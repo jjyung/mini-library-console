@@ -59,8 +59,7 @@
 └─ apps/
 ├─ api/          # Spring Boot
 └─ web/          # Vue (Vite) + Playwright
-
-````
+```
 
 ---
 
@@ -70,54 +69,42 @@
 - Java 21+
 - (optional) pnpm（沒有也可用 npm）
 
-> Windows 使用者不需要 WSL：請用 `scripts/*.cmd` 與 `mvnw.cmd`
+> Windows 使用者不需要 WSL：直接使用 `npm run ...` 即可
 
 ---
 
 ## Quick Start（建議兩個 Terminal）
 
-### Start Backend
-
-macOS/Linux:
+在專案根目錄先安裝前端依賴（首次）：
 
 ```bash
-./scripts/dev-be.sh
-````
-
-Windows:
-
-```bat
-.\scripts\dev-be.cmd
+npm run setup
 ```
 
-### Start Frontend
-
-macOS/Linux:
+### Terminal 1：Start Backend
 
 ```bash
-./scripts/dev-fe.sh
+npm run dev:api
 ```
 
-Windows:
+### Terminal 2：Start Frontend
 
-```bat
-.\scripts\dev-fe.cmd
+```bash
+npm run dev:web
+```
+
+### 或單指令同時啟動前後端
+
+```bash
+npm run dev
 ```
 
 ---
 
 ## Check（unit + integration + lint）
 
-macOS/Linux:
-
 ```bash
-./scripts/check.sh
-```
-
-Windows:
-
-```bat
-.\scripts\check.cmd
+npm run check
 ```
 
 ---
@@ -128,16 +115,8 @@ Windows:
 
 > create book → add copy → checkout(ok) → return(ok)
 
-macOS/Linux:
-
 ```bash
-./scripts/e2e.sh
-```
-
-Windows:
-
-```bat
-.\scripts\e2e.cmd
+npm run e2e
 ```
 
 ### UI Test Rule（很重要）

@@ -1,0 +1,16 @@
+{
+  "name": "mini-library-console",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "setup": "npm run install:web",
+    "install:web": "npm --prefix apps/web/library-mini-admin-web install",
+    "dev:api": "node scripts/run-api-command.js spring-boot:run",
+    "dev:web": "npm --prefix apps/web/library-mini-admin-web run dev",
+    "dev": "node scripts/dev.js",
+    "check:api": "node scripts/run-api-command.js test",
+    "check:web": "npm --prefix apps/web/library-mini-admin-web run lint && npm --prefix apps/web/library-mini-admin-web run type-check",
+    "check": "npm run check:api && npm run check:web",
+    "e2e": "npm --prefix apps/web/library-mini-admin-web run test:e2e"
+  }
+}
