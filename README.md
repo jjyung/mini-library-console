@@ -124,7 +124,7 @@ npm run e2e
 - 所有可互動元件都必須有 `data-testid`
 - E2E 一律用 `page.getByTestId()` 定位（避免 CSS 結構改動造成 flaky）
 
-Playwright 官方文件也建議以 test id 作為最 resilient 的定位方式。 ([playwright.dev][1])
+Playwright 官方文件也建議以 test id 作為最 resilient 的定位方式。
 
 ---
 
