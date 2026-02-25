@@ -1,0 +1,6 @@
+[features]
+multi_agent = true
+
+[agents.sa]
+description = "從 UI (Figma) 整理需求，負責產出功能性需求 (FR)、非功能性需求 (NFR) 與驗收標準 (AC)。"
+config_file = "agents/sa.toml"
