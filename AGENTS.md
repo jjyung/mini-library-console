@@ -1,10 +1,20 @@
 # AGENTS
 
 Version: 1.0.0
-Last Updated: 2026-02-24
+Last Updated: 2026-02-26
 
 This file defines mandatory rules for AI Agents and developers.
 All generated code MUST comply with this document.
+
+---
+
+## 0. Global Rules
+
+### 0.1 UI Test Locator Integrity (MUST)
+
+- All UI changes MUST preserve `data-testid` integrity.
+
+- If QA raises locator requirements, PG MUST prioritize handling them.
 
 ---
 
