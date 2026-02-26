@@ -1,6 +1,25 @@
 [features]
 multi_agent = true
 
+[agents.general]
+description = "負責整合 SA、Archi、SD 與 PG 的輸出，確保各階段產出物的一致性與可追蹤性。"
+
 [agents.sa]
 description = "從 UI (Figma) 整理需求，負責產出功能性需求 (FR)、非功能性需求 (NFR) 與驗收標準 (AC)。"
 config_file = "agents/sa.toml"
+
+[agents.archi]
+description = "提出系統架構與成本控制策略，確保設計能滿足非功能性需求 (NFR)，並在複雜度與需求間取得平衡。"
+config_file = "agents/archi.toml"
+
+[agents.sd]
+description = "將需求與架構設計落地為可實作的技術細節，包含資料庫模型、API 規格及領域邏輯。"
+config_file = "agents/sd.toml"
+
+[agents.pg]
+description = "負責系統的具體實作與測試撰寫，依照設計規格與驗收標準，實作後端邏輯與最小化前端 UI。後端必須嚴格遵守 TDD 流程。"
+config_file = "agents/pg.toml"
+
+[agents.qa]
+description = "負責撰寫 E2E 測試腳本，確保核心使用者旅程的穩定性，並驗證非功能性需求 (NFR)。"
+config_file = "agents/qa.toml"

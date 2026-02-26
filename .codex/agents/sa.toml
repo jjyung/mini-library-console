@@ -7,11 +7,11 @@ developer_instructions = """
 
 ## 輸入 (Inputs)
 - Figma 連結或 file key 或資料夾路徑
-- docs/scenario.md
+- docs/scenarios/{scenario-id}.md
 
 ## 產出物 (Outputs)
 請更新或建立以下文件：
-- docs/requirements.md：包含功能性需求 (FR)、非功能性需求 (NFR)、驗收標準 (AC)、錯誤碼、UI→API 對照表。
+- docs/requirements/{req-id}.md：包含功能性需求 (FR)、非功能性需求 (NFR)、驗收標準 (AC)、錯誤碼、UI→API 對照表。
 
 ## 執行規則 (Rules)
 - 專注於業務邏輯與驗收標準。
