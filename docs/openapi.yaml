@@ -1,0 +1,450 @@
+openapi: 3.0.3
+info:
+  title: Library Mini Admin API
+  version: 1.0.0
+  description: >-
+    SD output for REQ-LIB-001 and ARCH-LIB-001. MVP scope includes create books,
+    list books, borrow books, return books, and list borrow records.
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+tags:
+  - name: Books
+    description: Book management APIs
+  - name: BorrowRecords
+    description: Borrow and return APIs
+
+paths:
+  /api/v1/books:
+    post:
+      tags:
+        - Books
+      summary: library-books-001 Create Book
+      description: Create one book with initial stock.
+      operationId: postApiV1Books
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostBooksRequestDTO'
+      responses:
+        '200':
+          description: Business success or failure.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostBooksResponseDTO'
+    get:
+      tags:
+        - Books
+      summary: library-books-002 List Books
+      description: List all books and current availability.
+      operationId: getApiV1Books
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/BookStatusEnum'
+          description: Optional status filter.
+        - name: titleKeyword
+          in: query
+          required: false
+          schema:
+            type: string
+            maxLength: 120
+          description: Optional title keyword.
+      responses:
+        '200':
+          description: Business success or failure.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetBooksResponseDTO'
+
+  /api/v1/borrow-records:
+    post:
+      tags:
+        - BorrowRecords
+      summary: library-borrow-records-001 Borrow Book
+      description: Borrow one copy from a target book.
+      operationId: postApiV1BorrowRecords
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostBorrowRecordsRequestDTO'
+      responses:
+        '200':
+          description: Business success or failure.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostBorrowRecordsResponseDTO'
+    get:
+      tags:
+        - BorrowRecords
+      summary: library-borrow-records-003 List Borrow Records
+      description: List borrow records.
+      operationId: getApiV1BorrowRecords
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/BorrowRecordStatusEnum'
+          description: Optional status filter.
+        - name: bookId
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+          description: Optional book filter.
+        - name: borrowerName
+          in: query
+          required: false
+          schema:
+            type: string
+            maxLength: 80
+          description: Optional borrower filter.
+      responses:
+        '200':
+          description: Business success or failure.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetBorrowRecordsResponseDTO'
+
+  /api/v1/borrow-records/{borrowRecordId}/return:
+    patch:
+      tags:
+        - BorrowRecords
+      summary: library-borrow-records-002 Return Borrow Record
+      description: Return one borrowed record.
+      operationId: patchApiV1BorrowRecordsByBorrowRecordIdReturn
+      parameters:
+        - name: borrowRecordId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchBorrowRecordsRequestDTO'
+      responses:
+        '200':
+          description: Business success or failure.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatchBorrowRecordsResponseDTO'
+
+components:
+  schemas:
+    PostBooksRequestDTO:
+      type: object
+      required:
+        - title
+        - author
+        - totalCopies
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 120
+        author:
+          type: string
+          minLength: 1
+          maxLength: 80
+        totalCopies:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 9999
+
+    PostBooksResponseDTO:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          example: '00000'
+        message:
+          type: string
+          example: Success
+        data:
+          $ref: '#/components/schemas/PostBooksResponseDataDTO'
+        error:
+          allOf:
+            - $ref: '#/components/schemas/ErrorDetailDTO'
+          nullable: true
+
+    GetBooksRequestDTO:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/BookStatusEnum'
+        titleKeyword:
+          type: string
+          maxLength: 120
+
+    PostBooksResponseDataDTO:
+      type: object
+      required:
+        - book
+      properties:
+        book:
+          $ref: '#/components/schemas/BookDTO'
+
+    GetBooksResponseDTO:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          example: '00000'
+        message:
+          type: string
+          example: Success
+        data:
+          $ref: '#/components/schemas/GetBooksResponseDataDTO'
+        error:
+          allOf:
+            - $ref: '#/components/schemas/ErrorDetailDTO'
+          nullable: true
+
+    GetBooksResponseDataDTO:
+      type: object
+      required:
+        - books
+      properties:
+        books:
+          type: array
+          items:
+            $ref: '#/components/schemas/BookDTO'
+
+    PostBorrowRecordsRequestDTO:
+      type: object
+      required:
+        - bookId
+        - borrowerName
+      properties:
+        bookId:
+          type: integer
+          format: int64
+          minimum: 1
+        borrowerName:
+          type: string
+          minLength: 1
+          maxLength: 80
+
+    PostBorrowRecordsResponseDTO:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          example: '00000'
+        message:
+          type: string
+          example: Success
+        data:
+          $ref: '#/components/schemas/PostBorrowRecordsResponseDataDTO'
+        error:
+          allOf:
+            - $ref: '#/components/schemas/ErrorDetailDTO'
+          nullable: true
+
+    PostBorrowRecordsResponseDataDTO:
+      type: object
+      required:
+        - borrowRecord
+      properties:
+        borrowRecord:
+          $ref: '#/components/schemas/BorrowRecordDTO'
+
+    PatchBorrowRecordsRequestDTO:
+      type: object
+      required:
+        - returnedBy
+      properties:
+        returnedBy:
+          type: string
+          minLength: 1
+          maxLength: 80
+          description: Operator name for audit trail.
+
+    PatchBorrowRecordsResponseDTO:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          example: '00000'
+        message:
+          type: string
+          example: Success
+        data:
+          $ref: '#/components/schemas/PatchBorrowRecordsResponseDataDTO'
+        error:
+          allOf:
+            - $ref: '#/components/schemas/ErrorDetailDTO'
+          nullable: true
+
+    GetBorrowRecordsRequestDTO:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/BorrowRecordStatusEnum'
+        bookId:
+          type: integer
+          format: int64
+          minimum: 1
+        borrowerName:
+          type: string
+          maxLength: 80
+
+    PatchBorrowRecordsResponseDataDTO:
+      type: object
+      required:
+        - borrowRecord
+      properties:
+        borrowRecord:
+          $ref: '#/components/schemas/BorrowRecordDTO'
+
+    GetBorrowRecordsResponseDTO:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          example: '00000'
+        message:
+          type: string
+          example: Success
+        data:
+          $ref: '#/components/schemas/GetBorrowRecordsResponseDataDTO'
+        error:
+          allOf:
+            - $ref: '#/components/schemas/ErrorDetailDTO'
+          nullable: true
+
+    GetBorrowRecordsResponseDataDTO:
+      type: object
+      required:
+        - borrowRecords
+      properties:
+        borrowRecords:
+          type: array
+          items:
+            $ref: '#/components/schemas/BorrowRecordDTO'
+
+    BookDTO:
+      type: object
+      required:
+        - id
+        - title
+        - author
+        - totalCopies
+        - availableCopies
+        - status
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        author:
+          type: string
+        totalCopies:
+          type: integer
+          format: int32
+        availableCopies:
+          type: integer
+          format: int32
+        status:
+          $ref: '#/components/schemas/BookStatusEnum'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    BorrowRecordDTO:
+      type: object
+      required:
+        - id
+        - bookId
+        - bookTitle
+        - borrowerName
+        - borrowedAt
+        - status
+      properties:
+        id:
+          type: integer
+          format: int64
+        bookId:
+          type: integer
+          format: int64
+        bookTitle:
+          type: string
+        borrowerName:
+          type: string
+        borrowedAt:
+          type: string
+          format: date-time
+        returnedAt:
+          type: string
+          format: date-time
+          nullable: true
+        status:
+          $ref: '#/components/schemas/BorrowRecordStatusEnum'
+
+    ErrorDetailDTO:
+      type: object
+      required:
+        - errorSubCode
+        - errorMessage
+      properties:
+        errorSubCode:
+          type: string
+          description: Refined business code under A0000/B0000/C0000 families.
+          example: A0001
+        errorMessage:
+          type: string
+          example: Available copies are not enough.
+
+    BookStatusEnum:
+      type: string
+      enum:
+        - AVAILABLE
+        - CHECKED_OUT
+
+    BorrowRecordStatusEnum:
+      type: string
+      enum:
+        - BORROWED
+        - RETURNED

@@ -28,7 +28,7 @@
 
 You can preview this export in browser locally:
 
-1. `cd docs/figma-make/library-mini-admin-console`
+1. `cd docs/figma/library-mini-admin-console`
 1. `npm install`
 1. `npm run dev`
 1. Open `http://localhost:5173`
