@@ -267,6 +267,20 @@ Example:
 
 ---
 
+### 2.8 Figma UI Alignment
+
+#### MUST
+
+- Frontend implementation MUST align with design references under `docs/figma/*`.
+
+- `docs/figma/*` MAY contain multiple requirement batches and segmented screens; FE MUST follow the target requirement's corresponding Figma folder(s).
+
+- When visual/style conflicts exist across different `docs/figma/*` batches, FE MUST follow the latest requirement-scoped Figma source and document the chosen reference in delivery notes.
+
+- UI alignment MUST NOT break existing `data-testid` locators.
+
+---
+
 ## 3. OpenAPI Contract Rules
 
 This section applies to Backend, Frontend, SA, QA.
