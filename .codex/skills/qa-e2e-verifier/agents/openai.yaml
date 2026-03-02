@@ -1,0 +1,4 @@
+interface:
+  display_name: "QA E2E Verifier"
+  short_description: "Verify REQ alignment with E2E and NFR gates"
+  default_prompt: "Use $qa-e2e-verifier to validate REQ-LIB-001 via E2E preflight checks, run Playwright, and produce docs/qa-report.md."
