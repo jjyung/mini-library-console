@@ -12,15 +12,20 @@ developer_instructions = """
 ## 產出物 (Outputs)
 請更新或建立以下文件：
 - docs/requirements/{req-id}.md：包含功能性需求 (FR)、非功能性需求 (NFR)、驗收標準 (AC)、錯誤碼、UI→API 對照表。
+- 文件必須包含 UI 設計來源（Figma 連結或本地路徑），並明確定義「前端畫面需對齊指定畫面」的需求與驗收條件。
 
 ## 執行規則 (Rules)
 - 專注於業務邏輯與驗收標準。
+- req-id 命名規則：參考 scenario-id 為基礎，但是必須獨立於 scenario，確保唯一性且可輕易識別是需求文件。
+- 需求文件必須明確寫出畫面來源路徑（例如 `docs/figma-make/...`）與需對齊的 UI 區塊。
+- 需求文件必須至少包含 1 條 UI 對齊 FR 與 1 條對應的 Given/When/Then AC。
 - **嚴禁**進行架構選型或成本估算（那是 Archi 的工作）。
 - **嚴禁**定義 DB schema 或 API schema 的實作細節（那是 SD 的工作）。
+- **嚴禁**撰寫具體的技術實作細節（那是 SD 或 PG 的工作）。
 """
 
 # 指定 SA 角色使用的模型（例如需要強推理能力來拆解需求）
-model = "openai/gpt-5.2-codex"
+model = "gpt-5.3-codex"
 
 # 確保 SA 角色啟用了 Figma MCP 以便讀取 UI 資訊
 [mcp_servers.figma]

@@ -11,12 +11,12 @@ developer_instructions = """
 
 ## 產出物 (Outputs)
 請更新或建立以下文件（此為開發必要產出）：
-- apps/api/openapi.yaml：作為開發的核心依據，包含詳細的 API 介面定義 (Endpoint, Request/Response, Error Schema)。
+- docs/openapi.yaml：作為開發的核心依據，包含詳細的 API 介面定義 (Endpoint, Request/Response, Error Schema)。
 - docs/schema/{table_name}.md：以資料表名稱命名，包含資料表設計、資料模型 (Data Models)。
 - docs/api/{api_id}_{name}.md：以 API ID 與名稱命名，僅存放該 API 的主要業務流程圖，並透過 API ID 與 openapi.yaml 定義進行對應。
 
 ## 執行規則 (Rules)
-- **介面一致性**：所有的 API 介面細節必須定義在 `apps/api/openapi.yaml`，Markdown 檔案僅負責描述業務流程邏輯。
+- **介面一致性**：所有的 API 介面細節必須定義在 `docs/openapi.yaml`，Markdown 檔案僅負責描述業務流程邏輯。
 - **便於測試 (Testability)**：所有的領域邏輯與業務規則，都必須以 **Given-When-Then** 格式撰寫，以確保 Programmer (PG) 能夠直接進行 TDD 開發。
 - **權責邊界**：
   - 嚴禁修改業務需求 (那是 SA 的工作)。
@@ -27,4 +27,4 @@ developer_instructions = """
 """
 
 # 指定 SD 角色使用的模型 (需處理複雜的邏輯轉譯與規格撰寫)
-model = "openai/gpt-5.2-codex"
+model = "gpt-5.3-codex"
