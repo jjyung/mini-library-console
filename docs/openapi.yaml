@@ -1,0 +1,357 @@
+openapi: 3.0.3
+info:
+  title: Library Mini Admin API
+  version: 1.0.0
+  description: >-
+    MVP API contract for REQ-LIB-001 and ARCH-LIB-001.
+servers:
+  - url: http://localhost:8080
+    description: Local API server
+
+tags:
+  - name: books
+  - name: borrow-records
+
+paths:
+  /books:
+    post:
+      tags: [books]
+      summary: "library-books-001 Create book"
+      description: Create a new book in library inventory.
+      operationId: books.post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostBooksRequestDTO'
+      responses:
+        '201':
+          description: Business success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostBooksResponseDTO'
+        '400':
+          description: Client error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostBooksResponseDTO'
+        '409':
+          description: Conflict or duplicate
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostBooksResponseDTO'
+        '500':
+          description: System error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostBooksResponseDTO'
+    get:
+      tags: [books]
+      summary: "library-books-002 List books"
+      description: List books with available quantity and borrow status.
+      operationId: books.get
+      responses:
+        '200':
+          description: Business success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetBooksResponseDTO'
+        '500':
+          description: System error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetBooksResponseDTO'
+
+  /borrow-records:
+    post:
+      tags: [borrow-records]
+      summary: "library-borrow-records-001 Borrow book"
+      description: Borrow one book copy by borrower name.
+      operationId: borrow-records.post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostBorrowRecordsRequestDTO'
+      responses:
+        '201':
+          description: Business success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostBorrowRecordsResponseDTO'
+        '400':
+          description: Client error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostBorrowRecordsResponseDTO'
+        '409':
+          description: No stock or state conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostBorrowRecordsResponseDTO'
+        '500':
+          description: System error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostBorrowRecordsResponseDTO'
+
+  /borrow-records/{borrowRecordId}/return:
+    patch:
+      tags: [borrow-records]
+      summary: "library-borrow-records-002 Return borrowed book"
+      description: Return one borrowed record.
+      operationId: borrow-records-borrowRecordId-return.patch
+      parameters:
+        - name: borrowRecordId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchBorrowRecordsRequestDTO'
+      responses:
+        '200':
+          description: Business success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatchBorrowRecordsResponseDTO'
+        '400':
+          description: Client error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatchBorrowRecordsResponseDTO'
+        '404':
+          description: Record not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatchBorrowRecordsResponseDTO'
+        '409':
+          description: Already returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatchBorrowRecordsResponseDTO'
+        '500':
+          description: System error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatchBorrowRecordsResponseDTO'
+
+components:
+  schemas:
+    ApiResponseMetaDTO:
+      type: object
+      additionalProperties: false
+      required: [code, message]
+      properties:
+        code:
+          type: string
+          description: Business code
+          enum: ['00000', 'A0000', 'B0000', 'C0000']
+        message:
+          type: string
+          minLength: 1
+
+    BookDTO:
+      type: object
+      additionalProperties: false
+      required:
+        [id, title, author, totalQuantity, availableQuantity, status, createdAt, updatedAt]
+      properties:
+        id:
+          type: integer
+          format: int64
+          minimum: 1
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        author:
+          type: string
+          minLength: 1
+          maxLength: 120
+        totalQuantity:
+          type: integer
+          minimum: 1
+        availableQuantity:
+          type: integer
+          minimum: 0
+        status:
+          type: string
+          enum: [AVAILABLE, BORROWED]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    BorrowRecordDTO:
+      type: object
+      additionalProperties: false
+      required:
+        [id, bookId, borrowerName, status, borrowedAt, createdAt, updatedAt]
+      properties:
+        id:
+          type: integer
+          format: int64
+          minimum: 1
+        bookId:
+          type: integer
+          format: int64
+          minimum: 1
+        borrowerName:
+          type: string
+          minLength: 1
+          maxLength: 80
+        status:
+          type: string
+          enum: [BORROWED, RETURNED]
+        borrowedAt:
+          type: string
+          format: date-time
+        returnedAt:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    PostBooksRequestDTO:
+      type: object
+      additionalProperties: false
+      required: [title, author, totalQuantity]
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        author:
+          type: string
+          minLength: 1
+          maxLength: 120
+        totalQuantity:
+          type: integer
+          minimum: 1
+
+    PostBooksResponseBodyDTO:
+      type: object
+      additionalProperties: false
+      required: [book]
+      properties:
+        book:
+          $ref: '#/components/schemas/BookDTO'
+
+    PostBooksResponseDTO:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseMetaDTO'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/PostBooksResponseBodyDTO'
+
+    GetBooksRequestDTO:
+      type: object
+      additionalProperties: false
+      description: Reserved for future query fields in GET /books.
+      properties: {}
+
+    GetBooksResponseBodyDTO:
+      type: object
+      additionalProperties: false
+      required: [books]
+      properties:
+        books:
+          type: array
+          items:
+            $ref: '#/components/schemas/BookDTO'
+
+    GetBooksResponseDTO:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseMetaDTO'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/GetBooksResponseBodyDTO'
+
+    PostBorrowRecordsRequestDTO:
+      type: object
+      additionalProperties: false
+      required: [bookId, borrowerName]
+      properties:
+        bookId:
+          type: integer
+          format: int64
+          minimum: 1
+        borrowerName:
+          type: string
+          minLength: 1
+          maxLength: 80
+
+    PostBorrowRecordsResponseBodyDTO:
+      type: object
+      additionalProperties: false
+      required: [borrowRecord, book]
+      properties:
+        borrowRecord:
+          $ref: '#/components/schemas/BorrowRecordDTO'
+        book:
+          $ref: '#/components/schemas/BookDTO'
+
+    PostBorrowRecordsResponseDTO:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseMetaDTO'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/PostBorrowRecordsResponseBodyDTO'
+
+    PatchBorrowRecordsRequestDTO:
+      type: object
+      additionalProperties: false
+      description: Empty payload is allowed for return action.
+      properties: {}
+
+    PatchBorrowRecordsResponseBodyDTO:
+      type: object
+      additionalProperties: false
+      required: [borrowRecord, book]
+      properties:
+        borrowRecord:
+          $ref: '#/components/schemas/BorrowRecordDTO'
+        book:
+          $ref: '#/components/schemas/BookDTO'
+
+    PatchBorrowRecordsResponseDTO:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseMetaDTO'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/PatchBorrowRecordsResponseBodyDTO'
