@@ -1,0 +1,749 @@
+openapi: 3.0.3
+info:
+  title: Library Mini Admin API
+  version: 1.0.0
+  description: API contract for mini library admin console MVP.
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+tags:
+  - name: Books
+    description: Book catalog management
+  - name: Loans
+    description: Borrow and return transactions
+paths:
+  /library/books:
+    post:
+      tags: [Books]
+      x-api-id: library-books-001
+      summary: "[library-books-001] Create Book"
+      description: Create a new book inventory record.
+      operationId: postLibraryBooks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostBooksRequestDTO'
+      responses:
+        '200':
+          description: Operation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostBooksResponseDTO'
+              examples:
+                success:
+                  value:
+                    code: "00000"
+                    message: "Success"
+                    data:
+                      book:
+                        bookId: "BK00000001"
+                        title: "Domain-Driven Design"
+                        isbn: "9780321125217"
+                        author: "Eric Evans"
+                        category: "Software"
+                        totalQuantity: 3
+                        availableQuantity: 3
+                        shelfStatus: "ON_SHELF"
+                        circulationStatus: "AVAILABLE"
+                        createdAt: "2026-02-26T10:00:00Z"
+                        updatedAt: "2026-02-26T10:00:00Z"
+                duplicateIsbn:
+                  value:
+                    code: "A0002"
+                    message: "ISBN already exists"
+                    data: null
+                invalidInput:
+                  value:
+                    code: "A0003"
+                    message: "Missing required field or invalid format"
+                    data: null
+                systemError:
+                  value:
+                    code: "B0000"
+                    message: "System internal error"
+                    data: null
+        '400':
+          description: Client business error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostBooksResponseDTO'
+        '500':
+          description: System error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostBooksResponseDTO'
+    get:
+      tags: [Books]
+      x-api-id: library-books-002
+      summary: "[library-books-002] List Books"
+      description: List all books for book table display.
+      operationId: getLibraryBooks
+      parameters:
+        - name: shelfStatus
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/ShelfStatusEnum'
+          description: Optional filter by shelf status.
+      responses:
+        '200':
+          description: Operation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetBooksResponseDTO'
+              examples:
+                success:
+                  value:
+                    code: "00000"
+                    message: "Success"
+                    data:
+                      books:
+                        - bookId: "BK00000001"
+                          title: "Domain-Driven Design"
+                          isbn: "9780321125217"
+                          author: "Eric Evans"
+                          category: "Software"
+                          totalQuantity: 3
+                          availableQuantity: 2
+                          shelfStatus: "ON_SHELF"
+                          circulationStatus: "AVAILABLE"
+                          currentBorrowerReaderId: "reader-001"
+                          currentDueDate: "2026-03-10"
+                          createdAt: "2026-02-26T10:00:00Z"
+                          updatedAt: "2026-02-26T10:10:00Z"
+                systemError:
+                  value:
+                    code: "B0000"
+                    message: "System internal error"
+                    data: null
+        '500':
+          description: System error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetBooksResponseDTO'
+
+  /library/books/search:
+    get:
+      tags: [Books]
+      x-api-id: library-books-003
+      summary: "[library-books-003] Search Books"
+      description: Search books by title, ISBN or author.
+      operationId: getLibraryBooksSearch
+      parameters:
+        - name: keyword
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 120
+          description: Search keyword for title, ISBN or author.
+      responses:
+        '200':
+          description: Operation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetBooksSearchResponseDTO'
+              examples:
+                success:
+                  value:
+                    code: "00000"
+                    message: "Success"
+                    data:
+                      books:
+                        - bookId: "BK00000001"
+                          title: "Domain-Driven Design"
+                          isbn: "9780321125217"
+                          author: "Eric Evans"
+                          category: "Software"
+                          totalQuantity: 3
+                          availableQuantity: 2
+                          shelfStatus: "ON_SHELF"
+                          circulationStatus: "AVAILABLE"
+                          currentBorrowerReaderId: "reader-001"
+                          currentDueDate: "2026-03-10"
+                          createdAt: "2026-02-26T10:00:00Z"
+                          updatedAt: "2026-02-26T10:10:00Z"
+                invalidKeyword:
+                  value:
+                    code: "A0003"
+                    message: "Missing required field or invalid format"
+                    data: null
+                systemError:
+                  value:
+                    code: "B0000"
+                    message: "System internal error"
+                    data: null
+        '400':
+          description: Client business error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetBooksSearchResponseDTO'
+        '500':
+          description: System error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetBooksSearchResponseDTO'
+
+  /library/loans:
+    post:
+      tags: [Loans]
+      x-api-id: library-loans-001
+      summary: "[library-loans-001] Borrow Book"
+      description: Borrow one copy by ISBN for a reader.
+      operationId: postLibraryLoans
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostLoansRequestDTO'
+      responses:
+        '200':
+          description: Operation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostLoansResponseDTO'
+              examples:
+                success:
+                  value:
+                    code: "00000"
+                    message: "Success"
+                    data:
+                      loan:
+                        loanId: "LN00000001"
+                        isbn: "9780321125217"
+                        readerId: "reader-001"
+                        borrowedAt: "2026-02-26T10:20:00Z"
+                        dueDate: "2026-03-12"
+                        defaultDueDateApplied: true
+                        status: "BORROWED"
+                      bookInventory:
+                        isbn: "9780321125217"
+                        totalQuantity: 3
+                        availableQuantity: 1
+                        circulationStatus: "AVAILABLE"
+                bookNotFound:
+                  value:
+                    code: "A0001"
+                    message: "Book not found"
+                    data: null
+                outOfStock:
+                  value:
+                    code: "A0004"
+                    message: "No available stock"
+                    data: null
+                notOnShelf:
+                  value:
+                    code: "A0005"
+                    message: "Book is not on shelf"
+                    data: null
+                invalidInput:
+                  value:
+                    code: "A0003"
+                    message: "Missing required field or invalid format"
+                    data: null
+                systemError:
+                  value:
+                    code: "B0000"
+                    message: "System internal error"
+                    data: null
+        '400':
+          description: Client business error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostLoansResponseDTO'
+        '500':
+          description: System error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostLoansResponseDTO'
+
+  /library/loans/returns:
+    post:
+      tags: [Loans]
+      x-api-id: library-loans-002
+      summary: "[library-loans-002] Return Book"
+      description: Return one borrowed copy by ISBN.
+      operationId: postLibraryLoansReturns
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostLoansReturnsRequestDTO'
+      responses:
+        '200':
+          description: Operation result, including overdue warning.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostLoansReturnsResponseDTO'
+              examples:
+                success:
+                  value:
+                    code: "00000"
+                    message: "Success"
+                    data:
+                      returnRecord:
+                        loanId: "LN00000001"
+                        isbn: "9780321125217"
+                        readerId: "reader-001"
+                        returnedAt: "2026-03-10T09:00:00Z"
+                        overdueDays: 0
+                        fineAmount: 0
+                        currency: "TWD"
+                        status: "RETURNED"
+                      bookInventory:
+                        isbn: "9780321125217"
+                        totalQuantity: 3
+                        availableQuantity: 2
+                        circulationStatus: "AVAILABLE"
+                overdueWarning:
+                  value:
+                    code: "A0007"
+                    message: "Overdue return warning"
+                    data:
+                      returnRecord:
+                        loanId: "LN00000002"
+                        isbn: "9780321125217"
+                        readerId: "reader-002"
+                        returnedAt: "2026-03-20T09:00:00Z"
+                        overdueDays: 3
+                        fineAmount: 15
+                        currency: "TWD"
+                        status: "RETURNED"
+                      bookInventory:
+                        isbn: "9780321125217"
+                        totalQuantity: 3
+                        availableQuantity: 3
+                        circulationStatus: "AVAILABLE"
+                bookNotFound:
+                  value:
+                    code: "A0001"
+                    message: "Book not found"
+                    data: null
+                noBorrowRecord:
+                  value:
+                    code: "A0006"
+                    message: "No borrow record for return"
+                    data: null
+                invalidInput:
+                  value:
+                    code: "A0003"
+                    message: "Missing required field or invalid format"
+                    data: null
+                systemError:
+                  value:
+                    code: "B0000"
+                    message: "System internal error"
+                    data: null
+        '400':
+          description: Client business error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostLoansReturnsResponseDTO'
+        '500':
+          description: System error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostLoansReturnsResponseDTO'
+
+components:
+  schemas:
+    ShelfStatusEnum:
+      type: string
+      enum:
+        - ON_SHELF
+        - OFF_SHELF
+
+    CirculationStatusEnum:
+      type: string
+      enum:
+        - AVAILABLE
+        - BORROWED_OUT
+        - OFF_SHELF
+
+    LoanStatusEnum:
+      type: string
+      enum:
+        - BORROWED
+        - RETURNED
+
+    BaseResultDTO:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          description: Business result code.
+          enum:
+            - "00000"
+            - "A0001"
+            - "A0002"
+            - "A0003"
+            - "A0004"
+            - "A0005"
+            - "A0006"
+            - "A0007"
+            - "B0000"
+            - "C0000"
+        message:
+          type: string
+          maxLength: 255
+
+    BookInventoryDTO:
+      type: object
+      required:
+        - bookId
+        - title
+        - isbn
+        - category
+        - totalQuantity
+        - availableQuantity
+        - shelfStatus
+        - circulationStatus
+        - createdAt
+        - updatedAt
+      properties:
+        bookId:
+          type: string
+          maxLength: 32
+        title:
+          type: string
+          maxLength: 200
+        isbn:
+          type: string
+          maxLength: 20
+        author:
+          type: string
+          nullable: true
+          maxLength: 120
+        category:
+          type: string
+          maxLength: 80
+        totalQuantity:
+          type: integer
+          minimum: 1
+        availableQuantity:
+          type: integer
+          minimum: 0
+        shelfStatus:
+          $ref: '#/components/schemas/ShelfStatusEnum'
+        circulationStatus:
+          $ref: '#/components/schemas/CirculationStatusEnum'
+        currentBorrowerReaderId:
+          type: string
+          nullable: true
+          maxLength: 64
+        currentDueDate:
+          type: string
+          format: date
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    LoanDTO:
+      type: object
+      required:
+        - loanId
+        - isbn
+        - readerId
+        - borrowedAt
+        - dueDate
+        - defaultDueDateApplied
+        - status
+      properties:
+        loanId:
+          type: string
+          maxLength: 32
+        isbn:
+          type: string
+          maxLength: 20
+        readerId:
+          type: string
+          maxLength: 64
+        borrowedAt:
+          type: string
+          format: date-time
+        dueDate:
+          type: string
+          format: date
+        defaultDueDateApplied:
+          type: boolean
+        status:
+          $ref: '#/components/schemas/LoanStatusEnum'
+
+    ReturnRecordDTO:
+      type: object
+      required:
+        - loanId
+        - isbn
+        - readerId
+        - returnedAt
+        - overdueDays
+        - fineAmount
+        - currency
+        - status
+      properties:
+        loanId:
+          type: string
+          maxLength: 32
+        isbn:
+          type: string
+          maxLength: 20
+        readerId:
+          type: string
+          maxLength: 64
+        returnedAt:
+          type: string
+          format: date-time
+        overdueDays:
+          type: integer
+          minimum: 0
+        fineAmount:
+          type: integer
+          minimum: 0
+        currency:
+          type: string
+          example: TWD
+        status:
+          $ref: '#/components/schemas/LoanStatusEnum'
+
+    GetBooksRequestDTO:
+      type: object
+      properties:
+        shelfStatus:
+          $ref: '#/components/schemas/ShelfStatusEnum'
+
+    GetBooksDataDTO:
+      type: object
+      required:
+        - books
+      properties:
+        books:
+          type: array
+          items:
+            $ref: '#/components/schemas/BookInventoryDTO'
+
+    GetBooksResponseDTO:
+      allOf:
+        - $ref: '#/components/schemas/BaseResultDTO'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '#/components/schemas/GetBooksDataDTO'
+              nullable: true
+
+    GetBooksSearchRequestDTO:
+      type: object
+      required:
+        - keyword
+      properties:
+        keyword:
+          type: string
+          minLength: 1
+          maxLength: 120
+
+    GetBooksSearchDataDTO:
+      type: object
+      required:
+        - books
+      properties:
+        books:
+          type: array
+          items:
+            $ref: '#/components/schemas/BookInventoryDTO'
+
+    GetBooksSearchResponseDTO:
+      allOf:
+        - $ref: '#/components/schemas/BaseResultDTO'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '#/components/schemas/GetBooksSearchDataDTO'
+              nullable: true
+
+    PostBooksRequestDTO:
+      type: object
+      required:
+        - title
+        - isbn
+        - category
+        - quantity
+        - shelfStatus
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        isbn:
+          type: string
+          minLength: 1
+          maxLength: 20
+        author:
+          type: string
+          maxLength: 120
+        category:
+          type: string
+          minLength: 1
+          maxLength: 80
+        quantity:
+          type: integer
+          minimum: 1
+        shelfStatus:
+          $ref: '#/components/schemas/ShelfStatusEnum'
+
+    PostBooksDataDTO:
+      type: object
+      required:
+        - book
+      properties:
+        book:
+          $ref: '#/components/schemas/BookInventoryDTO'
+
+    PostBooksResponseDTO:
+      allOf:
+        - $ref: '#/components/schemas/BaseResultDTO'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '#/components/schemas/PostBooksDataDTO'
+              nullable: true
+
+    PostLoansRequestDTO:
+      type: object
+      required:
+        - readerId
+        - isbn
+      properties:
+        readerId:
+          type: string
+          minLength: 1
+          maxLength: 64
+        isbn:
+          type: string
+          minLength: 1
+          maxLength: 20
+        dueDate:
+          type: string
+          format: date
+          description: Optional due date; server applies default 14 days if omitted.
+
+    PostLoansDataDTO:
+      type: object
+      required:
+        - loan
+        - bookInventory
+      properties:
+        loan:
+          $ref: '#/components/schemas/LoanDTO'
+        bookInventory:
+          type: object
+          required:
+            - isbn
+            - totalQuantity
+            - availableQuantity
+            - circulationStatus
+          properties:
+            isbn:
+              type: string
+              maxLength: 20
+            totalQuantity:
+              type: integer
+              minimum: 1
+            availableQuantity:
+              type: integer
+              minimum: 0
+            circulationStatus:
+              $ref: '#/components/schemas/CirculationStatusEnum'
+
+    PostLoansResponseDTO:
+      allOf:
+        - $ref: '#/components/schemas/BaseResultDTO'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '#/components/schemas/PostLoansDataDTO'
+              nullable: true
+
+    PostLoansReturnsRequestDTO:
+      type: object
+      required:
+        - isbn
+      properties:
+        isbn:
+          type: string
+          minLength: 1
+          maxLength: 20
+        readerId:
+          type: string
+          maxLength: 64
+          description: Optional; if provided, server validates against active loan record.
+        returnedAt:
+          type: string
+          format: date-time
+          description: Optional; defaults to current server time.
+
+    PostLoansReturnsDataDTO:
+      type: object
+      required:
+        - returnRecord
+        - bookInventory
+      properties:
+        returnRecord:
+          $ref: '#/components/schemas/ReturnRecordDTO'
+        bookInventory:
+          type: object
+          required:
+            - isbn
+            - totalQuantity
+            - availableQuantity
+            - circulationStatus
+          properties:
+            isbn:
+              type: string
+              maxLength: 20
+            totalQuantity:
+              type: integer
+              minimum: 1
+            availableQuantity:
+              type: integer
+              minimum: 0
+            circulationStatus:
+              $ref: '#/components/schemas/CirculationStatusEnum'
+
+    PostLoansReturnsResponseDTO:
+      allOf:
+        - $ref: '#/components/schemas/BaseResultDTO'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '#/components/schemas/PostLoansReturnsDataDTO'
+              nullable: true

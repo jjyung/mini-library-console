@@ -1,8 +1,11 @@
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
-// See here how to get started:
-// https://playwright.dev/docs/intro
-test('visits the app root url', async ({ page }) => {
+test('visits app and sees required test ids', async ({ page }) => {
   await page.goto('/')
-  await expect(page.locator('h1')).toHaveText('You did it!')
+  await expect(page.getByTestId('page-title')).toHaveText('Library Mini Admin')
+  await expect(page.getByTestId('book-create-submit')).toBeVisible()
+  await expect(page.getByTestId('loan-borrow-submit')).toBeVisible()
+  await page.getByTestId('transaction-tab-return').click()
+  await expect(page.getByTestId('loan-return-submit')).toBeVisible()
+  await expect(page.getByTestId('book-search-submit')).toBeVisible()
 })
