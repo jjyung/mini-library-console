@@ -115,6 +115,26 @@ npm run check
 
 > create book → add copy → checkout(ok) → return(ok)
 
+### E2E 前置檢查（必做）
+
+在執行 E2E 前，先確認前後端服務都已啟動：
+
+```bash
+# 啟動服務（擇一）
+npm run dev
+# 或分開啟動
+npm run dev:api
+npm run dev:web
+```
+
+```bash
+# 確認服務埠
+lsof -iTCP:8080 -sTCP:LISTEN -n -P
+lsof -iTCP:5173 -sTCP:LISTEN -n -P
+```
+
+若任一服務未啟動，先修復服務啟動問題，再執行 E2E。
+
 ```bash
 npm run e2e
 ```
