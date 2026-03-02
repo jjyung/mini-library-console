@@ -1,4 +1,0 @@
-interface:
-  display_name: "Scenario Requirements Writer"
-  short_description: "Analyze SCN files and generate REQ docs"
-  default_prompt: "Use $scenario-requirements-writer to analyze SCN-LIB-001 and produce a requirement analysis document with REQ ID and traceability."

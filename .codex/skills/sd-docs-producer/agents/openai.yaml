@@ -1,4 +1,0 @@
-interface:
-  display_name: "SD Docs Producer"
-  short_description: "Generate OpenAPI and SD docs"
-  default_prompt: "Use $sd-docs-producer to generate SD deliverables from REQ-LIB-001 and ARCH-LIB-001, including openapi.yaml, schema docs, and API flow docs."
