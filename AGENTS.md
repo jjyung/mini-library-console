@@ -1,7 +1,7 @@
 # AGENTS
 
-Version: 1.0.0
-Last Updated: 2026-02-26
+Version: 1.0.1
+Last Updated: 2026-03-04
 
 This file defines mandatory rules for AI Agents and developers.
 All generated code MUST comply with this document.
@@ -15,6 +15,13 @@ All generated code MUST comply with this document.
 - All UI changes MUST preserve `data-testid` integrity.
 
 - If QA raises locator requirements, PG MUST prioritize handling them.
+
+### 0.2 Skill-Agent Decoupling (MUST)
+
+- Skill files under `.codex/skills/**` MUST NOT depend on `.codex/agents/*.toml`.
+- Skill workflow/checklist content MUST be self-contained and MUST NOT require reading agent config files as inputs.
+- Existing agents may remain for runtime/persona usage, but skills MUST work correctly when agent files are absent.
+- New or updated skills MUST follow the same rule and MUST NOT add references to `.codex/agents/**`.
 
 ---
 
@@ -530,3 +537,5 @@ AI-generated code MUST:
 6. Follow OpenAPI contract rules
 
 7. Follow Git rules
+
+8. Keep skills decoupled from `.codex/agents/**`

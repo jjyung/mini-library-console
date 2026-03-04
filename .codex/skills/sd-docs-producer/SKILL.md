@@ -12,7 +12,12 @@ Generate system design artifacts for implementation handoff.
 1. Read inputs.
 - Read `docs/requirements/*.md`.
 - Read `docs/architecture/*.md`.
-- Read `.codex/agents/sd.toml` and `AGENTS.md` for naming and contract rules.
+- Read `AGENTS.md` for naming and contract rules.
+- Apply built-in SD boundaries:
+  - Only edit design deliverables under `docs/openapi.yaml`, `docs/schema/*.md`, and `docs/api/*.md`.
+  - Do not modify requirement documents or architecture decision scope.
+  - Keep implementation-level details in design docs only, not source-code changes.
+  - Ensure business error-code mapping is consistent with requirements.
 
 2. Lock output scope.
 - Create or update `docs/openapi.yaml` as single source of API truth.

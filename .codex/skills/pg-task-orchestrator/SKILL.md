@@ -12,12 +12,17 @@ Run this workflow to execute PG coordination and delivery end-to-end.
 1. Load delivery context.
 - Read `docs/tasks/*.md` target plan.
 - Read `docs/openapi.yaml`, `docs/schema/*.md`, and `docs/api/*.md`.
-- Read agent boundaries in `.codex/agents/pg.toml`, `be.toml`, `fe.toml`, and `qa.toml` when present.
+- Apply built-in role boundaries:
+  - PG scope: planning, sequencing, dependency management, integration gate, and delivery summary.
+  - BE scope: `apps/api/**` only, TDD-first, business-code-consistent API behavior.
+  - FE scope: `apps/web/**` only, centralized API client, stable `data-testid`, business-code-based error mapping.
+  - QA scope: E2E scripts and QA report updates only.
 
 2. Confirm split ownership.
 - Assign backend tasks to BE (`apps/api/**`).
 - Assign frontend tasks to FE (`apps/web/**`).
 - Keep PG as coordinator for sequencing, dependency management, and final integration gate.
+- Keep design contract as immutable input unless user explicitly requests SD document updates.
 
 3. Execute by gates.
 - Gate-A: BE completes contract-critical backend tasks (controller, validation, error mapping).

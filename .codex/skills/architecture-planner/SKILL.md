@@ -11,7 +11,11 @@ Produce an architecture document at system level only.
 
 1. Read inputs.
 - Read `docs/requirements/*.md`.
-- Read current architecture constraints from `.codex/agents/archi.toml`.
+- Apply built-in architecture constraints:
+  - Focus on system-level decisions only: C4-L1/L2, deployment topology, technology trade-offs, NFR strategy, cost, risks, and non-goals.
+  - Keep deliverables under `docs/` only.
+  - Include minimum observability baseline for post-release operations.
+  - Keep minimal viable architecture: satisfy NFR while avoiding over-engineering.
 - If scenario context is needed, read `docs/scenarios/*.md`.
 
 2. Define output scope.

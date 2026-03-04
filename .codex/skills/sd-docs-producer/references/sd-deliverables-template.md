@@ -5,7 +5,7 @@
 - [ ] `docs/requirements/*.md`
 - [ ] `docs/architecture/*.md`
 - [ ] `AGENTS.md`
-- [ ] `.codex/agents/sd.toml`
+- [ ] Follow built-in SD boundaries defined in `sd-docs-producer/SKILL.md`
 
 ## OpenAPI (`docs/openapi.yaml`)
 
