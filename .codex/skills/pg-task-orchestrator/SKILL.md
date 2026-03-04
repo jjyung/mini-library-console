@@ -12,7 +12,7 @@ Run this workflow to execute PG coordination and delivery end-to-end.
 1. Load delivery context.
 - Read `docs/tasks/*.md` target plan.
 - Read `docs/openapi.yaml`, `docs/schema/*.md`, and `docs/api/*.md`.
-- Read agent boundaries in `.codex/agents/pg.toml`, `be.toml`, `fe.toml`, and `qa.toml` when present.
+- Read ownership and boundaries from project docs (for example `AGENTS.md`, task notes, and user instructions).
 
 2. Confirm split ownership.
 - Assign backend tasks to BE (`apps/api/**`).

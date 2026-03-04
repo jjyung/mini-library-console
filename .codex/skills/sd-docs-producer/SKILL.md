@@ -12,7 +12,7 @@ Generate system design artifacts for implementation handoff.
 1. Read inputs.
 - Read `docs/requirements/*.md`.
 - Read `docs/architecture/*.md`.
-- Read `.codex/agents/sd.toml` and `AGENTS.md` for naming and contract rules.
+- Read `AGENTS.md` and project docs for naming and contract rules.
 
 2. Lock output scope.
 - Create or update `docs/openapi.yaml` as single source of API truth.

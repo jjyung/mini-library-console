@@ -11,7 +11,7 @@ Produce an architecture document at system level only.
 
 1. Read inputs.
 - Read `docs/requirements/*.md`.
-- Read current architecture constraints from `.codex/agents/archi.toml`.
+- Read current architecture constraints from user request and existing project docs (for example `AGENTS.md`, `README.md`).
 - If scenario context is needed, read `docs/scenarios/*.md`.
 
 2. Define output scope.

@@ -5,7 +5,6 @@
 - [ ] `docs/requirements/*.md`
 - [ ] `docs/architecture/*.md`
 - [ ] `AGENTS.md`
-- [ ] `.codex/agents/sd.toml`
 
 ## OpenAPI (`docs/openapi.yaml`)
 
