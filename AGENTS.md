@@ -8,15 +8,15 @@ All generated code MUST comply with this document.
 
 ---
 
-## 0. Global Rules
+## Global Rules
 
-### 0.1 UI Test Locator Integrity (MUST)
+### UI Test Locator Integrity (MUST)
 
 - All UI changes MUST preserve `data-testid` integrity.
 
 - If QA raises locator requirements, PG MUST prioritize handling them.
 
-### 0.2 Skill-Agent Decoupling (MUST)
+### Skill-Agent Decoupling (MUST)
 
 - Skill files under `.codex/skills/**` MUST NOT depend on `.codex/agents/*.toml`.
 - Skill workflow/checklist content MUST be self-contained and MUST NOT require reading agent config files as inputs.
@@ -25,9 +25,9 @@ All generated code MUST comply with this document.
 
 ---
 
-## 1. Java Backend Rules
+## Java Backend Rules
 
-### 1.1 Naming
+### Naming
 
 #### MUST
 
@@ -91,7 +91,7 @@ All generated code MUST comply with this document.
 
 ---
 
-### 1.2 OOP
+### OOP
 
 #### MUST
 
@@ -115,7 +115,7 @@ All generated code MUST comply with this document.
 
 ---
 
-### 1.3 Exception Handling
+### Exception Handling
 
 #### MUST
 
@@ -139,7 +139,7 @@ throw new MyBusinessException("message", e);
 
 ---
 
-### 1.4 Error Code
+### Error Code
 
 All APIs MUST return business error code.
 
@@ -154,11 +154,11 @@ HTTP status code MUST NOT replace business error code.
 
 ---
 
-## 2. Frontend Rules
+## Frontend Rules
 
 ---
 
-### 2.1 Naming
+### Naming
 
 #### MUST
 
@@ -180,7 +180,7 @@ Example:
 
 ---
 
-### 2.2 Component Structure
+### Component Structure
 
 #### MUST
 
@@ -202,7 +202,7 @@ Business logic MUST be placed in:
 
 ---
 
-### 2.3 API Calling Rules
+### API Calling Rules
 
 #### MUST
 
@@ -220,7 +220,7 @@ Example:
 
 ---
 
-### 2.4 State Management
+### State Management
 
 #### MUST
 
@@ -238,7 +238,7 @@ Example:
 
 ---
 
-### 2.5 Error Handling
+### Error Handling
 
 #### MUST
 
@@ -250,7 +250,7 @@ Example:
 
 ---
 
-### 2.6 DTO Alignment
+### DTO Alignment
 
 #### MUST
 
@@ -262,7 +262,7 @@ Example:
 
 ---
 
-### 2.7 Forbidden
+### Forbidden
 
 - No hard-coded API URL
 
@@ -274,7 +274,7 @@ Example:
 
 ---
 
-### 2.8 Figma UI Alignment
+### Figma UI Alignment
 
 #### MUST
 
@@ -288,13 +288,13 @@ Example:
 
 ---
 
-## 3. OpenAPI Contract Rules
+## OpenAPI Contract Rules
 
 This section applies to Backend, Frontend, SA, QA.
 
 ---
 
-### 3.1 API ID (MUST)
+### API ID (MUST)
 
 Each API MUST have a unique API ID.
 
@@ -329,7 +329,7 @@ Usage:
 
 ---
 
-### 3.2 operationId (MUST)
+### operationId (MUST)
 
 - operationId MUST use path
 
@@ -339,7 +339,7 @@ Usage:
 
 ---
 
-### 3.3 Model Naming (MUST)
+### Model Naming (MUST)
 
 All models MUST distinguish Request and Response.
 
@@ -373,7 +373,7 @@ Examples:
 
 ---
 
-### 3.4 Naming Conflict (SHOULD)
+### Naming Conflict (SHOULD)
 
 When conflict occurs, add qualifier:
 
@@ -397,9 +397,9 @@ Example:
 
 ---
 
-## 4. Git Rules
+## Git Rules
 
-### 4.1 Branch Naming
+### Branch Naming
 
 Format:
 
@@ -432,7 +432,7 @@ Rules:
 
 ---
 
-### 4.2 Commit Message
+### Commit Message
 
 Format:
 
@@ -477,7 +477,7 @@ Rules:
 
 ---
 
-## 5. Versioning (Semantic Versioning)
+## Versioning (Semantic Versioning)
 
 Format:
 
@@ -520,7 +520,7 @@ Example:
 
 ---
 
-## 6. AI Agent Constraints
+## AI Agent Constraints
 
 AI-generated code MUST:
 
@@ -539,3 +539,92 @@ AI-generated code MUST:
 7. Follow Git rules
 
 8. Keep skills decoupled from `.codex/agents/**`
+
+---
+
+## Workflow orchestration rules
+
+This repository follows a **stage-gated, artifact-driven workflow** aligned with role boundaries.
+
+### Role order
+
+Unless explicitly overridden, scenario delivery should follow:
+
+```text
+SA -> Archi -> SD -> PG -> FE/BE -> QA
+```
+
+Do not collapse multiple decision layers into a single uncontrolled step.
+
+### Workflow state is mandatory
+
+For each scenario-driven implementation, maintain a workflow state file:
+
+```text
+docs/workflows/WF-<DOMAIN>-<NNN>.md
+```
+
+Agents must treat this file as the handoff artifact across sessions.
+
+Each workflow state file should include at least:
+
+- workflow metadata
+- current stage
+- workflow graph
+- current objective
+- stage-by-stage status
+- blockers and open questions
+- parallel FE/BE plan
+- QA loop status
+- session handoff notes
+
+### Required startup check for any agent
+
+Before making changes, agents should inspect:
+
+1. `README.md`
+2. `AGENTS.md`
+3. related scenario file under `docs/scenarios/`
+4. corresponding workflow state under `docs/workflows/`
+5. upstream artifacts required by the current stage
+
+### Stage transition rule
+
+An agent may move a workflow to the next stage only when the current stage has enough artifact quality to support the next role.
+
+If required information is missing, the agent must:
+
+- stop and ask clarifying questions, or
+- explicitly document assumptions before proceeding
+
+### Parallel FE/BE rule
+
+FE and BE may run in parallel only after PG has produced a stable implementation plan and SD artifacts are sufficient for parallel delivery.
+
+Agents must keep FE/BE aligned on:
+
+- API contract
+- shared terminology
+- acceptance criteria
+- scenario scope
+
+### Auto QA loop rule
+
+QA may trigger automatic rework loops, but the rework target must match the defect type:
+
+- implementation issue -> FE/BE
+- contract issue -> SD
+- design issue -> Archi
+- requirement issue -> SA
+
+Do not keep looping indefinitely. Escalate after repeated failures.
+
+### Handoff requirement
+
+At the end of any substantial agent action, update the workflow state file with:
+
+- latest completed step
+- current status
+- next recommended action
+- blockers/questions
+- files the next session should read first

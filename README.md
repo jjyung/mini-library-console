@@ -75,6 +75,59 @@
 
 > Windows 使用者不需要 WSL：直接使用 `npm run ...` 即可
 
+### Shell Environment Recommendation（macOS zsh）
+
+若你在 macOS 使用 `zsh`，建議把 Node.js 初始化放進 `~/.zshrc`，並讓 `~/.zprofile` 載入 `~/.zshrc`。
+
+原因：
+
+- 有些 terminal / agent / sandbox 會用 `login shell`
+- 有些只會讀 `~/.zprofile`，不一定會自動讀 `~/.zshrc`
+- 若 `node` / `npm` 只在 `~/.zshrc` 內設定，實際執行 `npm run check`、`npm run dev`、`npm run e2e` 時可能會出現 `command not found: node` 或 `command not found: npm`
+
+建議設定如下：
+
+`~/.zshrc`
+
+```bash
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
+
+# 建議使用 repo 對應版本
+nvm use --silent
+```
+
+`~/.zprofile`
+
+```bash
+# 讓 login shell 也載入 Node / npm 設定
+[ -f "$HOME/.zshrc" ] && source "$HOME/.zshrc"
+```
+
+本 repo 也提供 [.nvmrc](./.nvmrc)，所以進入專案後可先執行：
+
+```bash
+nvm use
+node -v
+npm -v
+```
+
+如果 `node -v` 或 `npm -v` 失敗，先修正 shell 設定，再執行後續流程，否則 `setup`、`check`、`dev`、`e2e` 都可能中斷。
+
+### Maven Cache Recommendation
+
+若你在受限制環境、sandbox 或 CI 內執行 Maven，建議避免把快取寫到 `~/.m2/repository`，因為可能會遇到權限問題。
+
+本 repo 的 [scripts/run-api-command.js](./scripts/run-api-command.js) 已預設將 Maven local repo 指到專案內的 `.m2-local`，因此建議優先使用：
+
+```bash
+npm run dev:api
+npm run check:api
+```
+
+而不是直接手打未帶 `-Dmaven.repo.local=...` 的 `./mvnw ...`。
+
 ---
 
 ## Quick Start（建議兩個 Terminal）
@@ -250,9 +303,26 @@ Playwright 官方文件也建議以 test id 作為最 resilient 的定位方式�
 
 ---
 
-## Optional: MCP 插點（有時間再示範）
+## Workflow State Management
 
-- SA：可接 Figma MCP 讀設計上下文 → 更快產出 requirements
-- QA：可接 Playwright MCP 協助走 UI、生成/修正 smoke spec
+This project uses **artifact-driven workflow state** so that different agents or sessions can continue work safely without relying on chat history alone.
 
-Codex 支援在 CLI/IDE 連 MCP servers。
+### Workflow IDs
+
+Each scenario-driven development flow should have a workflow record:
+
+- Scenario: `SCN-<DOMAIN>-<NNN>`
+- Workflow: `WF-<DOMAIN>-<NNN>`
+
+Example:
+
+- `SCN-LIB-001`
+- `WF-LIB-001`
+
+### Workflow state file
+
+Each workflow must maintain a state file under:
+
+```text
+docs/workflows/WF-<DOMAIN>-<NNN>.md
+```

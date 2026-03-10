@@ -12,7 +12,8 @@ approval_policy = 'untrusted'
 multi_agent = true
 
 [agents.general]
-description = "負責整合 SA、Archi、SD 與 PG 的輸出，確保各階段產出物的一致性與可追蹤性。"
+description = "General-purpose software development workflow orchestrator coordinating multi-role agents following team conventions and Conway's Law."
+config_file = "agents/orchestrator.toml"
 
 [agents.sa]
 description = "從 UI (Figma) 整理需求，負責產出功能性需求 (FR)、非功能性需求 (NFR) 與驗收標準 (AC)。"
