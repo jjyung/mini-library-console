@@ -1,3 +1,13 @@
+[profiles.deep-review]
+model = 'gpt-5-pro'
+model_reasoning_effort = 'high'
+approval_policy = 'never'
+
+[profiles.lightweight]
+model = 'gpt-4.1'
+approval_policy = 'untrusted'
+
+
 [features]
 multi_agent = true
 
