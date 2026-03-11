@@ -218,6 +218,26 @@ Playwright 官方文件也建議以 test id 作為最 resilient 的定位方式�
 
 ---
 
+## SCN-LIB-001 教學流程（Orchestrator）
+
+如果目前 session 預設角色是 orchestrator，你可以直接提問要求開始進行 `SCN-LIB-001` 的規劃與實作，讓它依 workflow 狀態自動判斷下一步並持續推進。
+
+可直接這樣問：
+
+```text
+請開始進行 SCN-LIB-001 的規劃與實作，依 workflow 自動判斷下一步並持續推進
+```
+
+```text
+請 orchestrator 告訴我 SCN-LIB-001 現在進度、下一步與需要先讀哪些文件
+```
+
+```text
+請 orchestrator 接手 SCN-LIB-001，從需求、架構、設計、任務規劃到實作與 QA 依序推進
+```
+
+---
+
 ## SCN-LIB-001 教學流程（Agent-by-Agent）
 
 以下是從情境到交付的建議順序，可直接照這個流程操作。
