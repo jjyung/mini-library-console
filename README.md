@@ -115,12 +115,12 @@ S0 Scenario Discovery
 | `SD` | `S3` | 產出 implementation-ready 設計，包含 OpenAPI、schema、API flow | `REQ-LIB-001`, `ARCH-LIB-001` | `docs/openapi.yaml`, `docs/schema/*`, `docs/api/*` |
 | `PG` | `S4` | 規劃任務、凍結 FE/BE 切分、協調實作與驗收門檻 | requirements, architecture, SD artifacts | `docs/tasks/TASK-LIB-001_mvp-delivery.md` |
 | `FE / BE` | `S5A` / `S5B` | 在 PG 協調下平行實作前後端 | task plan, frozen API contract, acceptance criteria | `apps/web/*`, `apps/api/*` |
-| `QA` | `S6` | 執行 E2E / NFR 驗證，必要時觸發回圈 | running app, REQ, workflow state, stable test ids | `docs/qa-report.md`, defect feedback |
+| `QA` | `S6` | 執行 E2E / NFR 驗證，必要時觸發回圈 | running app, REQ, workflow state, stable test ids | `docs/qa-report/QA-<DOMAIN>-<NNN>.md`, defect feedback |
 
 補充兩點：
 
 - `PG` 是協調與交付角色，不等於單人包辦所有 FE/BE 細節
-- 本 repo 的 source of truth 不是聊天紀錄，而是 [docs/workflows/WF-LIB-001.md](/Users/cfh00902455/Projects/mini-library-console/docs/workflows/WF-LIB-001.md)
+- 本 repo 的 source of truth 不是聊天紀錄，而是 [docs/workflows/WF-LIB-001.md](docs/workflows/WF-LIB-001.md)
 
 ## Artifact-Driven Workflow State
 
@@ -134,7 +134,7 @@ docs/workflows/WF-<DOMAIN>-<NNN>.md
 
 本 repo 的範例是：
 
-- [WF-LIB-001.md](/Users/cfh00902455/Projects/mini-library-console/docs/workflows/WF-LIB-001.md)
+- [WF-LIB-001.md](docs/workflows/WF-LIB-001.md)
 
 它至少會記錄：
 
@@ -305,7 +305,7 @@ npm run dev
 主要輸出：
 
 - `apps/web/library-mini-admin-web/e2e/*.spec.ts`
-- `docs/qa-report.md`
+- `docs/qa-report/QA-<DOMAIN>-<NNN>.md`
 
 若 QA 回報缺口，應回到對應角色修正，而不是無限重跑。
 
@@ -339,7 +339,7 @@ orchestrator 的工作方式應該是：
 - orchestrator 不是萬能 agent
 - orchestrator 是 workflow coordinator
 
-真正讓它能跨階段接續的，不是它「記性很好」，而是它會回到 [WF-LIB-001.md](/Users/cfh00902455/Projects/mini-library-console/docs/workflows/WF-LIB-001.md) 讀 source of truth。
+真正讓它能跨階段接續的，不是它「記性很好」，而是它會回到 [WF-LIB-001.md](docs/workflows/WF-LIB-001.md) 讀 source of truth。
 
 ## Demo 3: Resume / Handoff
 
@@ -384,7 +384,7 @@ orchestrator 的工作方式應該是：
 │  ├─ tasks/
 │  ├─ workflows/
 │  ├─ openapi.yaml
-│  ├─ qa-report.md
+│  ├─ qa-report/
 │  └─ figma/
 ├─ .codex/
 │  ├─ config.toml
@@ -398,9 +398,9 @@ orchestrator 的工作方式應該是：
 
 如果你是第一次看這個 repo，最值得先讀的不是全部目錄，而是這幾個 artifact：
 
-1. [AGENTS.md](/Users/cfh00902455/Projects/mini-library-console/AGENTS.md)
-2. [docs/scenarios/SCN-LIB-001.md](/Users/cfh00902455/Projects/mini-library-console/docs/scenarios/SCN-LIB-001.md)
-3. [docs/workflows/WF-LIB-001.md](/Users/cfh00902455/Projects/mini-library-console/docs/workflows/WF-LIB-001.md)
+1. [AGENTS.md](AGENTS.md)
+2. [docs/scenarios/SCN-LIB-001.md](docs/scenarios/SCN-LIB-001.md)
+3. [docs/workflows/WF-LIB-001.md](docs/workflows/WF-LIB-001.md)
 
 ## Commands Reference
 
@@ -419,14 +419,14 @@ npm run e2e        # Playwright smoke E2E
 
 這個 repo 的教學範例以 `SCN-LIB-001` 為主，對應的主要交付物如下：
 
-- Scenario: [SCN-LIB-001.md](/Users/cfh00902455/Projects/mini-library-console/docs/scenarios/SCN-LIB-001.md)
-- Workflow state: [WF-LIB-001.md](/Users/cfh00902455/Projects/mini-library-console/docs/workflows/WF-LIB-001.md)
-- Requirements: [REQ-LIB-001.md](/Users/cfh00902455/Projects/mini-library-console/docs/requirements/REQ-LIB-001.md)
-- Architecture: [ARCH-LIB-001.md](/Users/cfh00902455/Projects/mini-library-console/docs/architecture/ARCH-LIB-001.md)
-- OpenAPI contract: [openapi.yaml](/Users/cfh00902455/Projects/mini-library-console/docs/openapi.yaml)
-- PG task plan: [TASK-LIB-001_mvp-delivery.md](/Users/cfh00902455/Projects/mini-library-console/docs/tasks/TASK-LIB-001_mvp-delivery.md)
-- PG summary: [TASK-LIB-001_mvp-delivery-summary.md](/Users/cfh00902455/Projects/mini-library-console/docs/tasks/TASK-LIB-001_mvp-delivery-summary.md)
-- QA report: [qa-report.md](/Users/cfh00902455/Projects/mini-library-console/docs/qa-report.md)
+- Scenario: [SCN-LIB-001.md](docs/scenarios/SCN-LIB-001.md)
+- Workflow state: [WF-LIB-001.md](docs/workflows/WF-LIB-001.md)
+- Requirements: [REQ-LIB-001.md](docs/requirements/REQ-LIB-001.md)
+- Architecture: [ARCH-LIB-001.md](docs/architecture/ARCH-LIB-001.md)
+- OpenAPI contract: [openapi.yaml](docs/openapi.yaml)
+- PG task plan: [TASK-LIB-001_mvp-delivery.md](docs/tasks/TASK-LIB-001_mvp-delivery.md)
+- PG summary: [TASK-LIB-001_mvp-delivery-summary.md](docs/tasks/TASK-LIB-001_mvp-delivery-summary.md)
+- QA report template: [qa-report-template.md](docs/templates/qa-report-template.md)
 
 ## Project Notes
 
