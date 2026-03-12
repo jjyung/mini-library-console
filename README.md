@@ -5,7 +5,6 @@
 目前 repo 已附一條完整範例流程：
 
 - Scenario: `SCN-LIB-001`
-- Workflow: `WF-LIB-001`
 
 如果你想看的是 Codex multi-agent 怎麼設定、角色怎麼分工、workflow 怎麼接手，以及怎麼 demo，這份 README 就是入口。
 
@@ -14,7 +13,7 @@
 這個專案刻意把範圍收斂成一個小型 Web app，好讓焦點放在 workflow，而不是產品複雜度。
 
 - 用最小可運行案例示範多角色協作
-- 用 `docs/workflows/WF-LIB-001.md` 保存跨 session 的 workflow state
+- 用 `docs/workflows/WF-<DOMAIN>-<NNN>.md` 保存跨 session 的 workflow state
 - 用文件 artifact 而不是聊天紀錄當 source of truth
 - 用清楚的角色邊界降低單一 agent 包辦所有決策的風險
 
@@ -120,7 +119,8 @@ S0 Scenario Discovery
 補充兩點：
 
 - `PG` 是協調與交付角色，不等於單人包辦所有 FE/BE 細節
-- 本 repo 的 source of truth 不是聊天紀錄，而是 [docs/workflows/WF-LIB-001.md](docs/workflows/WF-LIB-001.md)
+- workflow state 是執行中的產物，不是 repo 一開始就固定存在的靜態文件
+- 當某條 scenario 開始推進時，對應的 source of truth 會是 `docs/workflows/WF-<DOMAIN>-<NNN>.md`
 
 ## Artifact-Driven Workflow State
 
@@ -132,10 +132,6 @@ workflow state 檔案位置：
 docs/workflows/WF-<DOMAIN>-<NNN>.md
 ```
 
-本 repo 的範例是：
-
-- [WF-LIB-001.md](docs/workflows/WF-LIB-001.md)
-
 它至少會記錄：
 
 - workflow metadata
@@ -146,6 +142,8 @@ docs/workflows/WF-<DOMAIN>-<NNN>.md
 - FE / BE parallel plan
 - QA loop status
 - session handoff notes
+
+這類檔案會在教學或實作流程推進時建立，例如某次執行 `SCN-LIB-001` 時，才可能產生 `docs/workflows/WF-LIB-001.md`。
 
 因此，當你換一個 agent、換一個 session，甚至中途停下來，仍然能靠 workflow file 恢復上下文，而不是靠「記得上次聊到哪」。
 
@@ -339,7 +337,7 @@ orchestrator 的工作方式應該是：
 - orchestrator 不是萬能 agent
 - orchestrator 是 workflow coordinator
 
-真正讓它能跨階段接續的，不是它「記性很好」，而是它會回到 [WF-LIB-001.md](docs/workflows/WF-LIB-001.md) 讀 source of truth。
+真正讓它能跨階段接續的，不是它「記性很好」，而是它會回到當次流程產生的 workflow state 檔讀 source of truth。
 
 ## Demo 3: Resume / Handoff
 
@@ -363,7 +361,7 @@ orchestrator 的工作方式應該是：
 
 - orchestrator 先讀 `README.md`
 - 再讀 `AGENTS.md`
-- 再讀 `docs/workflows/WF-LIB-001.md`
+- 再讀對應的 `docs/workflows/WF-<DOMAIN>-<NNN>.md`
 - 再定位應先讀哪些 artifact
 - 最後回報 next action
 
@@ -377,30 +375,31 @@ orchestrator 的工作方式應該是：
 ├─ AGENTS.md
 ├─ docs/
 │  ├─ scenarios/
-│  ├─ requirements/
-│  ├─ architecture/
-│  ├─ api/
-│  ├─ schema/
-│  ├─ tasks/
-│  ├─ workflows/
+│  ├─ requirements/        # 教學或分析後產出的需求文件
+│  ├─ architecture/        # 架構設計輸出
+│  ├─ api/                 # API flow 與介面說明
+│  ├─ schema/              # 資料模型與 schema 文件
+│  ├─ tasks/               # PG 交付計畫與實作摘要
+│  ├─ workflows/           # 執行中 workflow state，教學過程才會產生
 │  ├─ openapi.yaml
-│  ├─ qa-report/
-│  └─ figma/
+│  ├─ qa-report/           # QA 階段輸出的報告目錄
+│  ├─ figma/               # Figma 匯出與設計參考
+│  └─ templates/           # workflow / QA report 等模板
 ├─ .codex/
-│  ├─ config.toml
-│  ├─ agents/
-│  └─ skills/
-├─ scripts/
+│  ├─ config.toml          # Codex multi-agent 設定入口
+│  ├─ agents/              # 各角色 agent prompt 與邊界設定
+│  └─ skills/              # 可重用 workflow skills
+├─ scripts/                # 啟動、檢查或輔助腳本
 └─ apps/
-   ├─ api/
-   └─ web/
+   ├─ api/                 # 後端應用程式
+   └─ web/                 # 前端應用程式
 ```
 
-如果你是第一次看這個 repo，最值得先讀的不是全部目錄，而是這幾個 artifact：
+如果你是第一次看這個 repo，最值得先讀的不是全部目錄，而是這幾個起點：
 
 1. [AGENTS.md](AGENTS.md)
 2. [docs/scenarios/SCN-LIB-001.md](docs/scenarios/SCN-LIB-001.md)
-3. [docs/workflows/WF-LIB-001.md](docs/workflows/WF-LIB-001.md)
+3. [docs/templates/workflow-state-template.md](docs/templates/workflow-state-template.md)
 
 ## Commands Reference
 
@@ -417,16 +416,18 @@ npm run e2e        # Playwright smoke E2E
 
 ## Scenario 與交付物
 
-這個 repo 的教學範例以 `SCN-LIB-001` 為主，對應的主要交付物如下：
+這個 repo 目前提供的是教學起始材料與模板，不是所有交付物都已預先存在。以 `SCN-LIB-001` 為例：
 
-- Scenario: [SCN-LIB-001.md](docs/scenarios/SCN-LIB-001.md)
-- Workflow state: [WF-LIB-001.md](docs/workflows/WF-LIB-001.md)
-- Requirements: [REQ-LIB-001.md](docs/requirements/REQ-LIB-001.md)
-- Architecture: [ARCH-LIB-001.md](docs/architecture/ARCH-LIB-001.md)
-- OpenAPI contract: [openapi.yaml](docs/openapi.yaml)
-- PG task plan: [TASK-LIB-001_mvp-delivery.md](docs/tasks/TASK-LIB-001_mvp-delivery.md)
-- PG summary: [TASK-LIB-001_mvp-delivery-summary.md](docs/tasks/TASK-LIB-001_mvp-delivery-summary.md)
-- QA report template: [qa-report-template.md](docs/templates/qa-report-template.md)
+- 固定輸入：Scenario [SCN-LIB-001.md](docs/scenarios/SCN-LIB-001.md)
+- 固定模板：Workflow state [workflow-state-template.md](docs/templates/workflow-state-template.md)
+- 固定模板：QA report [qa-report-template.md](docs/templates/qa-report-template.md)
+- 執行過程可能產出：`docs/workflows/WF-LIB-001.md`
+- 執行過程可能產出：`docs/requirements/REQ-LIB-001.md`
+- 執行過程可能產出：`docs/architecture/ARCH-LIB-001.md`
+- 執行過程可能產出：`docs/openapi.yaml`
+- 執行過程可能產出：`docs/tasks/TASK-LIB-001_mvp-delivery.md`
+- 執行過程可能產出：`docs/tasks/TASK-LIB-001_mvp-delivery-summary.md`
+- 執行過程可能產出：`docs/qa-report/QA-LIB-001.md`
 
 ## Project Notes
 
