@@ -18,7 +18,8 @@
 - Separate environment constraints from product defects.
 
 ## 5) Reporting
-- Update `docs/qa-report.md` with:
+- Read `docs/templates/qa-report-template.md`.
+- Update `docs/qa-report/QA-<DOMAIN>-<NNN>.md` with:
   - Requirement ID and scope.
   - Preflight result.
   - Commands and outcomes.

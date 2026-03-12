@@ -1,6 +1,6 @@
 ---
 name: qa-e2e-verifier
-description: Validate web delivery against requirement acceptance criteria with E2E and NFR gates. Use when user asks QA to verify whether a feature/scenario is complete (for example REQ-LIB-001), run Playwright after frontend/backend preflight checks, and produce or update docs/qa-report.md with pass/fail coverage and evidence.
+description: Validate web delivery against requirement acceptance criteria with E2E and NFR gates. Use when user asks QA to verify whether a feature/scenario is complete (for example REQ-LIB-001), run Playwright after frontend/backend preflight checks, and produce or update `docs/qa-report/QA-<DOMAIN>-<NNN>.md` with pass/fail coverage and evidence.
 ---
 
 # QA E2E Verifier
@@ -11,6 +11,7 @@ Run this workflow to perform requirement-to-E2E verification with clear evidence
 
 1. Load requirement and runtime context.
 - Read target requirement doc (for example `docs/requirements/REQ-LIB-001.md`).
+- Read QA report template `references/qa-report-template.md`.
 - Read current E2E specs under `apps/web/library-mini-admin-web/e2e/`.
 - Read Playwright config `apps/web/library-mini-admin-web/playwright.config.ts`.
 
@@ -32,7 +33,8 @@ Run this workflow to perform requirement-to-E2E verification with clear evidence
 - If test fails due to environment/network limits, mark as `Blocked by environment` and separate from product defects.
 
 5. Update QA deliverables.
-- Update or create `docs/qa-report.md`.
+- Use `references/qa-report-template.md` as the source template.
+- Update or create `docs/qa-report/QA-<DOMAIN>-<NNN>.md`.
 - Include:
   - Scope and requirement ID.
   - Preflight result.
@@ -43,7 +45,7 @@ Run this workflow to perform requirement-to-E2E verification with clear evidence
 ## Rules
 
 - Keep QA ownership boundary:
-  - Allowed edits: `apps/web/library-mini-admin-web/e2e/**`, `docs/qa-report.md`.
+  - Allowed edits: `apps/web/library-mini-admin-web/e2e/**`, `docs/qa-report/QA-<DOMAIN>-<NNN>.md`.
   - Do not modify business source code unless user explicitly asks to switch role.
 - Prefer `data-testid` selectors in E2E.
 - Distinguish product issues from environment issues explicitly.
@@ -55,8 +57,9 @@ When reporting completion, include:
 - Preflight status for `8080` and `5173`.
 - E2E command results.
 - Coverage summary (`Pass`/`Partial`/`Fail`/`Blocked`).
-- Exact file path of updated `docs/qa-report.md`.
+- Exact file path of updated `docs/qa-report/QA-<DOMAIN>-<NNN>.md`.
 
 ## Reference
 
 Use [references/qa-e2e-checklist.md](references/qa-e2e-checklist.md) as the execution checklist.
+Use [references/qa-report-template.md](references/qa-report-template.md) as the reporting template.
