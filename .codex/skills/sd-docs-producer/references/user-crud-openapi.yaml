@@ -1,0 +1,614 @@
+openapi: 3.0.3
+info:
+  title: User CRUD API Template
+  version: 1.0.0
+  description: |
+    Reference-only OpenAPI template for a standard user CRUD resource.
+
+    Adapt the field set, authorization rules, and business error mapping to the
+    requirement and architecture artifacts before using this contract in a
+    product. Global business error-code definitions are maintained in
+    docs/error-codes.md. Keep the response envelope and DTO naming pattern
+    unless the upstream artifacts explicitly require a different contract.
+  x-template: true
+  x-business-error-code-reference: docs/error-codes.md
+  x-business-error-codes:
+    "00000": Success
+    A0000: Client error
+    B0000: System error
+    C0000: Third-party error
+servers:
+  - url: https://api.example.com
+    description: Replace with the environment-specific API base URL.
+tags:
+  - name: Users
+    description: User account administration.
+security:
+  - bearerAuth: []
+paths:
+  /v1/users:
+    get:
+      tags:
+        - Users
+      summary: "List users [user-management-users-001]"
+      description: Return a paginated list of users matching the query filters.
+      operationId: getUsers
+      x-api-id: user-management-users-001
+      x-request-dto: GetUsersRequestDTO
+      parameters:
+        - $ref: '#/components/parameters/UsersQueryParameter'
+      responses:
+        '200':
+          description: Users returned successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetUsersResponseDTO'
+        '400':
+          $ref: '#/components/responses/ClientErrorResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '500':
+          $ref: '#/components/responses/SystemErrorResponse'
+    post:
+      tags:
+        - Users
+      summary: "Create user [user-management-users-002]"
+      description: Create a user when the username and email are not already in use.
+      operationId: postUsers
+      x-api-id: user-management-users-002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostUsersRequestDTO'
+      responses:
+        '201':
+          description: User created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostUsersResponseDTO'
+        '400':
+          $ref: '#/components/responses/ClientErrorResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '409':
+          $ref: '#/components/responses/ConflictResponse'
+        '500':
+          $ref: '#/components/responses/SystemErrorResponse'
+  /v1/users/{userId}:
+    parameters:
+      - $ref: '#/components/parameters/UserIdPathParameter'
+    get:
+      tags:
+        - Users
+      summary: "Get user detail [user-management-users-003]"
+      description: Return one user by its stable identifier.
+      operationId: getUsersByUserId
+      x-api-id: user-management-users-003
+      x-request-dto: GetUsersDetailRequestDTO
+      responses:
+        '200':
+          description: User returned successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetUsersDetailResponseDTO'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '500':
+          $ref: '#/components/responses/SystemErrorResponse'
+    patch:
+      tags:
+        - Users
+      summary: "Update user [user-management-users-004]"
+      description: Partially update mutable user fields.
+      operationId: patchUsersByUserId
+      x-api-id: user-management-users-004
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchUsersRequestDTO'
+      responses:
+        '200':
+          description: User updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatchUsersResponseDTO'
+        '400':
+          $ref: '#/components/responses/ClientErrorResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '409':
+          $ref: '#/components/responses/ConflictResponse'
+        '500':
+          $ref: '#/components/responses/SystemErrorResponse'
+    delete:
+      tags:
+        - Users
+      summary: "Delete user [user-management-users-005]"
+      description: Delete one user by its stable identifier.
+      operationId: deleteUsersByUserId
+      x-api-id: user-management-users-005
+      x-request-dto: DeleteUsersRequestDTO
+      responses:
+        '200':
+          description: User deleted successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteUsersResponseDTO'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '409':
+          $ref: '#/components/responses/ConflictResponse'
+        '500':
+          $ref: '#/components/responses/SystemErrorResponse'
+components:
+  parameters:
+    UsersQueryParameter:
+      name: query
+      in: query
+      required: false
+      description: |
+        Query fields are represented by GetUsersRequestDTO. With form style and
+        explode enabled, fields are serialized as ordinary query parameters,
+        for example page=1&pageSize=20&status=ACTIVE.
+      style: form
+      explode: true
+      schema:
+        $ref: '#/components/schemas/GetUsersRequestDTO'
+    UserIdPathParameter:
+      name: userId
+      in: path
+      required: true
+      description: Stable identifier of the target user.
+      schema:
+        type: string
+        format: uuid
+        example: 2f7e7d8b-2ad4-4f3d-9e2a-9c1e0b7a6f44
+  responses:
+    ClientErrorResponse:
+      description: Request validation or other client-side business error.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponseDTO'
+          example:
+            code: A0000
+            message: Request validation failed.
+            traceId: 9c5a2d3e-1f4b-4a8c-9d0e-6b7c8a9d0e1f
+            details:
+              - field: email
+                reason: Must be a valid email address.
+    UnauthorizedResponse:
+      description: Authentication is missing or invalid.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponseDTO'
+          example:
+            code: A0000
+            message: Authentication is required.
+            traceId: 9c5a2d3e-1f4b-4a8c-9d0e-6b7c8a9d0e1f
+    ForbiddenResponse:
+      description: Authenticated caller is not allowed to perform the operation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponseDTO'
+          example:
+            code: A0000
+            message: Operation is not allowed.
+            traceId: 9c5a2d3e-1f4b-4a8c-9d0e-6b7c8a9d0e1f
+    NotFoundResponse:
+      description: Target user does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponseDTO'
+          example:
+            code: A0000
+            message: User was not found.
+            traceId: 9c5a2d3e-1f4b-4a8c-9d0e-6b7c8a9d0e1f
+    ConflictResponse:
+      description: Request conflicts with a uniqueness or state constraint.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponseDTO'
+          example:
+            code: A0000
+            message: Username or email is already in use.
+            traceId: 9c5a2d3e-1f4b-4a8c-9d0e-6b7c8a9d0e1f
+    SystemErrorResponse:
+      description: Unexpected server-side failure.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponseDTO'
+          example:
+            code: B0000
+            message: The service could not complete the request.
+            traceId: 9c5a2d3e-1f4b-4a8c-9d0e-6b7c8a9d0e1f
+    ThirdPartyErrorResponse:
+      description: Dependent third-party service failure.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponseDTO'
+          example:
+            code: C0000
+            message: A dependent service failed.
+            traceId: 9c5a2d3e-1f4b-4a8c-9d0e-6b7c8a9d0e1f
+  schemas:
+    GetUsersRequestDTO:
+      type: object
+      additionalProperties: false
+      properties:
+        page:
+          type: integer
+          format: int32
+          minimum: 1
+          default: 1
+          description: One-based page number.
+        pageSize:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 100
+          default: 20
+          description: Number of records per page.
+        keyword:
+          type: string
+          maxLength: 100
+          description: Case-insensitive match against username, display name, or email.
+        status:
+          $ref: '#/components/schemas/UserStatusEnum'
+        sortBy:
+          type: string
+          enum:
+            - createdAt
+            - updatedAt
+            - username
+          default: createdAt
+        sortDirection:
+          type: string
+          enum:
+            - ASC
+            - DESC
+          default: DESC
+    GetUsersResponseDTO:
+      type: object
+      required:
+        - code
+        - message
+        - traceId
+        - data
+      properties:
+        code:
+          type: string
+          enum:
+            - "00000"
+          example: "00000"
+        message:
+          type: string
+          example: Success.
+        traceId:
+          type: string
+          format: uuid
+        data:
+          $ref: '#/components/schemas/GetUsersDataResponseDTO'
+    GetUsersDataResponseDTO:
+      type: object
+      required:
+        - items
+        - pagination
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/GetUsersListItemResponseDTO'
+        pagination:
+          $ref: '#/components/schemas/GetUsersPaginationResponseDTO'
+    GetUsersListItemResponseDTO:
+      type: object
+      required:
+        - userId
+        - username
+        - displayName
+        - email
+        - role
+        - status
+        - createdAt
+        - updatedAt
+      properties:
+        userId:
+          type: string
+          format: uuid
+        username:
+          type: string
+          minLength: 3
+          maxLength: 50
+        displayName:
+          type: string
+          maxLength: 100
+        email:
+          type: string
+          format: email
+        role:
+          $ref: '#/components/schemas/UserRoleEnum'
+        status:
+          $ref: '#/components/schemas/UserStatusEnum'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    GetUsersPaginationResponseDTO:
+      type: object
+      required:
+        - page
+        - pageSize
+        - totalItems
+        - totalPages
+      properties:
+        page:
+          type: integer
+          format: int32
+          minimum: 1
+        pageSize:
+          type: integer
+          format: int32
+          minimum: 1
+        totalItems:
+          type: integer
+          format: int64
+          minimum: 0
+        totalPages:
+          type: integer
+          format: int32
+          minimum: 0
+    GetUsersDetailRequestDTO:
+      type: object
+      required:
+        - userId
+      properties:
+        userId:
+          type: string
+          format: uuid
+    GetUsersDetailResponseDTO:
+      type: object
+      required:
+        - code
+        - message
+        - traceId
+        - data
+      properties:
+        code:
+          type: string
+          enum:
+            - "00000"
+          example: "00000"
+        message:
+          type: string
+          example: Success.
+        traceId:
+          type: string
+          format: uuid
+        data:
+          $ref: '#/components/schemas/GetUsersDetailDataResponseDTO'
+    GetUsersDetailDataResponseDTO:
+      allOf:
+        - $ref: '#/components/schemas/GetUsersListItemResponseDTO'
+        - type: object
+          properties:
+            lastLoginAt:
+              type: string
+              format: date-time
+              nullable: true
+    PostUsersRequestDTO:
+      type: object
+      additionalProperties: false
+      required:
+        - username
+        - displayName
+        - email
+        - role
+      properties:
+        username:
+          type: string
+          minLength: 3
+          maxLength: 50
+          pattern: '^[A-Za-z0-9][A-Za-z0-9._-]*$'
+          description: Unique login name.
+        displayName:
+          type: string
+          minLength: 1
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        role:
+          $ref: '#/components/schemas/UserRoleEnum'
+        status:
+          allOf:
+            - $ref: '#/components/schemas/UserStatusEnum'
+          default: ACTIVE
+    PostUsersResponseDTO:
+      type: object
+      required:
+        - code
+        - message
+        - traceId
+        - data
+      properties:
+        code:
+          type: string
+          enum:
+            - "00000"
+          example: "00000"
+        message:
+          type: string
+          example: User created successfully.
+        traceId:
+          type: string
+          format: uuid
+        data:
+          $ref: '#/components/schemas/PostUsersDataResponseDTO'
+    PostUsersDataResponseDTO:
+      allOf:
+        - $ref: '#/components/schemas/GetUsersDetailDataResponseDTO'
+    PatchUsersRequestDTO:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        displayName:
+          type: string
+          minLength: 1
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        role:
+          $ref: '#/components/schemas/UserRoleEnum'
+        status:
+          $ref: '#/components/schemas/UserStatusEnum'
+    PatchUsersResponseDTO:
+      type: object
+      required:
+        - code
+        - message
+        - traceId
+        - data
+      properties:
+        code:
+          type: string
+          enum:
+            - "00000"
+          example: "00000"
+        message:
+          type: string
+          example: User updated successfully.
+        traceId:
+          type: string
+          format: uuid
+        data:
+          $ref: '#/components/schemas/PatchUsersDataResponseDTO'
+    PatchUsersDataResponseDTO:
+      allOf:
+        - $ref: '#/components/schemas/GetUsersDetailDataResponseDTO'
+    DeleteUsersRequestDTO:
+      type: object
+      required:
+        - userId
+      properties:
+        userId:
+          type: string
+          format: uuid
+    DeleteUsersResponseDTO:
+      type: object
+      required:
+        - code
+        - message
+        - traceId
+        - data
+      properties:
+        code:
+          type: string
+          enum:
+            - "00000"
+          example: "00000"
+        message:
+          type: string
+          example: User deleted successfully.
+        traceId:
+          type: string
+          format: uuid
+        data:
+          $ref: '#/components/schemas/DeleteUsersDataResponseDTO'
+    DeleteUsersDataResponseDTO:
+      type: object
+      required:
+        - userId
+        - deletedAt
+      properties:
+        userId:
+          type: string
+          format: uuid
+        deletedAt:
+          type: string
+          format: date-time
+    ErrorResponseDTO:
+      type: object
+      required:
+        - code
+        - message
+        - traceId
+      properties:
+        code:
+          type: string
+          enum:
+            - A0000
+            - B0000
+            - C0000
+          description: Business error code. HTTP status does not replace this field.
+        message:
+          type: string
+          example: Request validation failed.
+        traceId:
+          type: string
+          format: uuid
+        details:
+          type: array
+          items:
+            type: object
+            required:
+              - reason
+            properties:
+              field:
+                type: string
+              reason:
+                type: string
+    UserRoleEnum:
+      type: string
+      description: Authorization role assigned to the user.
+      enum:
+        - ADMIN
+        - USER
+    UserStatusEnum:
+      type: string
+      description: Lifecycle status of the user.
+      enum:
+        - ACTIVE
+        - INACTIVE
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

@@ -1,6 +1,6 @@
 ---
 name: sd-docs-producer
-description: Produce SD deliverables from requirements and architecture documents, including OpenAPI contract, schema docs, and per-API flow docs. Use when user asks SD to generate implementation-ready design artifacts under docs/openapi.yaml, docs/schema/, and docs/api/.
+description: Produce SD deliverables from requirements and architecture documents, including OpenAPI contract, global error-code definitions, schema docs, and per-API flow docs. Use when user asks SD to generate implementation-ready design artifacts under docs/openapi.yaml, docs/error-codes.md, docs/schema/, and docs/api/.
 ---
 
 # SD Docs Producer
@@ -14,13 +14,16 @@ Generate system design artifacts for implementation handoff.
 - Read `docs/architecture/*.md`.
 - Read `AGENTS.md` for naming and contract rules.
 - Apply built-in SD boundaries:
-  - Only edit design deliverables under `docs/openapi.yaml`, `docs/schema/*.md`, and `docs/api/*.md`.
+  - Only edit design deliverables under `docs/openapi.yaml`, `docs/error-codes.md`,
+    `docs/schema/*.md`, and `docs/api/*.md`.
   - Do not modify requirement documents or architecture decision scope.
   - Keep implementation-level details in design docs only, not source-code changes.
   - Ensure business error-code mapping is consistent with requirements.
 
 2. Lock output scope.
 - Create or update `docs/openapi.yaml` as single source of API truth.
+- Create or update `docs/error-codes.md` as the global business error-code
+  definition referenced by all APIs.
 - Create or update `docs/schema/{table_name}.md` for data model details.
 - Create or update `docs/api/{api_id}_{name}.md` for API flow only.
 
@@ -33,14 +36,29 @@ Generate system design artifacts for implementation handoff.
 - Use unified business code in responses: `00000`, `Axxxx`, `B0000`, `C0000`.
 
 4. Write schema docs.
-- Include table purpose, DDL draft, columns, indexes, constraints.
-- Include domain rules in Given/When/Then.
-- Include transaction boundary notes.
+- Create one physical table document per `docs/schema/{table_name}.md`.
+- Use [references/user-schema-template.md](references/user-schema-template.md)
+  as the minimum structure: modification history, Schema 2.3 column dictionary,
+  Schema 2.4 constraints, and DDL.
+- Add further sections only when the upstream requirements or architecture
+  artifacts explicitly require them.
 
 5. Write API flow docs.
-- Keep only main business flow and Given/When/Then.
-- Include Mermaid flowchart.
-- Link flow behavior to API ID and OpenAPI operation.
+- Create one `docs/api/{api_id}_{name}.md` file per API.
+- Use [references/api-flow-docs-template.md](references/api-flow-docs-template.md)
+  as the baseline.
+- Describe the main workflow with a Mermaid sequence diagram focused on the
+  application service business logic.
+- Document only the `Execute Business Logic` content. Request validation and
+  generated DTO constraints belong in `docs/openapi.yaml` and must not be
+  redefined in API flow docs.
+- Document the detailed business logic and Given/When/Then behavior in that
+  single section.
+- Reference `docs/error-codes.md` for global code definitions. In the API flow
+  document, only map this API's actual triggers, response behavior, and
+  retryability.
+- Link flow behavior to the API ID and OpenAPI operation without duplicating the
+  full OpenAPI schema.
 
 6. Validate before finish.
 - Confirm all API IDs in requirements mapping are present.
@@ -58,3 +76,19 @@ When complete, report:
 ## Reference
 
 Use [references/sd-deliverables-template.md](references/sd-deliverables-template.md) as checklist.
+Use [references/user-crud-openapi.yaml](references/user-crud-openapi.yaml) as the
+canonical baseline when requirements include a user CRUD resource. Adapt fields,
+authorization rules, and business behavior to the upstream artifacts while
+preserving the API ID, DTO, response-envelope, and error-code conventions.
+Use [references/user-schema-template.md](references/user-schema-template.md) as the
+baseline for one-table-per-file schema documents. Preserve the change history,
+Schema 2.3 column dictionary, Schema 2.4 constraints, and DDL structure unless
+the upstream artifacts require a different structure.
+Use [references/api-flow-docs-template.md](references/api-flow-docs-template.md)
+as the baseline for one-API-per-file flow documents. Preserve the history,
+sequence diagram, step logic, and dedicated error-code chapter unless the
+upstream artifacts require a different structure.
+Use [references/error-code-definition.md](references/error-code-definition.md) as
+the baseline for `docs/error-codes.md`. Keep it as the global source of truth;
+individual API documents should reference it instead of redefining global code
+semantics.
