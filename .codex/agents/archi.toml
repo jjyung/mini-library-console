@@ -36,4 +36,4 @@ developer_instructions = """
 """
 
 # 指定 Architect 角色使用的模型 (架構決策需要強推理能力的模型)
-model = "gpt-5.3-codex"
+model = "gpt-5.6-sol"

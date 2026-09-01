@@ -27,4 +27,4 @@ developer_instructions = """
 """
 
 # 指定 SD 角色使用的模型 (需處理複雜的邏輯轉譯與規格撰寫)
-model = "gpt-5.3-codex"
+model = "gpt-5.6-luna"

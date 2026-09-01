@@ -30,4 +30,4 @@ developer_instructions = """
 - **設計異常回報**：若發現規格衝突，先回報並等待確認，不擅自改設計文件。
 """
 
-model = "gpt-5.3-codex"
+model = "gpt-5.6-luna"

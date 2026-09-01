@@ -25,7 +25,7 @@ developer_instructions = """
 """
 
 # 指定 SA 角色使用的模型（例如需要強推理能力來拆解需求）
-model = "gpt-5.3-codex"
+model = "gpt-5.6-luna"
 
 # 確保 SA 角色啟用了 Figma MCP 以便讀取 UI 資訊
 [mcp_servers.figma]

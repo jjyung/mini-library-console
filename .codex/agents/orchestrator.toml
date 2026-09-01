@@ -321,4 +321,4 @@ Your job is to keep the workflow moving while ensuring every role has the artifa
 
 """
 
-model = "gpt-5.3-codex"
+model = "gpt-5.6-luna"

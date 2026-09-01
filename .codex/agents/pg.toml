@@ -28,4 +28,4 @@ developer_instructions = """
 - **權責邊界**：優先修改 `docs/tasks/` 與協調文件；若需跨角色調整，先明確記錄原因與影響。
 """
 
-model = "gpt-5.3-codex"
+model = "gpt-5.6-luna"

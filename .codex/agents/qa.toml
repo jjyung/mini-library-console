@@ -34,7 +34,7 @@ developer_instructions = """
 """
 
 # 指定 QA 角色使用的模型 (建議使用具備強推理能力來分析 UI 結構的模型)
-model = "gpt-5.3-codex"
+model = "gpt-5.6-luna"
 
 # 啟用 Playwright MCP 以便進行瀏覽器自動化操作
 [mcp_servers.playwright]
