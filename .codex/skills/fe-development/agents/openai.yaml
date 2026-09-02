@@ -1,0 +1,4 @@
+interface:
+  display_name: "FE Development"
+  short_description: "Implement or review FE from requirements and design"
+  default_prompt: "Use $fe-development to implement or review the assigned frontend scope against the requirement, Figma flow, and frozen OpenAPI contract with TDD and requirement verification."

@@ -85,6 +85,7 @@ skills 放在 `.codex/skills/`，例如：
 - `architecture-planner`
 - `sd-docs-producer`
 - `be-development`
+- `fe-development`
 - `pg-task-orchestrator`
 - `qa-e2e-verifier`
 
