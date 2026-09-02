@@ -1,4 +1,4 @@
 interface:
   display_name: "Architecture Planner"
-  short_description: "Plan MVP system architecture docs"
-  default_prompt: "Use $architecture-planner to create ARCH-LIB-001 from REQ-LIB-001 with strict Archi-only scope and SD handoff items."
+  short_description: "Plan architecture with tiered NFR controls"
+  default_prompt: "Use $architecture-planner to create a tiered system architecture with security, operations, NFR controls, and SD handoff items."
