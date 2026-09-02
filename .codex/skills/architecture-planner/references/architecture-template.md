@@ -38,51 +38,82 @@ profile 填 `N/A`，不可因模板存在就建立環境。
 | --- | --- | --- | --- | --- |
 | A-001 | | | Confirmed / Assumed / TBD | |
 
-## 2. 架構決策與取捨
+## 2. 技術選型與版本治理
 
-### 2.1 關鍵決策
+| 領域 | 選定技術／版本 | 版本固定與變更規則 | 選擇理由 | 替代方案與取捨 |
+| --- | --- | --- | --- | --- |
+| Backend runtime/framework | Java / Spring Boot | Pin runtime/framework versions in the build configuration |  |  |
+| Build/tooling | Maven Wrapper + `pom.xml` | Build plugins and versions are reviewable and pinned |  |  |
+| API contract generation | OpenAPI Generator Maven plugin | Plugin version is pinned in `pom.xml`; generated code is committed and never manually edited |  |  |
+| Persistence |  |  |  |  |
+| Database migration | Liquibase formatted SQL | Changesets are immutable; SQL only; Liquibase XML is prohibited |  |  |
+| Messaging | N/A or  |  |  |  |
+
+## 3. 應用架構選型與依賴方向
+
+- 選定模式：三層式 `controller -> service -> dao`／Clean Architecture／Hexagonal Architecture
+- 複雜度訊號：
+- 主要邊界與依賴方向：
+- 若有 MQ：inbound adapter、inbound port、application/domain core、outbound port、outbound adapter：
+- 交易、delivery、retry、dead-letter、ordering、idempotency 與 consistency 考量：
+- 選擇理由：
+- 未採用替代方案與原因：
+
+```mermaid
+flowchart LR
+    inbound[Inbound adapters]
+    portsIn[Inbound ports]
+    core[Application / Domain core]
+    portsOut[Outbound ports]
+    outbound[Outbound adapters]
+    inbound --> portsIn --> core --> portsOut --> outbound
+```
+
+## 4. 架構決策與取捨
+
+### 4.1 關鍵決策
 
 | ID | 決策 | 選項與取捨 | 需求依據 | 影響 / 後續觸發條件 |
 | --- | --- | --- | --- | --- |
 | ADR-001 | | | | |
 
-### 2.2 主要取捨
+### 4.2 主要取捨
 
 - 成本：
 - 複雜度：
 - 可用性 / 可靠性：
 - 安全性 / 維運性：
 
-## 3. 系統脈絡（C4-L1）
+## 5. 系統脈絡（C4-L1）
 
-### 3.1 描述
+### 5.1 描述
 
 - 使用者與角色：
 - 外部系統：
 - 信任邊界：
 - 重要資料 / 控制流：
 
-### 3.2 Mermaid
+### 5.2 Mermaid
 
 ```mermaid
 flowchart LR
 ```
 
-## 4. 容器視圖（C4-L2）
+## 6. 容器視圖（C4-L2）
 
-### 4.1 描述
+### 6.1 描述
 
 | 容器 | 職責 | 所有者 | 邊界 / 主要依賴 |
 | --- | --- | --- | --- |
 |  |  |  |  |
 
-### 4.2 Mermaid
+### 6.2 Mermaid
 
 ```mermaid
 flowchart LR
 ```
 
-## 5. 部署拓撲與本地運行模型
+## 7. 部署拓撲與本地運行模型
 
 ### 5.1 系統部署拓撲
 
@@ -113,7 +144,7 @@ alerting 的詳細決策唯一記錄在 6.2～6.7。
 - 本地替身 / 測試資料政策：
 - 與各環境的差異及不可模擬項：
 
-## 6. NFR 與架構控制面
+## 8. NFR 與架構控制面
 
 本章是安全與維運控制面的唯一內容來源。若控制面在不同環境有差異，
 請在本章記錄實際環境名稱或 profile；`5.2` 只引用本章，不重複填寫。
@@ -181,20 +212,20 @@ alerting 的詳細決策唯一記錄在 6.2～6.7。
 - alert condition、severity、routing、on-call、escalation：
 - deduplication / noise control、runbook、response expectation：
 
-## 7. 成本與複雜度控制
+## 9. 成本與複雜度控制
 
 - 各環境 profile 的成本護欄與代表性取捨：
 - PROD 成本驅動因素：
 - 為何不採用更複雜方案：
 - 擴容 / 升級觸發條件：
 
-## 8. 風險、非目標與開放決策
+## 10. 風險、非目標與開放決策
 
 | ID | 風險 / 非目標 / 未決策 | 影響 | 緩解或需要的決策 | Owner / deadline |
 | --- | --- | --- | --- | --- |
 | R-001 | | | | |
 
-## 9. 移交 SD 項目（Archi 不定稿）
+## 11. 移交 SD 項目（Archi 不定稿）
 
 1. 將 authentication / authorization 邊界落成 API 與服務間契約。
 2. 將 correlation / trace / audit / log 最低欄位與 redaction 規則落成設計。
@@ -202,14 +233,14 @@ alerting 的詳細決策唯一記錄在 6.2～6.7。
 4. 將部署、secrets、backup、telemetry 與 alert 的責任分界落成環境設定與流程。
 5. 補齊本文件列出的未決 API、schema、資料保留與實作細節。
 
-## 10. 擴展觸發條件（後續）
+## 12. 擴展觸發條件（後續）
 
 - 流量 / latency / storage / cache 指標達到：
 - 可用性、RTO / RPO 或 failure drill 不再滿足：
 - 權限、audit、合規或資料區域要求改變：
 - 外部依賴 SLA / 成本 / 風險改變：
 
-## 11. 完成檢查與證據
+## 13. 完成檢查與證據
 
 | 檢查項目 | 結果 | 證據 / 備註 |
 | --- | --- | --- |

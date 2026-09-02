@@ -1,4 +1,4 @@
 interface:
   display_name: "BE Development"
-  short_description: "Implement backend tasks from SD artifacts"
+  short_description: "Implement BE tasks from SD artifacts"
   default_prompt: "Use $be-development to implement the assigned backend task from the SD artifacts."

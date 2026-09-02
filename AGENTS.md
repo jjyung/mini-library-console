@@ -1,7 +1,7 @@
 # AGENTS
 
 Version: 1.0.1
-Last Updated: 2026-03-04
+Last Updated: 2026-09-02
 
 This file defines mandatory rules for AI Agents and developers.
 All generated code MUST comply with this document.
@@ -22,6 +22,11 @@ All generated code MUST comply with this document.
 - Skill workflow/checklist content MUST be self-contained and MUST NOT require reading agent config files as inputs.
 - Existing agents may remain for runtime/persona usage, but skills MUST work correctly when agent files are absent.
 - New or updated skills MUST follow the same rule and MUST NOT add references to `.codex/agents/**`.
+
+### Backend Workflow Routing
+
+- Detailed backend implementation workflow is defined by `.codex/skills/be-development/SKILL.md`.
+- Agent configuration files define role/context routing only; they MUST NOT be treated as the source of implementation procedures or engineering standards.
 
 ---
 
@@ -151,6 +156,24 @@ All APIs MUST return business error code.
 | C0000 | Third-party Error |
 
 HTTP status code MUST NOT replace business error code.
+
+---
+
+### Generated API Artifacts (MUST)
+
+- Backend API interfaces, request/response DTOs, and generated resources MUST be produced by the OpenAPI Generator Maven plugin configured in `pom.xml`.
+- The generator version MUST be pinned and the OpenAPI contract version MUST be tracked with the delivery.
+- Generated code MUST be committed to Git and MUST NOT be manually modified.
+
+---
+
+## Database Migration Rules
+
+### Liquibase (MUST)
+
+- Database migrations MUST use Liquibase formatted SQL changelogs.
+- Liquibase XML changelogs are prohibited.
+- Applied changesets MUST remain immutable; changes require a new SQL changeset.
 
 ---
 

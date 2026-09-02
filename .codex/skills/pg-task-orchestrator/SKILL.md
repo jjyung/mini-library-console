@@ -14,7 +14,8 @@ Run this workflow to execute PG coordination and delivery end-to-end.
 - Read `docs/openapi.yaml`, `docs/schema/*.md`, and `docs/api/*.md`.
 - Apply built-in role boundaries:
   - PG scope: planning, sequencing, dependency management, integration gate, and delivery summary.
-  - BE scope: `apps/api/**` only, TDD-first, business-code-consistent API behavior.
+  - BE scope: `apps/api/**` only; detailed backend implementation is governed by
+    the reusable `be-development` skill.
   - FE scope: `apps/web/**` only, centralized API client, stable `data-testid`, business-code-based error mapping.
   - QA scope: E2E scripts and QA report updates only.
 
@@ -31,7 +32,8 @@ Run this workflow to execute PG coordination and delivery end-to-end.
 - Gate-D: PG verifies full checks and updates task status to delivery-complete.
 
 4. Enforce implementation rules.
-- Follow TDD order for BE tasks: test first, then implementation.
+- Require BE to execute the `be-development` skill and provide its generator,
+  test, migration, and handoff evidence; PG owns coordination and gates.
 - Use centralized API client on FE; avoid direct fetch/axios in UI components.
 - Require business code based handling and stable `data-testid`.
 - Do not modify requirement/architecture/design docs unless user explicitly approves.

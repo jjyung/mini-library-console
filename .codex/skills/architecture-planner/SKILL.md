@@ -1,6 +1,6 @@
 ---
 name: architecture-planner
-description: Plan and document system-level architecture from requirement documents. Use when Archi must produce ARCH-*.md with C4 context, environment-tier topology, security and access control, traceability, logging, HA/resilience, performance and caching, monitoring and alerting, NFR trade-offs, cost, risks, and explicit SD handoff boundaries.
+description: Plan and document MVP system architecture from requirements, including technology selection, application architecture, environment-tier topology, C4 views, security, observability, resilience, NFR trade-offs, cost, risks, and explicit SD handoff boundaries.
 ---
 
 # Architecture Planner
@@ -132,6 +132,40 @@ all of the following:
 - capacity assumptions, cost drivers, and triggers for moving to a more robust
   topology.
 
+#### Technology selection and version governance
+
+For every material technology choice, record the selected technology and
+version, version-pinning and upgrade policy, alternatives considered, reason,
+NFR impact, operational cost, licensing, and ownership. For this repository's
+Java backend baseline, explicitly address Java/Spring, Maven Wrapper and
+`pom.xml`, the OpenAPI Generator Maven plugin, persistence, Liquibase formatted
+SQL migrations, and MQ only when messaging is in scope.
+
+The architecture must require a pinned OpenAPI Generator Maven plugin version
+and a separately versioned OpenAPI contract. Generated API code is committed to
+Git and is never manually edited. Database migration policy is Liquibase
+formatted SQL only; Liquibase XML changelogs are not an option. These are
+technology and governance decisions, not API schema or migration SQL design.
+
+#### Application architecture selection
+
+Explicitly choose the smallest suitable application architecture and record
+the complexity signals behind the choice:
+
+- simple synchronous use cases: three layers — `controller`, `service`, `dao`;
+- substantial domain rules or multiple integration boundaries: Clean or
+  Hexagonal Architecture / Ports and Adapters;
+- MQ with asynchronous delivery, retries, dead letters, idempotency, ordering,
+  or cross-boundary consistency: use explicit inbound adapters/ports,
+  application/domain core, outbound ports, and outbound adapters.
+
+MQ alone does not require a large redesign when it is only a trivial side
+effect. Document dependency direction and integration boundaries at a level BE
+can implement, but do not define internal package layouts, API fields, schema,
+or transaction steps. When comparing styles, use
+[the reference projects](references/architecture-reference-projects.md) as
+evidence rather than copying an entire project's stack.
+
 ### 4. Apply the architecture control-plane baseline
 
 The document must have an explicit decision, requirement reference, or
@@ -203,6 +237,10 @@ as the base skeleton. The document must include:
 - confirmed scope, environment coverage, assumptions, and open questions;
 - C4-L1 and C4-L2 diagrams;
 - deployment topology and local-run assumptions;
+- selected technologies, versions, version-pinning policy, alternatives, and
+  rationale;
+- selected application architecture, complexity signals, dependency direction,
+  and MQ boundary semantics when applicable;
 - the standard environment-profile mapping and a project matrix that maps
   actual environment names to the selected profiles;
 - separate, concrete sections for access control, traceability/audit,
@@ -247,6 +285,9 @@ Run this quality gate and record `Pass`, `Fail`, `TBD`, or `N/A` with evidence:
   are addressed;
 - monitoring has metrics/dashboards and alerting has owner, routing,
   severity, escalation, and runbook expectations;
+- technology selection includes version governance, OpenAPI Generator Maven
+  plugin policy, and Liquibase formatted SQL/no-XML policy;
+- application architecture selection and dependency direction are explicit;
 - cost, complexity, risks, non-goals, and expansion triggers are explicit;
 - SD handoff is actionable and no SD-owned low-level detail is finalized;
 - at least one Mermaid diagram exists and renders as valid Mermaid.
@@ -271,6 +312,15 @@ When complete, report:
 
 - output file path;
 - scope, selected profiles, and actual environment names covered;
+- selected technologies, versions, and version-pinning policy;
+- selected application architecture and dependency direction;
 - user-confirmed decisions and remaining assumptions;
 - validation-gate result and any unresolved blockers;
 - SD handoff items.
+
+## References
+
+Use [references/architecture-template.md](references/architecture-template.md)
+as the canonical output skeleton. Use
+[references/architecture-reference-projects.md](references/architecture-reference-projects.md)
+only when comparing Clean and Hexagonal Architecture options.

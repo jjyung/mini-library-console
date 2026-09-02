@@ -84,6 +84,7 @@ skills 放在 `.codex/skills/`，例如：
 - `scenario-requirements-writer`
 - `architecture-planner`
 - `sd-docs-producer`
+- `be-development`
 - `pg-task-orchestrator`
 - `qa-e2e-verifier`
 
