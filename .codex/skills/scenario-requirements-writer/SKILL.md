@@ -1,6 +1,6 @@
 ---
 name: scenario-requirements-writer
-description: Analyze scenario documents and related Figma export materials, then generate a structured requirements analysis file with FR/NFR/AC, risk items, business error-code mapping, and traceability metadata. Use when user asks to analyze a scenario (e.g., SCN-*) and produce or update a requirement document (e.g., REQ-*).
+description: Analyze scenario documents and related Figma export materials, then generate a structured requirements analysis file with FR/NFR/AC, business rules, edge cases, risk items, and business error-code mapping. Use when user asks to analyze a scenario (e.g., SCN-*) and produce or update a requirement document (e.g., REQ-*).
 ---
 
 # Scenario Requirements Writer
@@ -11,10 +11,10 @@ Execute this workflow to convert a scenario into a requirement analysis document
 
 1. Locate and read scenario and UI context files.
 - Read `docs/scenarios/<SCN-ID>.md`.
-- Read referenced design context (for this repo, prefer `docs/figma-make/<project>/README.md` and `guidelines/Guidelines.md`).
+- Read referenced design context (for this repo, prefer `docs/figma/<project>/README.md` and `guidelines/Guidelines.md`).
 - If source files are missing, stop and report exact missing paths.
 
-2. Establish document identity and traceability.
+2. Establish document identity.
 - Keep scenario ID as-is (for example `SCN-LIB-001`).
 - Assign a separate requirement document ID (for example `REQ-LIB-001`).
 - Add a `文件資訊` section near the top with:
@@ -27,13 +27,14 @@ Execute this workflow to convert a scenario into a requirement analysis document
 - `2) Functional Requirements (FR)`
 - `3) Non-Functional Requirements (NFR)`
 - `4) Acceptance Criteria (AC, Given/When/Then)`
-- `錯誤碼（業務層）`
+- `業務錯誤情境與錯誤碼需求`
 - `UI → API 對照表`
 - `5) 風險與待確認事項`
 
 4. Apply authoring rules.
 - Use Traditional Chinese.
 - Make FR/NFR/AC testable and specific.
+- Capture scope, actors, preconditions, business rules, state transitions, and edge cases.
 - Include at least one FR that explicitly requires frontend UI alignment to the specified Figma source.
 - Include at least one AC (Given/When/Then) that verifies frontend UI alignment to the specified Figma source.
 - Keep API IDs compliant with `AGENTS.md` format: `{service-name}-{resource-name-plural}-{3-digit-seq}`.
@@ -49,6 +50,7 @@ Execute this workflow to convert a scenario into a requirement analysis document
 - Ensure each AC is in Given/When/Then format.
 - Ensure `需求文件 ID`, `來源情境`, and `UI 設計來源` are present.
 - Ensure UI alignment FR and UI alignment AC both exist.
+- Ensure business rules, state transitions, edge cases, and open questions are addressed.
 
 ## Output Contract
 
