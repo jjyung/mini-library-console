@@ -19,7 +19,8 @@
     "workflow:validate": "node scripts/validate-workflow-state.js",
     "check:web": "npm --prefix apps/web/library-mini-admin-web run lint && npm --prefix apps/web/library-mini-admin-web run type-check",
     "check": "npm run check:api && npm run check:web",
-    "e2e": "npm --prefix apps/web/library-mini-admin-web run test:e2e"
+    "e2e": "npm --prefix apps/web/library-mini-admin-web run test:e2e",
+    "qa:skill:check": "node .codex/skills/qa-e2e-verifier/scripts/validate-qa-skill.mjs"
   },
   "devDependencies": {
     "yaml": "2.9.0"

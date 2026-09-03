@@ -1,27 +1,48 @@
-# QA E2E Checklist
+# QA E2E Execution Checklist
 
-## 1) Scope
-- Confirm target requirement file (example: `docs/requirements/REQ-LIB-001.md`).
-- Confirm expected AC/NFR items to verify.
+Use this checklist with `SKILL.md`. Check items with evidence, not assumptions.
 
-## 2) Preflight (mandatory)
-- Verify backend port: `lsof -iTCP:8080 -sTCP:LISTEN -n -P`.
-- Verify frontend port: `lsof -iTCP:5173 -sTCP:LISTEN -n -P`.
-- If not ready, start services and re-check.
+## 1. Handoff and scope
 
-## 3) Test execution
-- Run: `npm run e2e`.
-- If stability gate is required, run 3 consecutive times.
+- [ ] Read `README.md` and `AGENTS.md`.
+- [ ] Read the target scenario, workflow state when present, requirement, and available architecture/SD/PG/Figma artifacts.
+- [ ] Confirm requirement/scenario/workflow/report IDs and report path.
+- [ ] Convert every FR/AC/NFR into a coverage row with risk, journey, setup, oracle, and status.
+- [ ] Mark missing or unfrozen upstream artifacts as a gate/blocker.
 
-## 4) Evidence collection
-- Save pass/fail and key error lines.
-- Separate environment constraints from product defects.
+## 2. Architecture and testability
 
-## 5) Reporting
-- Read `docs/templates/qa-report-template.md`.
-- Update `docs/qa-report/QA-<DOMAIN>-<NNN>.md` with:
-  - Requirement ID and scope.
-  - Preflight result.
-  - Commands and outcomes.
-  - FR/AC/NFR coverage matrix.
-  - Open issues and next actions.
+- [ ] Read `references/playwright-e2e-architecture.md`.
+- [ ] Keep spec intent/assertions separate from fixture lifecycle, POM UI mechanics, API/service setup, and data ownership.
+- [ ] Decide test versus worker scope for every shared resource.
+- [ ] Decide unique ID/namespace, correlation/run tag, teardown, and interrupted-run cleanup.
+- [ ] Preserve `data-testid`; use semantic locators when role/label/text is itself part of the requirement.
+- [ ] No fixed mutable IDs, fixed ordering, arbitrary sleeps, or setup API used as the UI acceptance oracle.
+
+## 3. Preflight (mandatory)
+
+- [ ] Backend listener checked: `lsof -iTCP:8080 -sTCP:LISTEN -n -P`.
+- [ ] Frontend listener checked: `lsof -iTCP:5173 -sTCP:LISTEN -n -P` (or CI port `4173`).
+- [ ] `playwright.config.ts` `baseURL`, `webServer`, projects, retries, workers, and artifact settings reviewed.
+- [ ] Services started only with documented repository commands when needed, then re-checked.
+- [ ] Environment/version/commit context recorded when reproducibility matters.
+
+## 4. Execution and diagnosis
+
+- [ ] Targeted affected spec/project run.
+- [ ] Full `npm run e2e` run (or documented equivalent).
+- [ ] Required stability gate run as three separate consecutive processes.
+- [ ] Parallelism/isolation exercised for mutable data; one-worker comparison used only as a diagnostic.
+- [ ] If the effective worker count is `1`, parallelism is explicitly marked `Partial` or `Blocked` rather than treated as verified.
+- [ ] Failure artifacts preserved: HTML report, trace, screenshot/video, logs, request/response evidence as available.
+- [ ] Secrets, credentials, cookies, authorization headers, and personal data redacted before evidence is shared or committed.
+- [ ] Each failure classified as product, contract, test design, data isolation, environment, or third-party.
+- [ ] Retry-only passes reported as flaky/`Partial`, not unqualified `Pass`.
+
+## 5. Report and handoff
+
+- [ ] Read `references/qa-report-template.md`; keep `docs/templates/qa-report-template.md` aligned when present.
+- [ ] Report preflight, exact commands, run outcomes, stability, and all FR/AC/NFR rows.
+- [ ] Link evidence paths and record first failure plus retry behavior.
+- [ ] Record blocker/defect owner, rework target, and next action.
+- [ ] Update the corresponding existing workflow state with QA status and next-session handoff notes.
