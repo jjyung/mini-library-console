@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "setup": "npm run install:web",
+    "setup": "npm install --ignore-scripts && npm run install:web",
     "install:web": "npm --prefix apps/web/library-mini-admin-web install",
     "dev:api": "node scripts/run-api-command.js spring-boot:run",
     "dev:web": "npm --prefix apps/web/library-mini-admin-web run dev",
@@ -12,11 +12,16 @@
     "api:generate": "node scripts/backend-workflow.js api:generate",
     "api:verify-generated": "node scripts/backend-workflow.js api:verify-generated",
     "api:check": "node scripts/backend-workflow.js api:check",
+    "sd:validate": "node .codex/skills/sd-docs-producer/scripts/validate_sd_artifacts.js",
+    "test:sd": "node --test .codex/skills/sd-docs-producer/tests/validate_sd_artifacts.test.js",
     "backend:check": "node scripts/backend-workflow.js backend:check",
     "db:validate": "node scripts/backend-workflow.js db:validate",
     "workflow:validate": "node scripts/validate-workflow-state.js",
     "check:web": "npm --prefix apps/web/library-mini-admin-web run lint && npm --prefix apps/web/library-mini-admin-web run type-check",
     "check": "npm run check:api && npm run check:web",
     "e2e": "npm --prefix apps/web/library-mini-admin-web run test:e2e"
+  },
+  "devDependencies": {
+    "yaml": "2.9.0"
   }
 }

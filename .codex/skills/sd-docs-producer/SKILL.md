@@ -65,6 +65,15 @@ Generate system design artifacts for implementation handoff.
 - Confirm RequestDTO/ResponseDTO naming compliance.
 - Confirm every API has success and error business code.
 - Confirm docs/api files do not duplicate full API schema.
+- Run `scripts/validate_sd_artifacts.js` from the repository root after the
+  deliverables are written. Use `npm run sd:validate -- ...` when the root
+  package command is available.
+- Treat validator errors as a release-blocking S3 exit-gate. Treat warnings as
+  review items, or use `--strict` when the delivery requires zero warnings.
+- The validator checks deterministic structure, references, naming, required
+  sections, and cross-document API ID/path mapping. It does not decide whether
+  business rules, architecture trade-offs, transaction boundaries, retry
+  policies, or requirement intent are semantically correct.
 
 ## Output Contract
 
@@ -72,6 +81,7 @@ When complete, report:
 - Updated file list.
 - API IDs covered.
 - Any unresolved requirement ambiguity.
+- Validator result, including error/warning counts and the command used.
 
 ## Reference
 

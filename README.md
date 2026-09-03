@@ -165,6 +165,8 @@ docs/workflows/WF-<DOMAIN>-<NNN>.md
 npm run setup
 ```
 
+`setup` installs the root SD validator dependency and the frontend dependencies.
+
 ### Start Backend + Frontend
 
 ```bash
@@ -418,6 +420,8 @@ npm run api:generate        # run the POM-configured OpenAPI generator
 npm run api:verify-generated -- --generated-path apps/api/library-mini-admin-api/src/main/generated
 npm run db:validate -- --changelog <formatted-sql-directory>
 npm run workflow:validate -- docs/workflows/WF-<DOMAIN>-<NNN>.md
+npm run sd:validate -- --requirement docs/requirements/REQ-LIB-001.md --architecture docs/architecture/ARCH-LIB-001.md
+npm run test:sd       # SD artifact validator tests
 npm run e2e        # Playwright smoke E2E
 ```
 
@@ -427,6 +431,11 @@ the API POM does not contain the pinned OpenAPI Generator plugin, when
 The scripts execute deterministic checks only; architecture decisions,
 upstream artifact changes, workflow stage transitions, and SD/human approvals
 remain agent workflow responsibilities.
+
+`sd:validate` is the S3 SD exit gate. It checks the OpenAPI contract, global
+business error-code document, schema/API-flow document structure, and
+cross-document API ID/path mapping. It intentionally does not judge business
+semantics or architecture decisions.
 
 ## Scenario 與交付物
 
