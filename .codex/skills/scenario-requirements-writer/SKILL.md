@@ -29,7 +29,7 @@ Execute this workflow to convert a scenario into a requirement analysis document
 - `4) Acceptance Criteria (AC, Given/When/Then)`
 - `業務錯誤情境與錯誤碼需求`
 - `UI → API 對照表`
-- `5) 風險與待確認事項`
+- `5) 風險、假設與待確認事項`
 
 4. Apply authoring rules.
 - Use Traditional Chinese.
@@ -51,6 +51,9 @@ Execute this workflow to convert a scenario into a requirement analysis document
 - Ensure `需求文件 ID`, `來源情境`, and `UI 設計來源` are present.
 - Ensure UI alignment FR and UI alignment AC both exist.
 - Ensure business rules, state transitions, edge cases, and open questions are addressed.
+- Run `python3 .codex/skills/scenario-requirements-writer/scripts/validate_requirements.py <REQ-FILE>`.
+- Treat validator errors as blocking; warnings may be resolved according to the workflow gate.
+- The validator checks one REQ document only. Cross-artifact traceability belongs to the workflow framework, not this skill.
 
 ## Output Contract
 
@@ -59,6 +62,7 @@ When reporting completion, include:
 - Requirement document ID.
 - Source scenario ID.
 - Any open questions that block implementation.
+- Validation command and result.
 
 ## Reference
 
