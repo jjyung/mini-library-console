@@ -34,10 +34,15 @@
 
 `AGENTS.md` 定義這個 repo 的共同規範，包括：
 
-- 工程規範與命名要求
+- 跨角色的工程協作與 workflow 規範
 - OpenAPI / DTO / error code 規則
 - workflow stage 與 handoff 要求
 - `docs/workflows/WF-*.md` 的維護責任
+
+Backend 與 Frontend 的語言、框架及實作規範分別維護在
+`.codex/skills/be-development/SKILL.md` 與
+`.codex/skills/fe-development/SKILL.md`，避免把角色專屬內容混入 repo-level
+contract。
 
 Codex 在開始工作前應先讀 `AGENTS.md`，再讀對應 scenario 與 workflow artifact。
 

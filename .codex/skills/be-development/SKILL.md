@@ -10,6 +10,50 @@ the API contract, generated boundary code, business logic, persistence,
 messaging, migrations, tests, and handoff traceable to the task and acceptance
 criteria.
 
+## Repository backend standards
+
+Apply these Java and backend rules to all BE changes:
+
+### Naming
+
+- Do not start or end identifiers with `_` or `$`.
+- Do not use Chinese naming, Pinyin-English mixed naming, or discriminatory
+  words; use `allowList` / `blockList` terminology.
+- Classes use UpperCamelCase. Abstract classes use the `Abstract` or `Base`
+  prefix, exception classes use the `Exception` suffix, and test classes use
+  the `ClassNameTest` form.
+- Methods and variables use lowerCamelCase. Do not use single-letter
+  variables; choose meaningful names.
+- Constants use `UPPER_CASE_WITH_UNDERSCORE`. Avoid magic values. Suffix
+  `L`, `F`, or `D` on long, float, or double literals as applicable.
+- Enum classes use the `Enum` suffix and enum members use upper case.
+- Use `getXxx` for a single object, `listXxx` for multiple objects, and
+  `countXxx` for counts. Implementation classes use the `Impl` suffix.
+- Declare arrays as `int[] array`. Boolean POJO fields MUST NOT start with
+  `is`.
+
+### Object design
+
+- All fields MUST be private, and classes MUST provide getters/setters.
+- Do not call overridable methods from constructors.
+- Prefer composition, focused responsibilities, interfaces, and polymorphism
+  over deep inheritance or large conditional dispatch.
+- Keep method parameter count at five or fewer.
+
+### Exception handling
+
+- Do not use empty catches or catch `Exception` / `Throwable` directly.
+- Handle or declare every exception.
+- Preserve the original exception when wrapping it and log failures with a
+  stack trace.
+- Use try-with-resources for resource handling.
+
+For example:
+
+```java
+throw new MyBusinessException("message", cause);
+```
+
 ## 1. Load the handoff and freeze scope
 
 Before editing code, read:
@@ -194,9 +238,9 @@ isolate an integration boundary:
 
 Prefer composition, interfaces, and polymorphism. Keep classes focused, avoid
 large conditional business dispatch, keep method parameters at five or fewer,
-and avoid deep inheritance. Follow Java naming, visibility, exception, and
-business-error rules in `AGENTS.md`; HTTP status never replaces a business
-code.
+and avoid deep inheritance. Follow the backend standards in this skill and the
+repo-wide business-error contract in `AGENTS.md`; HTTP status never replaces a
+business code.
 
 Leave comments around core business invariants and non-obvious decisions:
 

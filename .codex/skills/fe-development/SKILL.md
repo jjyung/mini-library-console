@@ -46,6 +46,19 @@ Do not introduce a second framework because a Figma export uses another one.
 Use the project's existing conventions; make only non-critical defaults that
 are consistent with the selected architecture.
 
+### Repository frontend standards
+
+- Use camelCase for variables and functions and PascalCase for components.
+- Do not use Chinese naming or Pinyin-English mixed naming.
+- Keep one component per file, make the filename match the component name, and
+  give each component one responsibility.
+- Examples: `BookListPage`, `fetchBooks`, and `userProfileStore`.
+- Keep business logic out of UI components and templates. Place it in a
+  service, composable/hook, store, or mapper.
+- Do not use global mutable state. Stores (Pinia, Redux, or the established
+  equivalent) MUST separate state, actions, and getters/selectors.
+- Avoid magic numbers, duplicated API logic, and hard-coded API URLs.
+
 Keep features cohesive and components focused. Put business logic in the
 project's service, composable, hook, store, or mapper boundaries rather than
 templates. Keep API configuration, generated code, error mapping, and UI
@@ -63,6 +76,11 @@ and interaction references, then adapt them to the selected framework, tokens,
 accessibility rules, responsive behavior, and existing components. Use the
 applicable Figma design-to-code workflow for live Figma context or Figma writes.
 
+When `docs/figma/*` contains multiple requirement batches or segmented screens,
+follow the folder corresponding to the target requirement. When visual or
+stylistic references conflict, use the latest requirement-scoped source and
+record the selected reference in delivery notes.
+
 Preserve existing `data-testid` values. Add stable IDs for new
 acceptance-critical controls and states. Prefer accessible names and roles for
 general interaction while keeping `data-testid` as the QA contract.
@@ -74,6 +92,11 @@ parameters, schemas, DTO names, and business-error responses. All UI API calls
 go through one centralized client or application service; components must not
 call `fetch`, `axios`, or generated functions directly.
 
+API paths MUST match the OpenAPI definition. Request and response models MUST
+align with `{HttpMethod}{ResourcePlural}RequestDTO` and
+`{HttpMethod}{ResourcePlural}ResponseDTO`; for example,
+`GetBooksResponseDTO` must match the backend response schema.
+
 Keep generated output isolated, reproducible, version-pinned, and unedited.
 Put runtime configuration, auth, retries, normalization, error mapping, and
 view-model transformations outside generated output. Use an explicit mapper
@@ -84,6 +107,11 @@ Use the selected framework's approved generator and read
 the applicable setup and verification gate. Map errors by business code, not
 HTTP status alone, and implement the story's required pending, success, empty,
 validation, business-error, permission, network, and recovery states.
+
+Do not display an unmapped API error directly. UI behavior MUST be based on the
+business error code and its mapped product behavior, not on HTTP status alone.
+Frontend models MUST match the OpenAPI schema. Do not manually rename fields;
+use an explicit mapper when a view model needs different names or value types.
 
 ## 5. Develop with TDD and verify requirements
 

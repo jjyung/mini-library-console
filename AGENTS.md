@@ -1,10 +1,12 @@
 # AGENTS
 
-Version: 1.0.1
-Last Updated: 2026-09-02
+Version: 1.0.2
+Last Updated: 2026-09-03
 
-This file defines mandatory rules for AI Agents and developers.
-All generated code MUST comply with this document.
+This file defines repo-wide mandatory rules for AI Agents and developers.
+Role-specific implementation rules live in the corresponding skill under
+`.codex/skills/`. All work MUST comply with this file and the applicable role
+skill.
 
 ---
 
@@ -23,128 +25,17 @@ All generated code MUST comply with this document.
 - Existing agents may remain for runtime/persona usage, but skills MUST work correctly when agent files are absent.
 - New or updated skills MUST follow the same rule and MUST NOT add references to `.codex/agents/**`.
 
-### Backend Workflow Routing
+### Role-specific Workflow Routing
 
-- Detailed backend implementation workflow is defined by `.codex/skills/be-development/SKILL.md`.
-- Agent configuration files define role/context routing only; they MUST NOT be treated as the source of implementation procedures or engineering standards.
-
----
-
-## Java Backend Rules
-
-### Naming
-
-#### MUST
-
-- No `_` or `$` at start or end of identifiers
-
-- No Chinese naming
-
-- No Pinyin-English mixed naming
-
-- No discriminatory words (use allowList / blockList)
-
-#### Class
-
-- UpperCamelCase
-
-- Abstract class: prefix `Abstract` or `Base`
-
-- Exception class: suffix `Exception`
-
-- Test class: `ClassNameTest`
-
-#### Method / Variable
-
-- lowerCamelCase
-
-- No single-letter variable names
-
-- Use meaningful names
-
-#### Constant
-
-- UPPER_CASE_WITH_UNDERSCORE
-
-- No magic values
-
-- long must use `L`
-
-- float/double must use `F` / `D`
-
-#### Enum
-
-- Class name suffix `Enum`
-
-- Members UPPER_CASE
-
-#### Service / DAO
-
-- getXxx → single object
-
-- listXxx → multiple objects
-
-- countXxx → count
-
-- Implementation class suffix `Impl`
-
-#### Other
-
-- Array declaration: `int[] array`
-
-- Boolean field in POJO MUST NOT start with `is`
+- Role-specific implementation workflows are defined by the corresponding
+  skills under `.codex/skills/`, including `be-development` and
+  `fe-development`.
+- Agent configuration files define role/context routing only; they MUST NOT be
+  treated as the source of implementation procedures or engineering standards.
 
 ---
 
-### OOP
-
-#### MUST
-
-- All fields `private`
-
-- Provide getter/setter
-
-- No calling overridable methods in constructor
-
-- Avoid deep inheritance
-
-- Prefer composition
-
-- Single Responsibility Principle
-
-- Method parameter count ≤ 5
-
-- Use interface + polymorphism
-
-- Avoid large if-else for business logic
-
----
-
-### Exception Handling
-
-#### MUST
-
-- No empty catch
-
-- No catching `Exception` or `Throwable` directly
-
-- All exceptions must be handled or declared
-
-- Preserve original exception when wrapping
-
-- Log with stack trace
-
-- Use try-with-resources for resource handling
-
-Example:
-
-```java
-throw new MyBusinessException("message", e);
-```
-
----
-
-### Error Code
+## Business Error Contract
 
 All APIs MUST return business error code.
 
@@ -159,157 +50,6 @@ HTTP status code MUST NOT replace business error code.
 
 ---
 
-### Generated API Artifacts (MUST)
-
-- Backend API interfaces, request/response DTOs, and generated resources MUST be produced by the OpenAPI Generator Maven plugin configured in `pom.xml`.
-- The generator version MUST be pinned and the OpenAPI contract version MUST be tracked with the delivery.
-- Generated code MUST be committed to Git and MUST NOT be manually modified.
-
----
-
-## Database Migration Rules
-
-### Liquibase (MUST)
-
-- Database migrations MUST use Liquibase formatted SQL changelogs.
-- Liquibase XML changelogs are prohibited.
-- Applied changesets MUST remain immutable; changes require a new SQL changeset.
-
----
-
-## Frontend Rules
-
----
-
-### Naming
-
-#### MUST
-
-- Use camelCase for variables and functions
-
-- Use PascalCase for components
-
-- No Chinese naming
-
-- No Pinyin-English mixed naming
-
-Example:
-
-- BookListPage
-
-- fetchBooks
-
-- userProfileStore
-
----
-
-### Component Structure
-
-#### MUST
-
-- One component per file
-
-- File name MUST match component name
-
-- Component MUST have single responsibility
-
-- Avoid business logic inside UI component
-
-Business logic MUST be placed in:
-
-- service layer
-
-- composable / hook
-
-- store
-
----
-
-### API Calling Rules
-
-#### MUST
-
-- All API calls MUST use centralized API client
-
-- No direct fetch/axios inside component
-
-- API path MUST match OpenAPI definition
-
-- Model MUST align with `{HttpMethod}{Resource}RequestDTO/ResponseDTO`
-
-Example:
-
-- GetBooksResponseDTO must match backend response schema
-
----
-
-### State Management
-
-#### MUST
-
-- No global mutable variable
-
-- Use store (Pinia / Redux / equivalent)
-
-- Store must separate:
-
-  - state
-
-  - action
-
-  - getter
-
----
-
-### Error Handling
-
-#### MUST
-
-- All API errors MUST map to backend business error code
-
-- No direct error message display without mapping
-
-- UI must not depend on HTTP status only
-
----
-
-### DTO Alignment
-
-#### MUST
-
-- Frontend model MUST match OpenAPI schema
-
-- No manual field renaming without adapter layer
-
-- If transformation needed, use mapper function
-
----
-
-### Forbidden
-
-- No hard-coded API URL
-
-- No magic number
-
-- No duplicated API logic
-
-- No direct business rule inside UI template
-
----
-
-### Figma UI Alignment
-
-#### MUST
-
-- Frontend implementation MUST align with design references under `docs/figma/*`.
-
-- `docs/figma/*` MAY contain multiple requirement batches and segmented screens; FE MUST follow the target requirement's corresponding Figma folder(s).
-
-- When visual/style conflicts exist across different `docs/figma/*` batches, FE MUST follow the latest requirement-scoped Figma source and document the chosen reference in delivery notes.
-
-- UI alignment MUST NOT break existing `data-testid` locators.
-
----
 
 ## OpenAPI Contract Rules
 
@@ -545,23 +285,17 @@ Example:
 
 ## AI Agent Constraints
 
-AI-generated code MUST:
+AI-generated work MUST:
 
-1. Follow all rules in this file
+1. Follow this file and the applicable role-specific skill.
 
-2. Avoid magic values
+2. Avoid magic values and duplicated logic.
 
-3. Handle exceptions properly
+3. Map API errors to the business error contract.
 
-4. Respect OOP principles
+4. Follow the OpenAPI, Git, and versioning rules.
 
-5. Map all errors to business error code
-
-6. Follow OpenAPI contract rules
-
-7. Follow Git rules
-
-8. Keep skills decoupled from `.codex/agents/**`
+5. Keep skills decoupled from `.codex/agents/**`.
 
 ---
 
