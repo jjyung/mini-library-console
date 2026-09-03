@@ -50,11 +50,11 @@ The following gate is mandatory before controller implementation:
    pinned in the POM or a POM property; never use a floating or ad hoc CLI
    version. The generator name, input spec, output directory, package names,
    and additional properties must be reviewable from the POM/configuration.
-3. Run the POM-configured generator through Maven, normally from the API
-   module with `./mvnw generate-sources` or the repository's equivalent Maven
-   wrapper command. If the repository exposes `openapi-generator sync`, that
-   entry point must invoke the POM plugin rather than bypass it with a separate
-   CLI configuration.
+3. Run the POM-configured generator through the repository's deterministic
+   entry point, normally `npm run api:generate`. That script must delegate to
+   the API module Maven wrapper with `generate-sources` and activate only the
+   POM-defined generation profile when one is used; it must not contain a
+   second generator configuration or bypass the POM with a separate CLI.
 4. Keep generated source and generated resources in sync, inspect the diff,
    and ensure the generated output is in the tracked source directory agreed by
    the project. A target-only output that is deleted by `mvn clean` does not
@@ -215,7 +215,10 @@ this repository the preferred backend check is:
 npm run check:api
 ```
 
-For API work, also run the POM generator goal and verify:
+For API work, also run `npm run api:verify-generated -- --generated-path
+<tracked-generated-source> [--generated-path <tracked-generated-resource>]`.
+That entry point runs the POM generator and checks the generated paths against
+Git. Then verify:
 
 - the pinned generator plugin ran successfully;
 - generated interfaces, DTOs, and resources are current and compile;
@@ -225,8 +228,15 @@ For API work, also run the POM generator goal and verify:
 - every result maps to the required business code;
 - relevant tests pass.
 
-For database work, verify Liquibase formatted SQL, changeset identity,
-ordering, rollback, and migration-sensitive tests. For MQ work, verify the
+For a complete backend check, run `npm run backend:check`. For a scenario
+handoff, run `npm run workflow:validate -- docs/workflows/WF-<DOMAIN>-<NNN>.md`.
+These scripts validate and execute deterministic work only; they do not choose
+an architecture, edit upstream artifacts, advance workflow stages, or replace
+the SD/human approval gate.
+
+For database work, run `npm run db:validate -- --changelog
+apps/api/<service>/src/main/resources/db/changelog` and then verify Liquibase
+changeset identity, ordering, rollback, and migration-sensitive tests. For MQ work, verify the
 declared acknowledgment, retry, dead-letter, ordering, duplicate-delivery, and
 transaction behavior. Report environment failures separately from product
 defects, including the exact command and actionable remediation.

@@ -12,9 +12,10 @@ if (mavenArguments.length === 0) {
 
 const isWindowsPlatform = process.platform === "win32";
 const command = isWindowsPlatform ? "cmd.exe" : "./mvnw";
+const mavenLocalRepositoryArgument = `-Dmaven.repo.local=${path.join(projectRootPath, ".m2-local")}`;
 const commandArguments = isWindowsPlatform
-  ? ["/d", "/s", "/c", "mvnw.cmd", ...mavenArguments]
-  : mavenArguments;
+  ? ["/d", "/s", "/c", "mvnw.cmd", mavenLocalRepositoryArgument, ...mavenArguments]
+  : [mavenLocalRepositoryArgument, ...mavenArguments];
 
 const childProcessHandle = childProcess.spawn(command, commandArguments, {
   cwd: apiRootPath,

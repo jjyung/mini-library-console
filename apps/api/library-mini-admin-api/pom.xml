@@ -28,6 +28,9 @@
 	</scm>
 	<properties>
 		<java.version>21</java.version>
+		<openapi-generator-maven-plugin.version>7.25.0</openapi-generator-maven-plugin.version>
+		<openapi.input.spec>${project.basedir}/../../../docs/openapi.yaml</openapi.input.spec>
+		<openapi.generated.output>${project.basedir}/src/main/generated</openapi.generated.output>
 	</properties>
 	<dependencies>
 
@@ -85,6 +88,72 @@
 			</plugin>
 		</plugins>
 	</build>
+	<profiles>
+		<profile>
+			<id>api-generation</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.openapitools</groupId>
+						<artifactId>openapi-generator-maven-plugin</artifactId>
+						<version>${openapi-generator-maven-plugin.version}</version>
+						<executions>
+							<execution>
+								<id>generate-openapi-server</id>
+								<phase>generate-sources</phase>
+								<goals>
+									<goal>generate</goal>
+								</goals>
+								<configuration>
+									<inputSpec>${openapi.input.spec}</inputSpec>
+									<generatorName>spring</generatorName>
+									<output>${openapi.generated.output}</output>
+									<apiPackage>com.example.library.generated.api</apiPackage>
+									<modelPackage>com.example.library.generated.dto</modelPackage>
+									<invokerPackage>com.example.library.generated</invokerPackage>
+									<configOptions>
+										<dateLibrary>java8</dateLibrary>
+										<interfaceOnly>true</interfaceOnly>
+										<sourceFolder>src/main/java</sourceFolder>
+										<useBeanValidation>true</useBeanValidation>
+										<useSpringBoot3>true</useSpringBoot3>
+										<useTags>true</useTags>
+									</configOptions>
+									<generateApiDocumentation>false</generateApiDocumentation>
+									<generateApiTests>false</generateApiTests>
+									<generateModelDocumentation>false</generateModelDocumentation>
+									<generateModelTests>false</generateModelTests>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>build-helper-maven-plugin</artifactId>
+						<version>3.6.1</version>
+						<executions>
+							<execution>
+								<id>add-openapi-generated-sources</id>
+								<phase>generate-sources</phase>
+								<goals>
+									<goal>add-source</goal>
+									<goal>add-resource</goal>
+								</goals>
+								<configuration>
+									<sources>
+										<source>${openapi.generated.output}/src/main/java</source>
+									</sources>
+									<resources>
+										<resource>${openapi.generated.output}/src/main/resources</resource>
+									</resources>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 	<repositories>
 		<repository>
 			<id>spring-snapshots</id>

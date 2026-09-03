@@ -413,8 +413,20 @@ npm run dev:web    # start Vite web app
 npm run check      # backend tests + frontend lint/type-check
 npm run check:api  # backend tests
 npm run check:web  # frontend lint + type-check
+npm run backend:check       # deterministic backend Maven test entry point
+npm run api:generate        # run the POM-configured OpenAPI generator
+npm run api:verify-generated -- --generated-path apps/api/library-mini-admin-api/src/main/generated
+npm run db:validate -- --changelog <formatted-sql-directory>
+npm run workflow:validate -- docs/workflows/WF-<DOMAIN>-<NNN>.md
 npm run e2e        # Playwright smoke E2E
 ```
+
+`api:generate` and `api:verify-generated` are strict API gates. They fail when
+the API POM does not contain the pinned OpenAPI Generator plugin, when
+`docs/openapi.yaml` is missing, or when generated output is not clean in Git.
+The scripts execute deterministic checks only; architecture decisions,
+upstream artifact changes, workflow stage transitions, and SD/human approvals
+remain agent workflow responsibilities.
 
 ## Scenario 與交付物
 
