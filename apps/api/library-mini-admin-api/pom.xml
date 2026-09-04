@@ -31,6 +31,8 @@
 		<openapi-generator-maven-plugin.version>7.25.0</openapi-generator-maven-plugin.version>
 		<openapi.input.spec>${project.basedir}/../../../docs/openapi.yaml</openapi.input.spec>
 		<openapi.generated.output>${project.basedir}/src/main/generated</openapi.generated.output>
+		<springdoc.version>2.6.0</springdoc.version>
+		<jackson-databind-nullable.version>0.2.11</jackson-databind-nullable.version>
 	</properties>
 	<dependencies>
 
@@ -44,10 +46,32 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.session</groupId>
-			<artifactId>spring-session-jdbc</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
-
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jdbc</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.liquibase</groupId>
+			<artifactId>liquibase-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>${springdoc.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openapitools</groupId>
+			<artifactId>jackson-databind-nullable</artifactId>
+			<version>${jackson-databind-nullable.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>runtime</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
@@ -86,6 +110,31 @@
 					</excludes>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>3.6.1</version>
+				<executions>
+					<execution>
+						<id>add-openapi-generated-sources</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+							<goal>add-resource</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>${openapi.generated.output}/src/main/java</source>
+							</sources>
+							<resources>
+								<resource>
+									<directory>${openapi.generated.output}/src/main/resources</directory>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 	<profiles>
@@ -123,29 +172,6 @@
 									<generateApiTests>false</generateApiTests>
 									<generateModelDocumentation>false</generateModelDocumentation>
 									<generateModelTests>false</generateModelTests>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>build-helper-maven-plugin</artifactId>
-						<version>3.6.1</version>
-						<executions>
-							<execution>
-								<id>add-openapi-generated-sources</id>
-								<phase>generate-sources</phase>
-								<goals>
-									<goal>add-source</goal>
-									<goal>add-resource</goal>
-								</goals>
-								<configuration>
-									<sources>
-										<source>${openapi.generated.output}/src/main/java</source>
-									</sources>
-									<resources>
-										<resource>${openapi.generated.output}/src/main/resources</resource>
-									</resources>
 								</configuration>
 							</execution>
 						</executions>

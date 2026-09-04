@@ -1,0 +1,392 @@
+openapi: 3.0.3
+info:
+  title: Library Mini Admin API
+  version: 1.0.0
+  description: >-
+    Test-only API contract for the Library Mini Admin Console. Authentication is
+    intentionally omitted and the test environment enters as the default Admin.
+    This contract does not authorize production deployment.
+servers:
+  - url: http://localhost:8080
+    description: Local or isolated test server
+tags:
+  - name: Books
+    description: Catalogue and inventory operations
+  - name: Loans
+    description: Borrow and return operations
+paths:
+  /api/books:
+    get:
+      tags:
+        - Books
+      summary: "[library-books-001] 取得館藏列表"
+      operationId: getBooks
+      x-api-id: library-books-001
+      x-request-dto: GetBooksRequestDTO
+      responses:
+        '200':
+          description: 館藏列表查詢成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetBooksResponseDTO'
+        '500':
+          description: 館藏列表查詢失敗
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+
+    post:
+      tags:
+        - Books
+      summary: "[library-books-002] 建立書籍與初始館藏"
+      operationId: postBooks
+      x-api-id: library-books-002
+      x-request-dto: PostBooksRequestDTO
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostBooksRequestDTO'
+      responses:
+        '201':
+          description: 書籍建立成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostBooksResponseDTO'
+        '400':
+          description: 輸入資料或唯一性條件不符合
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+        '500':
+          description: 書籍建立失敗
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+
+  /api/loans/borrow:
+    post:
+      tags:
+        - Loans
+      summary: "[library-loans-001] 借出書籍"
+      operationId: postLoansBorrow
+      x-api-id: library-loans-001
+      x-request-dto: PostLoansBorrowRequestDTO
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostLoansBorrowRequestDTO'
+      responses:
+        '200':
+          description: 書籍借出成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostLoansBorrowResponseDTO'
+        '400':
+          description: 書籍不可借或借閱條件不符合
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+        '500':
+          description: 借出處理失敗
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+
+  /api/loans/return:
+    post:
+      tags:
+        - Loans
+      summary: "[library-loans-002] 歸還書籍"
+      operationId: postLoansReturn
+      x-api-id: library-loans-002
+      x-request-dto: PostLoansReturnRequestDTO
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostLoansReturnRequestDTO'
+      responses:
+        '200':
+          description: 書籍歸還成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostLoansReturnResponseDTO'
+        '400':
+          description: 沒有可歸還借閱或歸還條件不符合
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+        '500':
+          description: 歸還處理失敗
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+
+components:
+  schemas:
+    GetBooksRequestDTO:
+      type: object
+      additionalProperties: false
+      description: 本情境不提供搜尋條件；保留 request DTO 以維持 contract 命名一致性。
+    PostBooksRequestDTO:
+      type: object
+      additionalProperties: false
+      required:
+        - title
+        - isbn
+        - category
+        - quantity
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: 書名
+        isbn:
+          type: string
+          minLength: 1
+          maxLength: 20
+          description: 書籍唯一識別值；MVP 以 ISBN 實作
+        author:
+          type: string
+          maxLength: 200
+          description: 作者；可選
+        category:
+          type: string
+          minLength: 1
+          maxLength: 30
+          description: 分類
+        quantity:
+          type: integer
+          format: int32
+          minimum: 1
+          description: 初始副本總數
+        isActive:
+          type: boolean
+          default: true
+          description: 是否上架；未提供時預設為 true
+    PostLoansBorrowRequestDTO:
+      type: object
+      additionalProperties: false
+      required:
+        - readerId
+        - isbn
+      properties:
+        readerId:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: 測試用借閱人識別值；使用 synthetic value
+        isbn:
+          type: string
+          minLength: 1
+          maxLength: 20
+          description: 書籍 ISBN
+        dueDate:
+          type: string
+          format: date
+          description: 可選到期日；本 MVP 不計算罰款
+    PostLoansReturnRequestDTO:
+      type: object
+      additionalProperties: false
+      required:
+        - isbn
+      properties:
+        isbn:
+          type: string
+          minLength: 1
+          maxLength: 20
+          description: 書籍 ISBN
+        readerId:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: 可選借閱人識別值；多筆 active loan 時用於唯一選擇
+    BookDTO:
+      type: object
+      required:
+        - bookId
+        - title
+        - isbn
+        - category
+        - status
+        - availableCount
+        - totalCount
+        - isActive
+      properties:
+        bookId:
+          type: string
+          format: uuid
+        title:
+          type: string
+        isbn:
+          type: string
+        author:
+          type: string
+          nullable: true
+        category:
+          type: string
+        status:
+          type: string
+          enum:
+            - AVAILABLE
+            - BORROWED
+            - INACTIVE
+        availableCount:
+          type: integer
+          format: int32
+          minimum: 0
+        totalCount:
+          type: integer
+          format: int32
+          minimum: 1
+        isActive:
+          type: boolean
+    LoanDTO:
+      type: object
+      required:
+        - loanId
+        - bookId
+        - readerId
+        - borrowedAt
+      properties:
+        loanId:
+          type: string
+          format: uuid
+        bookId:
+          type: string
+          format: uuid
+        readerId:
+          type: string
+        borrowedAt:
+          type: string
+          format: date-time
+        dueDate:
+          type: string
+          format: date
+          nullable: true
+        returnedAt:
+          type: string
+          format: date-time
+          nullable: true
+    GetBooksResponseDTO:
+      type: object
+      required:
+        - code
+        - message
+        - traceId
+        - data
+      properties:
+        code:
+          type: string
+          enum:
+            - '00000'
+        message:
+          type: string
+        traceId:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/BookDTO'
+    PostBooksResponseDTO:
+      type: object
+      required:
+        - code
+        - message
+        - traceId
+        - data
+      properties:
+        code:
+          type: string
+          enum:
+            - '00000'
+        message:
+          type: string
+        traceId:
+          type: string
+        data:
+          $ref: '#/components/schemas/BookDTO'
+    PostLoansBorrowResponseDTO:
+      type: object
+      required:
+        - code
+        - message
+        - traceId
+        - data
+      properties:
+        code:
+          type: string
+          enum:
+            - '00000'
+        message:
+          type: string
+        traceId:
+          type: string
+        data:
+          $ref: '#/components/schemas/LoanDTO'
+    PostLoansReturnResponseDTO:
+      type: object
+      required:
+        - code
+        - message
+        - traceId
+        - data
+      properties:
+        code:
+          type: string
+          enum:
+            - '00000'
+        message:
+          type: string
+        traceId:
+          type: string
+        data:
+          $ref: '#/components/schemas/LoanDTO'
+    ErrorDetailDTO:
+      type: object
+      required:
+        - field
+        - reason
+      properties:
+        field:
+          type: string
+        reason:
+          type: string
+    ErrorResponseDTO:
+      type: object
+      required:
+        - code
+        - message
+        - traceId
+      properties:
+        code:
+          type: string
+          enum:
+            - 'A0000'
+            - 'B0000'
+            - 'C0000'
+        message:
+          type: string
+        traceId:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorDetailDTO'

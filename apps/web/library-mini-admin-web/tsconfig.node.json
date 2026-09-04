@@ -3,6 +3,8 @@
   "include": [
     "vite.config.*",
     "vitest.config.*",
+    "vitest.component.config.*",
+    "vitest.unit.config.*",
     "cypress.config.*",
     "nightwatch.conf.*",
     "playwright.config.*",

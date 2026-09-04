@@ -1,0 +1,16 @@
+README.md
+pom.xml
+src/main/java/com/example/library/generated/api/ApiUtil.java
+src/main/java/com/example/library/generated/api/BooksApi.java
+src/main/java/com/example/library/generated/api/LoansApi.java
+src/main/java/com/example/library/generated/dto/BookDTO.java
+src/main/java/com/example/library/generated/dto/ErrorDetailDTO.java
+src/main/java/com/example/library/generated/dto/ErrorResponseDTO.java
+src/main/java/com/example/library/generated/dto/GetBooksResponseDTO.java
+src/main/java/com/example/library/generated/dto/LoanDTO.java
+src/main/java/com/example/library/generated/dto/PostBooksRequestDTO.java
+src/main/java/com/example/library/generated/dto/PostBooksResponseDTO.java
+src/main/java/com/example/library/generated/dto/PostLoansBorrowRequestDTO.java
+src/main/java/com/example/library/generated/dto/PostLoansBorrowResponseDTO.java
+src/main/java/com/example/library/generated/dto/PostLoansReturnRequestDTO.java
+src/main/java/com/example/library/generated/dto/PostLoansReturnResponseDTO.java
