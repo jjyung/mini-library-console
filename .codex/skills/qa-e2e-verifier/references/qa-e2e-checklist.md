@@ -29,9 +29,13 @@ Use this checklist with `SKILL.md`. Check items with evidence, not assumptions.
 
 ## 4. Execution and diagnosis
 
-- [ ] Targeted affected spec/project run.
-- [ ] Full `npm run e2e` run (or documented equivalent).
-- [ ] Required stability gate run as three separate consecutive processes.
+- [ ] Targeted affected spec/project run on Chromium.
+- [ ] Full acceptance suite run on Chromium (or documented equivalent with `--project=chromium`).
+- [ ] Passing run stopped without an unnecessary stability rerun.
+- [ ] Any retry was failure-triggered, hypothesis-driven, assigned a distinct run ID,
+      and kept within three total process attempts for the same scope.
+- [ ] Firefox/WebKit were run only when a documented cross-browser risk or release
+      gate required them; otherwise Chromium-only scope was recorded.
 - [ ] Parallelism/isolation exercised for mutable data; one-worker comparison used only as a diagnostic.
 - [ ] If the effective worker count is `1`, parallelism is explicitly marked `Partial` or `Blocked` rather than treated as verified.
 - [ ] Failure artifacts preserved: HTML report, trace, screenshot/video, logs, request/response evidence as available.
@@ -42,7 +46,8 @@ Use this checklist with `SKILL.md`. Check items with evidence, not assumptions.
 ## 5. Report and handoff
 
 - [ ] Read `references/qa-report-template.md`; keep `docs/templates/qa-report-template.md` aligned when present.
-- [ ] Report preflight, exact commands, run outcomes, stability, and all FR/AC/NFR rows.
+- [ ] Report preflight, browser scope, exact commands, run outcomes, retries when
+      triggered, and all FR/AC/NFR rows.
 - [ ] Link evidence paths and record first failure plus retry behavior.
 - [ ] Record blocker/defect owner, rework target, and next action.
 - [ ] Update the corresponding existing workflow state with QA status and next-session handoff notes.

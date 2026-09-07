@@ -9,7 +9,8 @@
 - Status: `not_started` | `in_progress` | `blocked` | `done`
 - Execution date/time: <timezone-aware timestamp>
 - Commit/build: <commit, branch, or build identifier>
-- Environment: <local/CI, browser projects, relevant service versions>
+- Environment: <local/CI, Chromium by default; opt-in browser projects and reason, relevant service versions>
+- Retry policy: <no retry after pass; maximum three total process attempts for a failed scope>
 - Evidence redaction: <secrets and personal data masked/none present>
 
 ## Scope and decision
@@ -42,9 +43,9 @@
 | --- | --- | --- | --- | --- |
 | Targeted | <command> | pass/fail/blocked | <details> | <paths> |
 | Full | <command> | pass/fail/blocked | <details> | <paths> |
-| Stability 1 | <command> | pass/fail/blocked | <details> | <paths> |
-| Stability 2 | <command> | pass/fail/blocked | <details> | <paths> |
-| Stability 3 | <command> | pass/fail/blocked | <details> | <paths> |
+| Retry 1 (only after failure) | <command or `not_run`> | pass/fail/blocked | <hypothesis and details> | <paths> |
+| Retry 2 (only after Retry 1 failure) | <command or `not_run`> | pass/fail/blocked | <hypothesis and details> | <paths> |
+| Cross-browser (opt-in) | <command or `not_run`> | pass/fail/blocked | <reason or `not_run`> | <paths> |
 | Parallelism diagnostic | <command, if needed> | pass/fail/blocked | <details> | <paths> |
 
 ## Coverage Matrix

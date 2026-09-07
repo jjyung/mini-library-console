@@ -115,12 +115,33 @@ If a locator or product behavior is missing, record the exact locator/contract a
 
 Run in this order, adapting only to repository scripts/configuration:
 
-1. Targeted affected spec/project for fast feedback.
-2. Full `npm run e2e` at the repository root, or `npm --prefix apps/web/library-mini-admin-web run test:e2e`.
-3. The required NFR/stability run. For high-risk or explicitly gated journeys, run the same command in three separate consecutive processes and record every run; three retries inside one process are not three independent runs.
-4. A parallelism check when data/state is mutable: use the configured worker mode and, when diagnosing isolation, compare with a one-worker run. A one-worker pass does not clear a parallel data defect.
+1. Targeted affected spec on Chromium for fast feedback.
+2. Full acceptance suite on Chromium, using the repository's equivalent of
+   `--project=chromium`.
+3. Stop after a passing run. Do not perform mandatory repeated stability runs.
+   Trigger a retry only after a failure and only when there is a concrete
+   hypothesis such as a transient environment issue, data collision, or a
+   recently corrected test-design problem. Use a distinct run ID for each
+   process and record the hypothesis and result.
+4. Allow at most three process attempts for the same scope, including the
+   initial attempt (initial run plus at most two retries). Never blindly rerun
+   a passing test or exceed this cap. If a Playwright config adds per-test
+   retries, record them and keep the total retry policy within the same cap;
+   use an explicit `--retries=0` when process-level counting must be exact.
+5. A parallelism check when data/state is mutable: use the configured worker
+   mode and, when diagnosing isolation, compare with a one-worker run. A
+   one-worker pass does not clear a parallel data defect.
 
-Use the configured browser projects unless the requirement explicitly narrows scope. Preserve HTML reports, traces, screenshots, videos, logs, and test-result paths that materially support a finding. Before writing evidence to a report or shared artifact location, redact tokens, passwords, cookies, authorization headers, and personal data. Keep raw evidence outside the deliverable only when its storage is secure and authorized. A test that passes only on retry is flaky and remains `Partial` until explained and stabilized.
+Chromium is the default browser because it is the primary acceptance target.
+Firefox and WebKit are opt-in only when the requirement, changed browser-
+dependent behavior, release gate, or a Chromium finding gives a concrete
+cross-browser reason. Do not fan every run out to all configured projects.
+Preserve HTML reports, traces, screenshots, videos, logs, and test-result
+paths that materially support a finding. Before writing evidence to a report
+or shared artifact location, redact tokens, passwords, cookies, authorization headers,
+and personal data. Keep raw evidence outside the deliverable only when its
+storage is secure and authorized. A test that passes only after a retry is
+flaky and remains `Partial` until explained and stabilized.
 
 If the effective Playwright configuration or invocation uses only one worker (`workers=1`), parallelism has not been verified. Use an explicit multi-worker diagnostic when the environment allows it; otherwise mark the parallelism NFR `Partial` or `Blocked` with the reason.
 
@@ -141,7 +162,7 @@ Use `references/qa-report-template.md` as the report baseline; keep the reposito
 
 - requirement/scenario/workflow IDs, scope, exclusions, and test environment;
 - preflight results for `8080` and `5173`/`4173`;
-- exact commands, timestamps or run labels, first-attempt/retry outcomes, and stability result;
+- exact commands, timestamps or run labels, browser selection, first-attempt/retry outcomes, and any risk-triggered stability result;
 - the complete FR/AC/NFR matrix with evidence links/paths and status;
 - test architecture and data-isolation decisions for material E2E coverage;
 - evidence redaction result for secrets and personal data;
@@ -155,7 +176,7 @@ Final communication must include:
 
 - target requirement ID;
 - preflight status for backend `8080` and frontend `5173`/`4173`;
-- E2E commands and outcomes, including independent stability runs when required;
+- E2E commands and outcomes, including browser selection and retries only when triggered by failure;
 - coverage summary by `Pass`/`Partial`/`Fail`/`Blocked`;
 - exact path of the updated `docs/qa-report/QA-<DOMAIN>-<NNN>.md`;
 - blockers, defect classification, and next owner/action.
