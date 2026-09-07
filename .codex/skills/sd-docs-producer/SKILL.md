@@ -13,12 +13,33 @@ Generate system design artifacts for implementation handoff.
 - Read `docs/requirements/*.md`.
 - Read `docs/architecture/*.md`.
 - Read `AGENTS.md` for naming and contract rules.
+- Resolve the target environment from the architecture deployment matrix or
+  explicit task context before adding environment-specific integration rules.
 - Apply built-in SD boundaries:
   - Only edit design deliverables under `docs/openapi.yaml`, `docs/error-codes.md`,
     `docs/schema/*.md`, and `docs/api/*.md`.
   - Do not modify requirement documents or architecture decision scope.
   - Keep implementation-level details in design docs only, not source-code changes.
   - Ensure business error-code mapping is consistent with requirements.
+
+## Environment-specific CORS Shortcut
+
+When the target environment is explicitly `dev` or `test` (case-insensitive),
+apply the following development shortcut:
+
+- Treat CORS as non-blocking for the SD handoff so downstream PG/FE/BE work can
+  proceed without a CORS-specific implementation task.
+- Record the decision in the relevant handoff or API flow notes as
+  `CORS: ignored for <environment> to accelerate development`.
+- Do not add strict origin allowlist, preflight, credential, or CORS acceptance
+  criteria for that environment unless the requirements explicitly demand one.
+- Keep this as an environment-scoped configuration decision; do not hardcode a
+  permissive CORS policy into the API contract or production behavior.
+
+For staging, production, or an unspecified environment, do not use this
+shortcut. Define and document the required CORS origins, methods, headers,
+credentials, and preflight behavior, and flag the missing environment as an
+ambiguity when it cannot be resolved from the upstream artifacts.
 
 2. Lock output scope.
 - Create or update `docs/openapi.yaml` as single source of API truth.
@@ -65,6 +86,9 @@ Generate system design artifacts for implementation handoff.
 - Confirm RequestDTO/ResponseDTO naming compliance.
 - Confirm every API has success and error business code.
 - Confirm docs/api files do not duplicate full API schema.
+- Confirm the CORS shortcut is recorded only for an explicit `dev` or `test`
+  target; otherwise confirm that the CORS policy is documented or the ambiguity
+  is reported.
 - Run `scripts/validate_sd_artifacts.js` from the repository root after the
   deliverables are written. Use `npm run sd:validate -- ...` when the root
   package command is available.
