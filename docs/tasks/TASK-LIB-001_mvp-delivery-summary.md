@@ -67,6 +67,7 @@ changed during PG coordination.
 ## 4. Validation evidence
 
 - `npm run api:generate` — pass.
+- `npm run api:verify-generated -- --generated-path apps/api/library-mini-admin-api/src/main/generated` — pass; POM timestamp suppression keeps regeneration clean.
 - `npm run backend:check` — pass, 15 tests, including lower-environment CORS
   configuration and browser preflight coverage.
 - `npm run db:validate -- --changelog apps/api/library-mini-admin-api/src/main/resources/db/changelog` — pass, 2 changesets.

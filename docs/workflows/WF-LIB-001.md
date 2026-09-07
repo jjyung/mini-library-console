@@ -71,8 +71,8 @@ S4 PG
 
 - Current Goal: QA 依已完成的環境化 CORS runtime policy 重跑完整 SCN-LIB-001 UI journey、主要錯誤與必要 NFR。
 - Why this is the next step：BE 已依 SD 的 `x-environment-cors-policy` 完成 dev／poc／test bypass；test profile integration test 與 `APP_ENV=dev` browser-origin OPTIONS probe 均已通過，現在需要 QA 重新驗證完整旅程。
-- Expected Output：QA 重跑 `docs/qa-report/QA-LIB-001.md` 中的 commands 並更新結果；generated output cleanliness 仍由 implementation owner 處理。
-- Exit Criteria：DEF-001 修正後，QA 以 synthetic data 通過新增→列表→借出→最後一本狀態→歸還→恢復可借的 scenario journey，確認 `data-testid`、business code 與 scope；generated output cleanliness 也完成後才可進 S7。
+- Expected Output：QA 重跑 `docs/qa-report/QA-LIB-001.md` 中的 commands 並更新結果；generated output 已由 BE commit 並通過 strict cleanliness。
+- Exit Criteria：DEF-001 修正後，QA 以 synthetic data 通過新增→列表→借出→最後一本狀態→歸還→恢復可借的 scenario journey，確認 `data-testid`、business code 與 scope；其餘 gate 維持綠燈後才可進 S7。
 
 ## 5. Stage Status
 
@@ -114,7 +114,7 @@ S4 PG
   - Summary：已完成 generated OpenAPI boundary、controller-service-dao flow、H2＋Liquibase persistence、business code mapping 與 atomic borrow／return。
   - Output Files：`apps/api/library-mini-admin-api/src/main/generated/**`、`apps/api/library-mini-admin-api/src/main/java/com/example/library/**`、`apps/api/library-mini-admin-api/src/main/resources/db/**`、`apps/api/library-mini-admin-api/src/test/**`
   - Validation：backend check 15 tests pass、DB 2 changesets pass、API generation pass、manual create→list→borrow→return smoke pass；test profile preflight test 與 `APP_ENV=dev` browser-origin OPTIONS probe pass。
-  - Open Questions：不得手改 generated files；POM 已關閉生成時間戳，strict generated cleanliness 待本次 commit 後驗證。
+  - Open Questions：不得手改 generated files；POM 已關閉生成時間戳，strict generated cleanliness 已驗證通過。
 - S6 QA: blocked
 
   - Summary：QA 已以 synthetic data 完成 scenario E2E、preflight、targeted、full、三次 stability 與 parallelism diagnostic；mocked UI tests 通過，但既有 real API UI journeys 因舊版 frontend 5173 呼叫 backend 8080 的 CORS preflight 403 而失敗。BE runtime policy 現已完成並通過 test profile 與 `APP_ENV=dev` probe，QA 尚未重跑完整矩陣。
