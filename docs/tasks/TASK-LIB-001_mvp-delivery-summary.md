@@ -5,7 +5,7 @@
 - Task: `TASK-LIB-001`
 - Workflow: `WF-LIB-001`
 - Scenario: `SCN-LIB-001`
-- Updated: 2026-09-04
+- Updated: 2026-09-07
 - PG status: QA handoff ready; formal S6 acceptance pending
 - Gate-A: complete
 - Gate-B: complete
@@ -15,7 +15,9 @@
 The test-only library mini admin flow is implemented in the allowed
 `apps/api/**` and `apps/web/**` scopes. The confirmed boundaries remain no
 login, default `Admin`, no encryption, local/test only, and no production
-readiness claim.
+readiness claim. The SD handoff now also defines an environment-scoped CORS
+policy: `dev`/`poc`/`test` bypass CORS and allow `OPTIONS` preflight without
+credentials; staging/production require an explicit allowlist.
 
 ## 2. Implemented scope
 
@@ -57,13 +59,16 @@ readiness claim.
 | `library-loans-001` | POST | `/api/loans/borrow` |
 | `library-loans-002` | POST | `/api/loans/return` |
 
-The contract remains `docs/openapi.yaml` version `1.0.0`; no requirement,
-architecture, or SD artifact was changed during PG implementation.
+The API surface remains `docs/openapi.yaml` version `1.0.0`; the CORS policy is
+an environment transport extension and does not change paths, DTOs, business
+rules, or response envelopes. No requirement or architecture artifact was
+changed during PG coordination.
 
 ## 4. Validation evidence
 
 - `npm run api:generate` — pass.
-- `npm run backend:check` — pass, 12 tests.
+- `npm run backend:check` — pass, 15 tests, including lower-environment CORS
+  configuration and browser preflight coverage.
 - `npm run db:validate -- --changelog apps/api/library-mini-admin-api/src/main/resources/db/changelog` — pass, 2 changesets.
 - `npm run check:web` — pass.
 - `npm --prefix apps/web/library-mini-admin-web run test:unit` — pass, 26 tests; statements 95.37%, branches 92.3%, functions 96.42%, lines 95.89%.
@@ -73,6 +78,7 @@ architecture, or SD artifact was changed during PG implementation.
 - `npm run check` — pass.
 - `npm run sd:validate -- --requirement docs/requirements/REQ-LIB-001.md --architecture docs/architecture/ARCH-LIB-001.md --strict` — pass, 4 APIs, 0 errors, 0 warnings.
 - `npm run workflow:validate -- docs/workflows/WF-LIB-001.md` — pass.
+- Latest SD policy validation — `npm run sd:validate -- --project-root . --requirement docs/requirements/REQ-LIB-001.md --architecture docs/architecture/ARCH-LIB-001.md --strict` — pass, 4 APIs, 0 warnings.
 
 ### Manual API smoke
 
@@ -85,21 +91,27 @@ All responses returned business code `00000`.
 
 ## 5. Open blockers and exact remediation
 
-1. The existing QA-owned
+1. The prior HTTP 403 browser `OPTIONS` preflight defect is fixed. The test
+   profile integration test and an `APP_ENV=dev` probe from
+   `http://localhost:5173` now return HTTP 200 without credentials. QA must
+   rerun targeted, full, stability, and parallelism checks with an explicit
+   lower-environment setting.
+2. The existing QA-owned
    `apps/web/library-mini-admin-web/e2e/vue.spec.ts` still asserts the starter
    Vue skeleton heading `You did it!`. `npm run e2e` therefore fails in all
    three configured browsers. QA must replace that assertion with the
    SCN-LIB-001 journey, using the stable locators from
    `TASK-LIB-001_mvp-delivery.md`, and then run `qa-e2e-verifier`.
-2. `npm run api:verify-generated -- --generated-path apps/api/library-mini-admin-api/src/main/generated`
-   reports untracked generated output. Commit the generated directory without
-   edits and rerun the command. This is repository-state hygiene, not a code
-   generation defect.
+3. `npm run api:verify-generated -- --generated-path apps/api/library-mini-admin-api/src/main/generated`
+   reports expected regeneration diffs in the generated output. Commit the
+   generated directory without edits and rerun the command. This is
+   repository-state hygiene, not a code generation defect.
 
 ## 6. Next handoff
 
-QA should read the scenario, requirement, architecture, SD artifacts, task
-plan, this summary, and the FE traceability manifest first; update the QA-owned
-E2E test and produce `docs/qa-report/QA-LIB-001.md`. After QA passes, rerun
-strict generated-output verification and advance the workflow to S7 if no
-rework is required.
+QA should now read the scenario,
+requirement, architecture, SD artifacts, task plan, this summary, and the FE
+traceability manifest; run the QA-owned E2E matrix with `APP_ENV=dev` or the
+test profile, update `docs/qa-report/QA-LIB-001.md`, and report any rework.
+After QA passes, rerun strict generated-output verification and advance the
+workflow to S7 if no rework is required.

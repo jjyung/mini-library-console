@@ -10,7 +10,7 @@
 - Overall Status: blocked
 - Priority: medium
 - Created At: 2026-09-04
-- Updated At: 2026-09-04
+- Updated At: 2026-09-07
 - Related Branch/Worktree: 目前工作區，未指定獨立分支
 - Related Files:
   - `README.md`
@@ -69,9 +69,9 @@ S4 PG
 
 ## 4. Current Objective
 
-- Current Goal: 由 FE／BE 修正 DEF-001 的 frontend 5173 → backend 8080 browser CORS／API 連線問題，再由 QA 重跑完整 SCN-LIB-001 UI journey、主要錯誤與必要 NFR。
-- Why this is the next step：QA 已完成 scenario E2E、preflight、targeted/full/stability/parallelism execution；15 個 real API UI tests 在同一個 catalogue load gate 失敗，根因為 CORS preflight 403，不能進入 S7。
-- Expected Output：FE／BE 提供可由 browser 讀取 API 的核准啟動／部署設定；QA 重跑 `docs/qa-report/QA-LIB-001.md` 中的 commands 並更新結果；generated output cleanliness 仍由 implementation owner 處理。
+- Current Goal: QA 依已完成的環境化 CORS runtime policy 重跑完整 SCN-LIB-001 UI journey、主要錯誤與必要 NFR。
+- Why this is the next step：BE 已依 SD 的 `x-environment-cors-policy` 完成 dev／poc／test bypass；test profile integration test 與 `APP_ENV=dev` browser-origin OPTIONS probe 均已通過，現在需要 QA 重新驗證完整旅程。
+- Expected Output：QA 重跑 `docs/qa-report/QA-LIB-001.md` 中的 commands 並更新結果；generated output cleanliness 仍由 implementation owner 處理。
 - Exit Criteria：DEF-001 修正後，QA 以 synthetic data 通過新增→列表→借出→最後一本狀態→歸還→恢復可借的 scenario journey，確認 `data-testid`、business code 與 scope；generated output cleanliness 也完成後才可進 S7。
 
 ## 5. Stage Status
@@ -93,7 +93,7 @@ S4 PG
   - Open Questions：架構 gate 已解除；REQ Q-001、Q-002、Q-003、Q-005、Q-008 仍由 SA／SD 在 contract freeze 前處理。
 - S3 SD: done
 
-  - Summary：已依 REQ、ARCH 與 test-only 邊界產出 OpenAPI、全域錯誤碼、兩張 schema 與四份 API flow；四個 API 均有唯一 API ID、Request/Response DTO、成功與錯誤 business code mapping。
+  - Summary：已依 REQ、ARCH 與 test-only 邊界產出 OpenAPI、全域錯誤碼、兩張 schema 與四份 API flow；四個 API 均有唯一 API ID、Request/Response DTO、成功與錯誤 business code mapping。2026-09-07 補充 `x-environment-cors-policy`，定義 dev／poc／test bypass、OPTIONS preflight 與 staging／production allowlist guardrail。
   - Output Files：`docs/openapi.yaml`、`docs/error-codes.md`、`docs/schema/books.md`、`docs/schema/loans.md`、`docs/api/library-books-001_get-books.md`、`docs/api/library-books-002_create-book.md`、`docs/api/library-loans-001_borrow-loan.md`、`docs/api/library-loans-002_return-loan.md`
   - Validation：`node .codex/skills/sd-docs-producer/scripts/validate_sd_artifacts.js --project-root . --requirement docs/requirements/REQ-LIB-001.md --architecture docs/architecture/ARCH-LIB-001.md --strict` → 4 API operation(s), 0 error, 0 warning；`git diff --check` passed。
   - Open Questions：REQ Q-001、Q-002、Q-005、Q-008 尚未回寫需求文件；SD 以 bounded contract assumptions 定稿，PG 必須在 task 與 contract freeze review 時確認，不得自行擴大 scope。
@@ -108,28 +108,28 @@ S4 PG
   - Summary：已完成 Figma-aligned Vue page、borrow／return／create／catalogue states、centralized typed API client、stable `data-testid` 與 FE requirement traceability。
   - Output Files：`apps/web/library-mini-admin-web/src/**`、`docs/traceability/FE-REQ-LIB-001.json`
   - Validation：unit 26 pass、component 17 pass、requirement verifier 17/17 pass、coverage branch 92.3%、lint/type-check/build pass。
-  - Open Questions：QA scenario journey 已完成；正式驗證目前受 S6 的 browser CORS blocker 影響。Figma difference list remains documented in FE handoff/task scope。
+  - Open Questions：QA scenario journey 已完成；正式驗證需以明確的 lower-environment 設定重跑。Figma difference list remains documented in FE handoff/task scope。
 - S5B BE: done
 
   - Summary：已完成 generated OpenAPI boundary、controller-service-dao flow、H2＋Liquibase persistence、business code mapping 與 atomic borrow／return。
   - Output Files：`apps/api/library-mini-admin-api/src/main/generated/**`、`apps/api/library-mini-admin-api/src/main/java/com/example/library/**`、`apps/api/library-mini-admin-api/src/main/resources/db/**`、`apps/api/library-mini-admin-api/src/test/**`
-  - Validation：backend check 12 tests pass、DB 2 changesets pass、API generation pass、manual create→list→borrow→return smoke pass。
-  - Open Questions：generated directory is currently untracked and must be committed before strict generated cleanliness can pass；不得手改 generated files。
+  - Validation：backend check 15 tests pass、DB 2 changesets pass、API generation pass、manual create→list→borrow→return smoke pass；test profile preflight test 與 `APP_ENV=dev` browser-origin OPTIONS probe pass。
+  - Open Questions：generated directory is currently modified by regeneration and must be committed before strict generated cleanliness can pass；不得手改 generated files。
 - S6 QA: blocked
 
-  - Summary：QA 已以 synthetic data 完成 scenario E2E、preflight、targeted、full、三次 stability 與 parallelism diagnostic；mocked UI tests 通過，但所有 real API UI journeys 受 frontend 5173 呼叫 backend 8080 的 CORS preflight 403 阻塞。
+  - Summary：QA 已以 synthetic data 完成 scenario E2E、preflight、targeted、full、三次 stability 與 parallelism diagnostic；mocked UI tests 通過，但既有 real API UI journeys 因舊版 frontend 5173 呼叫 backend 8080 的 CORS preflight 403 而失敗。BE runtime policy 現已完成並通過 test profile 與 `APP_ENV=dev` probe，QA 尚未重跑完整矩陣。
   - Output Files：`docs/qa-report/QA-LIB-001.md`、`apps/web/library-mini-admin-web/e2e/library.spec.ts`、`fixtures.ts`、`library-page.ts`、`library-data.ts`
   - Validation：Full 27 tests 使用 3 workers，12 passed、15 failed；Stability 1～3 均為 12 passed、15 failed；workers=2 與 workers=1 diagnostic 均為 5 failed。失敗一致在 `book-table` catalogue load gate，頁面顯示 `B0000`。
-  - Open Questions：FE／BE 需修正 DEF-001（核准的 backend CORS、frontend proxy 或 runtime API-base 邊界）；修正後 QA 必須重跑完整矩陣。generated output commit／strict cleanliness 仍待 implementation owner。
+  - Open Questions：QA 必須以 `APP_ENV=dev`、`APP_ENV=poc` 或 test profile 重跑完整矩陣，確認 DEF-001 已解除。generated output commit／strict cleanliness 仍待 implementation owner。
 - S7 Done: not_started
 
   - Summary：待 QA 通過、所有 artifact 一致且未有未核准 scope drift 後標記完成。
 
 ## 6. Dependency / Blocking Status
 
-- Blocking Issues：DEF-001：frontend 5173 呼叫 backend 8080 時 browser CORS preflight 回 403，導致 real API catalogue load 顯示 `B0000`，15 個 real API UI tests 失敗；另 `api:verify-generated` 需在 generated output commit 後才可通過。
+- Blocking Issues：QA 尚未以修正後 runtime policy 重跑完整矩陣；另 `api:verify-generated` 需在 generated output commit 後才可通過。既有 QA report 中的 DEF-001 403 證據保留作為修正前基線。
 - Missing Decisions：REQ Q-001、Q-002、Q-005、Q-008 尚未由 SA／業務正式回寫；本次 PG 依 SD bounded assumptions 執行，若業務否決需回送 SA／SD。
-- Waiting For：FE／BE 修正 DEF-001 後交 QA 重跑；implementation owner commit generated OpenAPI output 後重跑 strict cleanliness。
+- Waiting For：QA 以明確 lower-environment 設定重跑並更新報告；implementation owner commit generated OpenAPI output 後重跑 strict cleanliness。
 - Safe Assumptions：核心流程為新增、列表、借出、歸還；本次實際環境為 local + test，test 免登入、預設 Admin、不加密、無 HA／SLO／RTO／RPO／backup／DR／on-call；書籍以 ISBN 唯一識別；借閱使用 synthetic `readerId`；到期日只保存、不計算罰款；同 ISBN 多筆 active loan 時，歸還需提供 `readerId`；Figma URL 與本地匯出元件是 UI 對齊來源；Figma 四筆資料是展示 mock；搜尋、罰款、獨立增加 copies 暫不納入；local／test 僅使用 synthetic data。
 - Risks：多副本與多管理員同時異動可能造成借閱誤配或數量競爭；scenario 與 Figma 欄位差異可能造成 FE／BE 返工；視覺偏離若未形成差異清單，QA 無法判斷是否可接受。
 
@@ -147,7 +147,7 @@ S4 PG
 - Latest QA Result：blocked
 - Defects：
 
-  - DEF-001：frontend 5173 → backend 8080 的 browser CORS preflight 回 403，catalogue request 進入 `B0000`，Full／Stability 1～3 每次均有 15 個 real API UI tests 失敗；remediation owner 為 FE／BE，應依核准邊界提供 CORS、proxy 或 runtime API-base 修正，之後由 QA 重跑。
+  - DEF-001：修正前 frontend 5173 → backend 8080 的 browser CORS preflight 回 403，catalogue request 進入 `B0000`，Full／Stability 1～3 每次均有 15 個 real API UI tests 失敗；BE 已依核准邊界完成 runtime CORS 修正，QA 待重跑確認。
   - DATA-001：沒有 delete 或 test-reset API；QA 已用唯一 namespace 與 tracked active-loan best-effort return 降低 interrupted-run 影響，屬 mitigated data-isolation caveat，非本次 blocker。
 
 - Re-entry Rule：
@@ -161,11 +161,11 @@ S4 PG
 
 ## 9. Session Handoff Notes
 
-- Last completed action：QA 已完成 QA-owned scenario E2E、lint、preflight、targeted/full execution、三次 stability 與 workers=2／1 diagnostic，並產出 `docs/qa-report/QA-LIB-001.md`；已確認 DEF-001 為 Product blocker。
-- Recommended next action: FE／BE 修正 DEF-001 並提供可重現的 browser API connectivity；QA 重跑 report commands，確認 real journey、錯誤碼、state consistency 與 NFR；implementation owner 同步 commit generated output 後重跑 `api:verify-generated`，完成後才評估 S7。
+- Last completed action：BE 已依 `x-environment-cors-policy` 完成 runtime CORS policy；`npm run backend:check` 15 tests pass，test profile preflight integration test 與 `APP_ENV=dev` browser-origin OPTIONS probe 均回 HTTP 200；task/summary 已更新 handoff。
+- Recommended next action: QA 以 `APP_ENV=dev`、`APP_ENV=poc` 或 test profile 重跑 report commands，確認 real journey、錯誤碼、state consistency 與 NFR；implementation owner 同步 commit generated output 後重跑 `api:verify-generated`，完成後才評估 S7。
 - Files to read first: `README.md`、`AGENTS.md`、`docs/scenarios/SCN-LIB-001.md`、`docs/requirements/REQ-LIB-001.md`、`docs/architecture/ARCH-LIB-001.md`、`docs/openapi.yaml`、`docs/error-codes.md`、`docs/schema/`、`docs/api/`、`docs/tasks/TASK-LIB-001_mvp-delivery.md`、`docs/tasks/TASK-LIB-001_mvp-delivery-summary.md`、`docs/traceability/FE-REQ-LIB-001.json`、`docs/qa-report/QA-LIB-001.md`、`apps/web/library-mini-admin-web/e2e/library.spec.ts`、`fixtures.ts`、`library-page.ts`、`library-data.ts`。
-- Questions to resolve：DEF-001 修正是否已在 browser 端可重現；generated output 是否已被 commit。不得把 test-only 免登入／不加密決策延伸到未來 PROD，也不得自行加入搜尋、罰款或獨立增加 copies。
-- Notes for next agent/session：REQ 與 ARCH 都遵守 SA／Archi 邊界；SD 已明確定義四個 API、兩張資料表、同步交易邊界與 business code mapping。ARCH 的 PostgreSQL 16、p95 500ms、20 concurrent admins 與 10,000 rows 是 preliminary assumptions，不是已核准 NFR；test 的免登入、不加密、無 HA／backup／DR／on-call 是已確認的範圍限制。Figma Guidelines 目前沒有額外內容；任何 UI 偏離必須留下差異清單。
+- Questions to resolve：QA 是否已在 browser 端重現 DEF-001 修正；generated output 是否已被 commit。CORS bypass 僅適用明確的 dev／poc／test lower-tier environment，不得延伸到 staging／PROD；也不得把 test-only 免登入／不加密決策延伸到未來 PROD，或自行加入搜尋、罰款、獨立增加 copies。
+- Notes for next agent/session：REQ 與 ARCH 都遵守 SA／Archi 邊界；SD 已明確定義四個 API、兩張資料表、同步交易邊界、business code mapping 與 `x-environment-cors-policy`。低階環境的 preflight 是 transport handshake，不產生 business code；真正進入 API operation 的 response 仍遵守 `00000`／`A0000`／`B0000`／`C0000`。ARCH 的 PostgreSQL 16、p95 500ms、20 concurrent admins 與 10,000 rows 是 preliminary assumptions，不是已核准 NFR；test 的免登入、不加密、無 HA／backup／DR／on-call 是已確認的範圍限制。Figma Guidelines 目前沒有額外內容；任何 UI 偏離必須留下差異清單。
 
 ## 10. Completion Checklist
 
@@ -177,5 +177,5 @@ S4 PG
 - [x] FE implementation is complete
 - [x] BE implementation is complete
 - [ ] QA verification is complete
-- [x] Artifacts are consistent through implementation handoff; QA report records the S6 blocker
+- [x] Artifacts are consistent through implementation handoff; QA report records the pre-fix S6 blocker and BE remediation evidence
 - [x] Scope has not drifted

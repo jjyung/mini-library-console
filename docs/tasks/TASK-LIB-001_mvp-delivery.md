@@ -12,7 +12,7 @@
 - Scope: test-only local/test delivery; no production readiness claim
 - Contract version: `docs/openapi.yaml` `info.version: 1.0.0`
 - Created: 2026-09-04
-- Updated: 2026-09-04
+- Updated: 2026-09-07
 
 ## 2. Delivery objective
 
@@ -37,6 +37,9 @@ artifacts are maintained under `docs/tasks/**`, `docs/traceability/**`, and
 - `library-loans-001`: `POST /api/loans/borrow`
 - `library-loans-002`: `POST /api/loans/return`
 - `00000`, `A0000`, and `B0000` response-code mapping with `traceId`
+- environment-scoped backend CORS policy: `dev`/`poc`/`test` bypass CORS and
+  allow browser `OPTIONS` preflight; staging/production require an explicit
+  allowlist
 - relational persistence for `books` and `loans`, with an atomic borrow/return
   update
 - Vue UI aligned to the local Figma export for `TopBar`, `TransactionCard`,
@@ -54,8 +57,8 @@ artifacts are maintained under `docs/tasks/**`, `docs/traceability/**`, and
 
 ## 4. Contract freeze decision
 
-PG adopts the bounded assumptions already used by the SD artifacts for this
-test MVP without modifying upstream requirement, architecture, or SD files:
+PG adopts the bounded assumptions already used by the current SD artifacts for
+this test MVP without modifying upstream requirement or architecture files:
 
 - ISBN is the unique book identifier and is used by borrow/return requests.
 - `readerId` is a synthetic value; it is not an authenticated identity.
@@ -66,6 +69,11 @@ test MVP without modifying upstream requirement, architecture, or SD files:
 - `isActive` defaults to `true`; status is derived as `INACTIVE`, `BORROWED`,
   or `AVAILABLE`.
 - local/test are isolated, no-login environments entered as default `Admin`.
+- Backend CORS is controlled by the `x-environment-cors-policy` extension in
+  `docs/openapi.yaml`. In explicit `dev`, `poc`, or `test`, the backend must not
+  reject cross-origin requests or `OPTIONS` preflight, must not enable
+  credentials, and must not emit a business code for the transport handshake.
+  Staging/production must use explicit origins and preflight policy.
 
 If a business owner rejects one of these assumptions, this task must re-enter
 SA/SD; neither FE nor BE may silently change the contract.
@@ -82,6 +90,7 @@ SA/SD; neither FE nor BE may silently change the contract.
 | BE-004 | Implement `controller -> service -> dao` behavior for list/create/borrow/return, including derived status, uniqueness, active-loan selection, and atomic count/loan updates. | BE-002, API flows | Gate-B: service/HTTP integration tests |
 | BE-005 | Map all failures to business codes and `traceId`; HTTP status must not replace body `code`. | docs/error-codes.md | Gate-A/B: error mapping assertions |
 | BE-006 | Provide BE handoff with API IDs, generator version, persistence/migration evidence, test data/reset notes, and known limitations. | BE-001..005 | Gate-B handoff note |
+| BE-007 | Apply the environment-scoped CORS runtime policy; lower environments bypass origin validation and return a successful `OPTIONS` preflight without credentials, while production-like environments require explicit configuration. | `x-environment-cors-policy` in `docs/openapi.yaml` | Gate-A: runtime/preflight check; Gate-B: browser connectivity evidence |
 
 ### FE — `apps/web/**`
 
@@ -145,7 +154,10 @@ only and must not add a query parameter or new API.
 - Generated interfaces/DTOs compile and controller adapters implement the four
   operations without hand-written duplicate public DTOs.
 - Request validation and `A0000`/`B0000`/`traceId` response mapping are covered.
-- No OpenAPI, schema, API flow, requirement, or architecture document changes.
+- Lower-environment CORS mode is selected from runtime configuration; explicit
+  `dev`/`poc`/`test` `OPTIONS` preflight does not return 403.
+- No requirement or architecture document changes; SD policy changes must be
+  reflected in the current frozen handoff before implementation.
 
 ### Gate-B — BE integration readiness
 
@@ -154,6 +166,9 @@ only and must not add a query parameter or new API.
 - Service/DAO tests prove list/create/borrow/return, status derivation,
   duplicate ISBN, no-copy/inactive book, no/ambiguous active loan, atomic
   rollback, and count bounds.
+- A browser-origin smoke check proves the configured lower environment can read
+  the API from the frontend origin; CORS transport failures are not mapped as
+  business errors for the preflight handshake.
 - `npm run backend:check` and generated-code verification pass.
 - BE supplies reset/seed instructions using synthetic data only.
 
@@ -177,12 +192,16 @@ only and must not add a query parameter or new API.
   no encryption, and data-testid integrity are rechecked.
 - QA handoff contains test data, journey steps, expected API codes/states,
   locators, responsive checks, and Figma difference list.
+- QA handoff identifies the active environment and confirms the corresponding
+  CORS mode; bypass mode is never treated as a staging/production readiness
+  claim.
 
 PG integration has completed the API smoke journey and prepared the QA handoff.
-Formal S6 acceptance remains pending because the repository's existing
-QA-owned Playwright spec still asserts the starter Vue skeleton (`h1` text
-`You did it!`) instead of SCN-LIB-001. This is a QA test-maintenance blocker,
-not a product implementation failure; PG must not edit `e2e/**`.
+BE has now implemented the runtime CORS policy; the test profile preflight test
+and an `APP_ENV=dev` browser-origin OPTIONS probe both pass. Formal S6
+acceptance remains pending until QA reruns the full matrix against the active
+lower environment. Any remaining QA-owned Playwright maintenance must stay
+within QA scope; PG must not edit `e2e/**`.
 
 ## 9. Validation command set
 
@@ -190,16 +209,17 @@ not a product implementation failure; PG must not edit `e2e/**`.
 | --- | --- | --- | --- |
 | SD contract | `npm run sd:validate -- --requirement docs/requirements/REQ-LIB-001.md --architecture docs/architecture/ARCH-LIB-001.md --strict` | PG | baseline pass |
 | Workflow | `npm run workflow:validate -- docs/workflows/WF-LIB-001.md` | PG | baseline pass |
+| CORS runtime/preflight | Backend lower-environment `OPTIONS` preflight check from the configured frontend origin | BE/QA | pass: test profile integration test and `APP_ENV=dev` probe returned HTTP 200 without credentials |
 | API generation | `npm run api:generate` | BE | pass |
-| Generated cleanliness | `npm run api:verify-generated -- --generated-path apps/api/library-mini-admin-api/src/main/generated` | BE | blocked: generated output is untracked until committed |
-| Backend check | `npm run backend:check` | BE | pass: 12 tests |
+| Generated cleanliness | `npm run api:verify-generated -- --generated-path apps/api/library-mini-admin-api/src/main/generated` | BE | pending: regenerated tracked output must be committed before strict verification can pass |
+| Backend check | `npm run backend:check` | BE | pass: 15 tests |
 | DB schema | `npm run db:validate -- --changelog apps/api/library-mini-admin-api/src/main/resources/db/changelog` | BE | pass: 2 changesets |
 | FE lint/type-check | `npm run check:web` | FE | pass |
 | FE build | `npm --prefix apps/web/library-mini-admin-web run build` | FE | pass |
 | FE requirement verifier | `verify_requirement_tests.py` with FE manifest and coverage | FE | pass: 17/17 criteria, branch coverage 92.3% |
 | Full repository check | `npm run check` | PG | pass |
 | Smoke/E2E | API smoke plus `npm run e2e` | QA/PG handoff | API smoke pass; Playwright 3/3 browsers fail on stale QA skeleton assertion |
-| Diff hygiene | scope/data-testid review and whitespace scan | PG | pass for product scope; generated output remains untracked |
+| Diff hygiene | scope/data-testid review and whitespace scan | PG | pass for product scope; generated output has expected regeneration diffs pending commit |
 
 ## 10. Gate log
 
@@ -208,7 +228,7 @@ not a product implementation failure; PG must not edit `e2e/**`.
 | Gate-A | complete | OpenAPI 7.25.0 generation, generated controller boundary, validation, and business-code tests passed; strict cleanliness awaits committing generated output. |
 | Gate-B | complete | Liquibase validation, service/DAO/integration tests, count-bound checks, and API smoke flow passed. |
 | Gate-C | complete | Vue implementation, centralized typed API client, required locators, unit/component tests, coverage, lint/type-check, build, and requirement verifier passed. |
-| Gate-D | pending QA | API smoke passed and handoff is ready; formal E2E is blocked by the QA-owned stale skeleton assertion. |
+| Gate-D | pending QA | API smoke and BE CORS preflight checks pass; formal E2E remains pending until QA reruns the journey with the active lower-environment configuration. |
 
 ## 11. Risks and escalation
 
@@ -229,16 +249,20 @@ not a product implementation failure; PG must not edit `e2e/**`.
   starter `h1` text `You did it!`; it fails in Chromium, Firefox, and WebKit.
   QA should replace it with the SCN-LIB-001 journey using the locators in
   Section 7, then run the QA verifier and produce `QA-LIB-001.md`.
-- `api:verify-generated` reports the generated Java directory as untracked.
-  The generated OpenAPI output is intentionally unedited; commit it with the
-  implementation and rerun the strict generated-cleanliness check.
-- The frontend `api:check` command compares tracked diffs only, so untracked
-  generated output requires the explicit status/strict verification above.
+- QA must rerun the full matrix with an explicit lower-environment setting
+  (`APP_ENV=dev`, `APP_ENV=poc`, or the test profile). The BE implementation
+  now applies `x-environment-cors-policy`; its test-profile preflight test and
+  `APP_ENV=dev` browser-origin probe return HTTP 200 without credentials.
+- `api:verify-generated` reports expected regeneration diffs in the generated
+  Java directory. The generated OpenAPI output is intentionally unedited;
+  commit it with the implementation and rerun the strict generated-cleanliness
+  check.
+- The frontend `api:check` command compares tracked diffs only, so generated
+  regeneration requires the explicit status/strict verification above.
 
 ## 12. Completion definition
 
 PG delivery is complete through Gates A-C and the Gate-D QA handoff. Overall
-scenario delivery remains open until QA replaces the stale E2E assertion,
-executes formal S6 acceptance, and confirms the generated output is committed.
-QA remains the owner of formal S6 acceptance and may reopen FE/BE by the
-workflow re-entry rules.
+scenario delivery remains open until QA executes formal S6 acceptance and the
+generated output is committed. QA remains the owner of formal S6 acceptance
+and may reopen FE/BE by the workflow re-entry rules.

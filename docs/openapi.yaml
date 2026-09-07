@@ -5,10 +5,52 @@ info:
   description: >-
     Test-only API contract for the Library Mini Admin Console. Authentication is
     intentionally omitted and the test environment enters as the default Admin.
-    This contract does not authorize production deployment.
+    This contract does not authorize production deployment. Backend CORS is
+    environment-scoped by the x-environment-cors-policy extension below.
 servers:
   - url: http://localhost:8080
-    description: Local or isolated test server
+    description: Local, dev, POC, or isolated test server
+x-environment-cors-policy:
+  description: >-
+    Backend HTTP-boundary policy for browser clients. This is an environment
+    configuration and does not change API paths, DTOs, business rules, or
+    business error-code responses.
+  environments:
+    dev:
+      mode: bypass
+      preflight: allow
+      credentials: false
+      note: Do not reject cross-origin browser requests or OPTIONS preflight.
+    poc:
+      mode: bypass
+      preflight: allow
+      credentials: false
+      note: Do not reject cross-origin browser requests or OPTIONS preflight.
+    test:
+      mode: bypass
+      preflight: allow
+      credentials: false
+      note: Do not reject cross-origin browser requests or OPTIONS preflight.
+    staging:
+      mode: explicit-allowlist-required
+      preflight: explicit
+      credentials: explicit
+    production:
+      mode: explicit-allowlist-required
+      preflight: explicit
+      credentials: explicit
+  bypass-behavior:
+    - Respond to browser OPTIONS preflight with a successful transport response.
+    - Permit the configured frontend to call the API without origin validation;
+      the current no-auth MVP may use a wildcard origin only in these isolated
+      lower environments and must not enable credentials.
+    - Do not emit a business error code for a preflight response. Requests that
+      reach an API operation keep the existing 00000/A0000/B0000/C0000 contract.
+  guardrails:
+    - Select the mode from the active environment configuration, never from a
+      permissive fallback.
+    - Never carry bypass mode or wildcard-origin behavior into staging or
+      production.
 tags:
   - name: Books
     description: Catalogue and inventory operations

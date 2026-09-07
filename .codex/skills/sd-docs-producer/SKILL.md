@@ -24,8 +24,8 @@ Generate system design artifacts for implementation handoff.
 
 ## Environment-specific CORS Shortcut
 
-When the target environment is explicitly `dev` or `test` (case-insensitive),
-apply the following development shortcut:
+When the target environment is explicitly `dev`, `poc`, or `test`
+(case-insensitive), apply the following development shortcut:
 
 - Treat CORS as non-blocking for the SD handoff so downstream PG/FE/BE work can
   proceed without a CORS-specific implementation task.
@@ -86,9 +86,9 @@ ambiguity when it cannot be resolved from the upstream artifacts.
 - Confirm RequestDTO/ResponseDTO naming compliance.
 - Confirm every API has success and error business code.
 - Confirm docs/api files do not duplicate full API schema.
-- Confirm the CORS shortcut is recorded only for an explicit `dev` or `test`
-  target; otherwise confirm that the CORS policy is documented or the ambiguity
-  is reported.
+- Confirm the CORS shortcut is recorded only for an explicit `dev`, `poc`, or
+  `test` target; otherwise confirm that the CORS policy is documented or the
+  ambiguity is reported.
 - Run `scripts/validate_sd_artifacts.js` from the repository root after the
   deliverables are written. Use `npm run sd:validate -- ...` when the root
   package command is available.

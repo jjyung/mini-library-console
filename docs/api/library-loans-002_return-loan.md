@@ -5,6 +5,7 @@
 | Version | Who | When | Why / What |
 | --- | --- | --- | --- |
 | 1.0.0 | SD | 2026-09-04 | 定義以 ISBN 歸還 active loan、處理多筆借閱歧義與回補可借數量的流程。 |
+| 1.0.1 | SD | 2026-09-07 | 引用環境化 CORS policy；dev／poc／test bypass，避免 browser preflight 阻塞 API flow。 |
 
 ## 2. API Flow
 
@@ -16,6 +17,9 @@
 - Response DTO: `PostLoansReturnResponseDTO`
 - Contract source: `docs/openapi.yaml`
 - Authentication context: test-only default Admin; optional `readerId` is a synthetic selector, not a login identity.
+- Environment CORS policy: follow `x-environment-cors-policy` in
+  `docs/openapi.yaml`; `dev`／`poc`／`test` bypass origin validation and allow
+  preflight, while staging／production require an explicit allowlist.
 
 ### 2.1 Workflow Sequence Diagram
 
