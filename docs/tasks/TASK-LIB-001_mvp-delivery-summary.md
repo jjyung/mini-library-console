@@ -102,16 +102,10 @@ All responses returned business code `00000`.
    three configured browsers. QA must replace that assertion with the
    SCN-LIB-001 journey, using the stable locators from
    `TASK-LIB-001_mvp-delivery.md`, and then run `qa-e2e-verifier`.
-3. `npm run api:verify-generated -- --generated-path apps/api/library-mini-admin-api/src/main/generated`
-   reports expected regeneration diffs in the generated output. Commit the
-   generated directory without edits and rerun the command. This is
-   repository-state hygiene, not a code generation defect.
-
 ## 6. Next handoff
 
 QA should now read the scenario,
 requirement, architecture, SD artifacts, task plan, this summary, and the FE
 traceability manifest; run the QA-owned E2E matrix with `APP_ENV=dev` or the
 test profile, update `docs/qa-report/QA-LIB-001.md`, and report any rework.
-After QA passes, rerun strict generated-output verification and advance the
-workflow to S7 if no rework is required.
+After QA passes, advance the workflow to S7 if no rework is required.

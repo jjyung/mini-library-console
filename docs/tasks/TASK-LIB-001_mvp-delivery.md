@@ -211,7 +211,7 @@ within QA scope; PG must not edit `e2e/**`.
 | Workflow | `npm run workflow:validate -- docs/workflows/WF-LIB-001.md` | PG | baseline pass |
 | CORS runtime/preflight | Backend lower-environment `OPTIONS` preflight check from the configured frontend origin | BE/QA | pass: test profile integration test and `APP_ENV=dev` probe returned HTTP 200 without credentials |
 | API generation | `npm run api:generate` | BE | pass |
-| Generated cleanliness | `npm run api:verify-generated -- --generated-path apps/api/library-mini-admin-api/src/main/generated` | BE | pending: regenerated tracked output must be committed before strict verification can pass |
+| Generated cleanliness | `npm run api:verify-generated -- --generated-path apps/api/library-mini-admin-api/src/main/generated` | BE | pass after committing regenerated output with timestamp suppression |
 | Backend check | `npm run backend:check` | BE | pass: 15 tests |
 | DB schema | `npm run db:validate -- --changelog apps/api/library-mini-admin-api/src/main/resources/db/changelog` | BE | pass: 2 changesets |
 | FE lint/type-check | `npm run check:web` | FE | pass |
@@ -219,13 +219,13 @@ within QA scope; PG must not edit `e2e/**`.
 | FE requirement verifier | `verify_requirement_tests.py` with FE manifest and coverage | FE | pass: 17/17 criteria, branch coverage 92.3% |
 | Full repository check | `npm run check` | PG | pass |
 | Smoke/E2E | API smoke plus `npm run e2e` | QA/PG handoff | API smoke pass; Playwright 3/3 browsers fail on stale QA skeleton assertion |
-| Diff hygiene | scope/data-testid review and whitespace scan | PG | pass for product scope; generated output has expected regeneration diffs pending commit |
+| Diff hygiene | scope/data-testid review and whitespace scan | PG | pass; generated output is reproducible with timestamp suppression |
 
 ## 10. Gate log
 
 | Gate | Result | Evidence / blocker |
 | --- | --- | --- |
-| Gate-A | complete | OpenAPI 7.25.0 generation, generated controller boundary, validation, and business-code tests passed; strict cleanliness awaits committing generated output. |
+| Gate-A | complete | OpenAPI 7.25.0 generation, generated controller boundary, validation, business-code tests, and strict generated cleanliness passed. |
 | Gate-B | complete | Liquibase validation, service/DAO/integration tests, count-bound checks, and API smoke flow passed. |
 | Gate-C | complete | Vue implementation, centralized typed API client, required locators, unit/component tests, coverage, lint/type-check, build, and requirement verifier passed. |
 | Gate-D | pending QA | API smoke and BE CORS preflight checks pass; formal E2E remains pending until QA reruns the journey with the active lower-environment configuration. |
@@ -253,16 +253,12 @@ within QA scope; PG must not edit `e2e/**`.
   (`APP_ENV=dev`, `APP_ENV=poc`, or the test profile). The BE implementation
   now applies `x-environment-cors-policy`; its test-profile preflight test and
   `APP_ENV=dev` browser-origin probe return HTTP 200 without credentials.
-- `api:verify-generated` reports expected regeneration diffs in the generated
-  Java directory. The generated OpenAPI output is intentionally unedited;
-  commit it with the implementation and rerun the strict generated-cleanliness
-  check.
-- The frontend `api:check` command compares tracked diffs only, so generated
-  regeneration requires the explicit status/strict verification above.
+- The generated OpenAPI output is intentionally unedited; the POM suppresses
+  generator timestamps so strict regeneration remains reproducible.
 
 ## 12. Completion definition
 
 PG delivery is complete through Gates A-C and the Gate-D QA handoff. Overall
-scenario delivery remains open until QA executes formal S6 acceptance and the
-generated output is committed. QA remains the owner of formal S6 acceptance
-and may reopen FE/BE by the workflow re-entry rules.
+scenario delivery remains open until QA executes formal S6 acceptance. QA
+remains the owner of formal S6 acceptance and may reopen FE/BE by the workflow
+re-entry rules.

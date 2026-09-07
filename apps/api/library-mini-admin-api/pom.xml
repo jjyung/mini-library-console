@@ -167,6 +167,7 @@
 										<useBeanValidation>true</useBeanValidation>
 										<useSpringBoot3>true</useSpringBoot3>
 										<useTags>true</useTags>
+										<hideGenerationTimestamp>true</hideGenerationTimestamp>
 									</configOptions>
 									<generateApiDocumentation>false</generateApiDocumentation>
 									<generateApiTests>false</generateApiTests>

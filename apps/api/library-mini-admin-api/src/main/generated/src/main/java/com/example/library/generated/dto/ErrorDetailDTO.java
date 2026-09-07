@@ -19,7 +19,7 @@ import jakarta.annotation.Generated;
  * ErrorDetailDTO
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-09-07T10:06:39.879502+08:00[Asia/Taipei]", comments = "Generator version: 7.25.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", comments = "Generator version: 7.25.0")
 public class ErrorDetailDTO {
 
   private String field;
