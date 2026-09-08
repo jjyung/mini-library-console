@@ -1,0 +1,568 @@
+openapi: 3.0.3
+info:
+  title: Library Mini Admin API
+  version: 0.1.0
+  description: |
+    TEST-only synchronous API for the Library Mini Admin Console.
+    MVP intentionally has no login flow and must be deployed behind a private
+    TEST ingress. Every response carries a business code.
+servers:
+  - url: http://localhost:8080
+    description: TEST backend default
+tags:
+  - name: Books
+    description: 書目、館藏與借閱交易
+paths:
+  /api/books:
+    get:
+      tags:
+        - Books
+      summary: library-books-001 查詢館藏
+      description: 取得館藏清單；query 若有值，依書名、ISBN 或作者進行不分大小寫的包含搜尋，並支援 1-based page-number 分頁。
+      operationId: getApiBooks
+      x-api-id: library-books-001
+      x-request-dto: GetBooksRequestDTO
+      parameters:
+        - $ref: '#/components/parameters/CorrelationIdHeader'
+        - name: query
+          in: query
+          required: false
+          description: 書名、ISBN 或作者的搜尋文字。
+          schema:
+            type: string
+            maxLength: 100
+        - name: page
+          in: query
+          required: false
+          description: 頁碼，從 1 開始；未提供時為 1。
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            default: 1
+        - name: pageSize
+          in: query
+          required: false
+          description: 每頁筆數；未提供時為 20，最大 100。
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: 館藏查詢成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetBooksResponseDTO'
+        '400':
+          description: 查詢參數不合法
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+        '500':
+          description: 館藏查詢發生系統錯誤
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+    post:
+      tags:
+        - Books
+      summary: library-books-002 建立書籍與初始庫存
+      description: 建立一筆書目並設定初始複本數量。
+      operationId: postApiBooks
+      x-api-id: library-books-002
+      x-request-dto: PostBooksRequestDTO
+      parameters:
+        - $ref: '#/components/parameters/CorrelationIdHeader'
+        - $ref: '#/components/parameters/IdempotencyKeyHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostBooksRequestDTO'
+      responses:
+        '201':
+          description: 書籍建立成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostBooksResponseDTO'
+        '400':
+          description: 書籍欄位或數量不合法
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+        '409':
+          description: ISBN 已存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+        '500':
+          description: 書籍建立發生系統錯誤
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+  /api/books/{bookId}/borrow:
+    post:
+      tags:
+        - Books
+      summary: library-books-003 借出書籍
+      description: 建立一筆借閱紀錄並扣減一個可借複本。
+      operationId: postApiBooksBookIdBorrow
+      x-api-id: library-books-003
+      x-request-dto: PostBookBorrowsRequestDTO
+      parameters:
+        - $ref: '#/components/parameters/BookIdPath'
+        - $ref: '#/components/parameters/CorrelationIdHeader'
+        - $ref: '#/components/parameters/IdempotencyKeyHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostBookBorrowsRequestDTO'
+      responses:
+        '200':
+          description: 借出成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostBookBorrowsResponseDTO'
+        '400':
+          description: 借閱人或借閱條件不合法
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+        '404':
+          description: 找不到書目
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+        '409':
+          description: 書籍無可借複本、未上架或請求衝突
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+        '500':
+          description: 借出發生系統錯誤
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+  /api/books/{bookId}/return:
+    post:
+      tags:
+        - Books
+      summary: library-books-004 歸還書籍
+      description: 結束唯一借閱紀錄並恢復一個可借複本。
+      operationId: postApiBooksBookIdReturn
+      x-api-id: library-books-004
+      x-request-dto: PostBookReturnsRequestDTO
+      parameters:
+        - $ref: '#/components/parameters/BookIdPath'
+        - $ref: '#/components/parameters/CorrelationIdHeader'
+        - $ref: '#/components/parameters/IdempotencyKeyHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostBookReturnsRequestDTO'
+      responses:
+        '200':
+          description: 歸還成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostBookReturnsResponseDTO'
+        '400':
+          description: 歸還識別值或條件不合法
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+        '404':
+          description: 找不到書目或借閱紀錄
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+        '409':
+          description: 借閱紀錄已歸還或請求衝突
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+        '500':
+          description: 歸還發生系統錯誤
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+components:
+  parameters:
+    BookIdPath:
+      name: bookId
+      in: path
+      required: true
+      description: 書目的穩定識別值。
+      schema:
+        type: string
+        format: uuid
+    CorrelationIdHeader:
+      name: X-Correlation-Id
+      in: header
+      required: false
+      description: 用於串聯 frontend、API、audit 與 log 的請求識別值。
+      schema:
+        type: string
+        maxLength: 100
+    IdempotencyKeyHeader:
+      name: Idempotency-Key
+      in: header
+      required: true
+      description: 寫入操作的重複提交保護識別值；相同 key 不得產生第二次 mutation。
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 100
+  schemas:
+    GetBooksRequestDTO:
+      type: object
+      additionalProperties: false
+      properties:
+        query:
+          type: string
+          maxLength: 100
+          description: 書名、ISBN 或作者的搜尋文字。
+        page:
+          type: integer
+          format: int32
+          minimum: 1
+          default: 1
+          description: 頁碼，從 1 開始。
+        pageSize:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 100
+          default: 20
+          description: 每頁筆數。
+    PostBooksRequestDTO:
+      type: object
+      additionalProperties: false
+      required:
+        - title
+        - isbn
+        - category
+        - quantity
+        - isActive
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: 書名。
+        isbn:
+          type: string
+          minLength: 1
+          maxLength: 20
+          description: 書目的唯一 ISBN 識別值。
+        author:
+          type: string
+          maxLength: 100
+          nullable: true
+          description: 作者；依 Figma MVP baseline 可省略。
+        category:
+          type: string
+          enum:
+            - literature
+            - science
+            - technology
+            - history
+            - art
+            - philosophy
+            - business
+            - education
+          description: 書籍分類。
+        quantity:
+          type: integer
+          format: int32
+          minimum: 1
+          description: 初始複本數量。
+        isActive:
+          type: boolean
+          default: true
+          description: 是否上架並可供借閱。
+    PostBookBorrowsRequestDTO:
+      type: object
+      additionalProperties: false
+      required:
+        - readerId
+      properties:
+        readerId:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: 借閱人識別值；MVP 以文字承載 reader name 或 reader ID。
+        dueDate:
+          type: string
+          format: date
+          nullable: true
+          description: 可選到期日；MVP 不計算逾期罰款。
+    PostBookReturnsRequestDTO:
+      type: object
+      additionalProperties: false
+      required:
+        - loanId
+      properties:
+        loanId:
+          type: string
+          format: uuid
+          description: 要結束的唯一借閱紀錄識別值。
+        readerId:
+          type: string
+          maxLength: 100
+          nullable: true
+          description: 可選的 UI 輔助識別值；業務定位以 loanId 為準。
+    GetBooksResponseDTO:
+      type: object
+      required:
+        - code
+        - message
+        - traceId
+        - data
+      properties:
+        code:
+          type: string
+          enum:
+            - '00000'
+        message:
+          type: string
+        traceId:
+          type: string
+        data:
+          $ref: '#/components/schemas/GetBooksDataResponseDTO'
+    PostBooksResponseDTO:
+      type: object
+      required:
+        - code
+        - message
+        - traceId
+        - data
+      properties:
+        code:
+          type: string
+          enum:
+            - '00000'
+        message:
+          type: string
+        traceId:
+          type: string
+        data:
+          $ref: '#/components/schemas/BookDetailResponseDTO'
+    PostBookBorrowsResponseDTO:
+      type: object
+      required:
+        - code
+        - message
+        - traceId
+        - data
+      properties:
+        code:
+          type: string
+          enum:
+            - '00000'
+        message:
+          type: string
+        traceId:
+          type: string
+        data:
+          $ref: '#/components/schemas/PostBookBorrowsDataResponseDTO'
+    PostBookReturnsResponseDTO:
+      type: object
+      required:
+        - code
+        - message
+        - traceId
+        - data
+      properties:
+        code:
+          type: string
+          enum:
+            - '00000'
+        message:
+          type: string
+        traceId:
+          type: string
+        data:
+          $ref: '#/components/schemas/PostBookReturnsDataResponseDTO'
+    ErrorResponseDTO:
+      type: object
+      required:
+        - code
+        - message
+        - traceId
+      properties:
+        code:
+          type: string
+          enum:
+            - 'A0000'
+            - 'B0000'
+            - 'C0000'
+        message:
+          type: string
+        traceId:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorDetailResponseDTO'
+    ErrorDetailResponseDTO:
+      type: object
+      required:
+        - field
+        - reason
+      properties:
+        field:
+          type: string
+        reason:
+          type: string
+    GetBooksDataResponseDTO:
+      type: object
+      required:
+        - items
+        - page
+        - pageSize
+        - totalPages
+        - total
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BookSummaryResponseDTO'
+        page:
+          type: integer
+          format: int32
+          minimum: 1
+        pageSize:
+          type: integer
+          format: int32
+          minimum: 1
+        totalPages:
+          type: integer
+          format: int32
+          minimum: 0
+        total:
+          type: integer
+          format: int32
+          minimum: 0
+    BookSummaryResponseDTO:
+      type: object
+      required:
+        - bookId
+        - title
+        - isbn
+        - category
+        - status
+        - availableCount
+        - totalCount
+      properties:
+        bookId:
+          type: string
+          format: uuid
+        title:
+          type: string
+        isbn:
+          type: string
+        author:
+          type: string
+          nullable: true
+        category:
+          type: string
+        status:
+          type: string
+          enum:
+            - available
+            - borrowed
+            - inactive
+        availableCount:
+          type: integer
+          format: int32
+          minimum: 0
+        totalCount:
+          type: integer
+          format: int32
+          minimum: 1
+        activeLoan:
+          allOf:
+            - $ref: '#/components/schemas/LoanSummaryResponseDTO'
+          nullable: true
+    BookDetailResponseDTO:
+      allOf:
+        - $ref: '#/components/schemas/BookSummaryResponseDTO'
+    LoanSummaryResponseDTO:
+      type: object
+      required:
+        - loanId
+        - bookId
+        - readerId
+        - borrowedAt
+        - status
+      properties:
+        loanId:
+          type: string
+          format: uuid
+        bookId:
+          type: string
+          format: uuid
+        readerId:
+          type: string
+        borrowedAt:
+          type: string
+          format: date-time
+        dueDate:
+          type: string
+          format: date
+          nullable: true
+        returnedAt:
+          type: string
+          format: date-time
+          nullable: true
+        status:
+          type: string
+          enum:
+            - ACTIVE
+            - RETURNED
+    PostBookBorrowsDataResponseDTO:
+      type: object
+      required:
+        - book
+        - loan
+      properties:
+        book:
+          $ref: '#/components/schemas/BookDetailResponseDTO'
+        loan:
+          $ref: '#/components/schemas/LoanSummaryResponseDTO'
+    PostBookReturnsDataResponseDTO:
+      type: object
+      required:
+        - book
+        - loan
+      properties:
+        book:
+          $ref: '#/components/schemas/BookDetailResponseDTO'
+        loan:
+          $ref: '#/components/schemas/LoanSummaryResponseDTO'
