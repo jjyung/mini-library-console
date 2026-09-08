@@ -6,7 +6,7 @@
 - Scenario ID: SCN-LIB-001
 - Title: 小型圖書櫃管理 MVP
 - Owner Role: orchestrator
-- Current Stage: S2
+- Current Stage: S3
 - Overall Status: in_progress
 - Priority: medium
 - Created At: 2026-09-08
@@ -68,16 +68,16 @@ S4 PG
   - Summary: 已產出 FR、NFR、Given/When/Then AC、業務規則、狀態轉移、例外、錯誤碼、UI→API 候選與待確認事項。
   - Output Files: docs/requirements/REQ-LIB-001.md
   - Open Questions: Q-001 至 Q-007 需由後續角色或產品決策確認；Q-008 為目前安全假設。
-- S2 Archi: in_progress
+- S2 Archi: done
 
-  - Summary: 等待架構角色接手並定義可支援借閱一致性的 MVP 邊界。
-  - Output Files: 尚未產出
-  - Open Questions: 請優先處理 Q-002、Q-004、Q-005，並說明 Q-001、Q-003、Q-006 的架構影響。
-- S3 SD: not_started
+  - Summary: 已依使用者確認選定 TEST profile、MVP 免登入、H2 2.3.232；完成 C4、部署拓撲、三層式架構、NFR 控制面與 SD handoff。
+  - Output Files: docs/architecture/ARCH-LIB-001.md
+  - Open Questions: Q-001 至 Q-004、Q-006、Q-007 仍由 SA／SD／PG 定案，但目前不阻擋 SD 開始；Q-004 需在 API freeze 前解決。
+- S3 SD: in_progress
 
-  - Summary: 等待 ARCH-LIB-001。
+  - Summary: 架構已 Ready for SD；SD 需將需求與架構邊界落成 OpenAPI、error codes、schema 與 API flow artifacts。
   - Output Files: docs/openapi.yaml、docs/error-codes.md、docs/schema/、docs/api/
-  - Open Questions: 待架構與需求決策。
+  - Open Questions: Q-001 欄位必填性、Q-002 reader identity、Q-003 due date／fine、Q-004 唯一 loan identity、Q-006 search 行為。
 - S4 PG: not_started
 
   - Summary: 等待需求、架構與 SD 契約穩定後規劃 FE／BE 切分。
@@ -104,10 +104,10 @@ S4 PG
 
 ## 6. Dependency / Blocking Status
 
-- Blocking Issues: 目前沒有阻擋 Archi 開始的問題；REQ 已將未決產品選擇標示為 Open。
+- Blocking Issues: 目前沒有阻擋 SD 開始的問題；Q-001 至 Q-004 若在 SD contract freeze 前仍未決，需回送 SA／產品，不得由 SD 靜默猜測。
 - Missing Decisions: Q-001 必填欄位、Q-002 reader identity、Q-003 逾期規則、Q-004 歸還定位、Q-005 持久化、Q-006 搜尋行為、Q-007 複本增補範圍。
-- Waiting For: Archi 產出 ARCH-LIB-001；必要時由產品／SA 確認 REQ open questions。
-- Safe Assumptions: 管理員已完成授權；MVP 先涵蓋單次單複本交易；所有 API 遵守 00000／A0000／B0000／C0000 業務碼契約；Figma export 作為 UI 視覺與互動語意基準，而非未確認業務規則的唯一來源。
+- Waiting For: SD 讀取 ARCH-LIB-001 並產出 implementation-ready artifacts；必要時回送 Q-001 至 Q-004 給 SA／產品決策。
+- Safe Assumptions: TEST 是唯一 deployment profile；MVP 免登入且只允許 private TEST ingress；H2 2.3.232 作為 TEST embedded persistence；管理員流程先涵蓋單次單複本交易；所有 API 遵守 00000／A0000／B0000／C0000 業務碼契約；Figma export 作為 UI 視覺與互動語意基準，而非未確認業務規則的唯一來源。
 - Risks: 以 ISBN 直接歸還可能無法定位多複本的特定借閱；前端 mock state 不足以支援共享資料；Figma 搜尋欄與 scenario 範圍尚未一致。
 
 ## 7. Parallel Work Plan
@@ -139,11 +139,11 @@ S4 PG
 
 ## 9. Session Handoff Notes
 
-- Last completed action: SA 完成 REQ-LIB-001，並以 `python3 .codex/skills/scenario-requirements-writer/scripts/validate_requirements.py docs/requirements/REQ-LIB-001.md` 驗證。
-- Recommended next action: 請 Archi 讀取 REQ-LIB-001 與 Figma export，產出 ARCH-LIB-001；優先處理借閱一致性、借閱人識別及持久化邊界。
-- Files to read first: README.md；AGENTS.md；docs/scenarios/SCN-LIB-001.md；docs/requirements/REQ-LIB-001.md；docs/figma/library-mini-admin-console/README.md；docs/figma/library-mini-admin-console/src/app/App.tsx；docs/figma/library-mini-admin-console/src/app/components/TransactionCard.tsx；docs/figma/library-mini-admin-console/src/app/components/BookTable.tsx。
-- Questions to resolve: Q-001 至 Q-007；其中 Q-002 與 Q-004 會直接影響 API identity，Q-005 會影響架構與資料一致性。
-- Notes for next agent/session: 需求文件中的 API ID 只是業務能力候選，不得直接當 operationId；任何 API 仍須遵守 AGENTS.md 的業務錯誤碼與 DTO 命名規則。Figma export 的 `src/styles/fonts.css` 缺失是匯出備註，不影響本階段需求分析。
+- Last completed action: Archi 產出 ARCH-LIB-001，完成使用者確認的 TEST／免登入／H2 決策、架構控制面與 SD handoff。
+- Recommended next action: 請 SD 讀取 REQ-LIB-001 與 ARCH-LIB-001，產出 docs/openapi.yaml、docs/error-codes.md、docs/schema/ 與 docs/api/，並在 contract freeze 前處理 Q-001 至 Q-004。
+- Files to read first: README.md；AGENTS.md；docs/scenarios/SCN-LIB-001.md；docs/requirements/REQ-LIB-001.md；docs/architecture/ARCH-LIB-001.md；docs/figma/library-mini-admin-console/README.md；docs/figma/library-mini-admin-console/src/app/App.tsx；docs/figma/library-mini-admin-console/src/app/components/TransactionCard.tsx；docs/figma/library-mini-admin-console/src/app/components/BookTable.tsx。
+- Questions to resolve: Q-001 至 Q-004、Q-006、Q-007；其中 Q-002 與 Q-004 會直接影響 API identity，Q-003 影響是否擴大資料與驗收範圍。
+- Notes for next agent/session: ARCH-LIB-001 已選定三層式同步架構、TEST 單實例、H2 embedded、無 MQ／無 cache；不得將免登入決策推廣到 UAT／PROD。API ID 仍由 SD 依 AGENTS.md 定稿，不得直接當 operationId。
 
 ## 10. Completion Checklist
 
