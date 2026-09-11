@@ -6,11 +6,11 @@
 - Scenario ID: SCN-LIB-001
 - Title: 小型圖書櫃管理 MVP
 - Owner Role: orchestrator
-- Current Stage: S4
+- Current Stage: S6
 - Overall Status: in_progress
 - Priority: medium
 - Created At: 2026-09-08
-- Updated At: 2026-09-08
+- Updated At: 2026-09-11
 - Related Branch/Worktree: current worktree
 - Related Files:
   - docs/scenarios/SCN-LIB-001.md
@@ -20,6 +20,8 @@
   - docs/architecture/ARCH-LIB-001.md
   - docs/openapi.yaml
   - docs/tasks/TASK-LIB-001_mvp-delivery.md
+  - docs/tasks/TASK-LIB-001_mvp-delivery-summary.md
+  - docs/traceability/FE-REQ-LIB-001.json
   - docs/qa-report/QA-LIB-001.md
 
 ## 2. Business Goal
@@ -51,10 +53,10 @@ S4 PG
 
 ## 4. Current Objective
 
-- Current Goal: 由 PG 依 REQ-LIB-001、ARCH-LIB-001 與已補充分頁的 SD artifacts 定義 FE／BE MVP 實作切分。
-- Why this is the next step: SA、Archi 與 SD artifacts 已完成；library-books-001 的 page、pageSize、totalPages 契約已納入 OpenAPI 與 API flow。
-- Expected Output: docs/tasks/TASK-LIB-001_mvp-delivery.md
-- Exit Criteria: PG plan 凍結 FE／BE 邊界、API contract、分頁行為、data-testid locator 與 QA handoff，並記錄未決產品問題。
+- Current Goal: 由 QA 依已完成的 PG handoff 驗證 TEST-only Library Mini Admin MVP 的完整前後端 journey、NFR 與 locator 契約。
+- Why this is the next step: PG 已完成 FE／BE 實作、contract alignment、unit/integration checks 與 QA 測試資料 handoff；剩餘工作是實際瀏覽器驗證。
+- Expected Output: docs/qa-report/QA-LIB-001.md
+- Exit Criteria: QA 完成新增、借出、歸還、搜尋／分頁、錯誤、響應式、可存取性與 performance smoke，並依缺陷分類觸發有限 rework loop。
 
 ## 5. Stage Status
 
@@ -78,58 +80,64 @@ S4 PG
   - Summary: 已產出並驗證 OpenAPI、global error codes、books／loans schema 與四份 API flow；library-books-001 已補充 1-based page-number pagination；TEST CORS shortcut 已記錄。contract freeze 前仍需確認 Q-001 至 Q-004。
   - Output Files: docs/openapi.yaml；docs/error-codes.md；docs/schema/books.md；docs/schema/loans.md；docs/api/library-books-001_list.md；docs/api/library-books-002_create.md；docs/api/library-books-003_borrow.md；docs/api/library-books-004_return.md
   - Open Questions: SD baseline 建議 author optional、readerId 字串、MVP 不計逾期罰款、return 使用 loanId；需由 SA／產品在 implementation freeze 前確認。
-- S4 PG: in_progress
+- S4 PG: done
 
-  - Summary: 需求、架構與 SD artifacts 已可供 PG 規劃 FE／BE 切分；PG 需記錄 API contract freeze 與未決產品確認。
-  - Output Files: docs/tasks/TASK-LIB-001_mvp-delivery.md
-  - Open Questions: Q-001 至 Q-004 的產品確認、FE／BE 任務切分、data-testid locator freeze。
-- S5A FE: not_started
+  - Summary: 已完成 FE／BE ownership split、API contract freeze、分頁行為、locator contract、測試資料與 QA handoff；已產出 delivery plan 與 summary。
+  - Output Files: docs/tasks/TASK-LIB-001_mvp-delivery.md；docs/tasks/TASK-LIB-001_mvp-delivery-summary.md
+  - Open Questions: Q-001 至 Q-004 使用 SD baseline 實作，仍需產品確認；不阻擋本次 TEST MVP handoff。
+- S5A FE: done
 
-  - Summary: 需依 PG plan 與 frozen OpenAPI 實作 Figma 對齊 UI。
-  - Output Files: apps/web/*
-  - Open Questions: 需凍結 data-testid locator 契約。
-- S5B BE: not_started
+  - Summary: 已完成 Vue 3 Figma-aligned admin console、typed OpenAPI client、館藏搜尋／分頁、表單交易、錯誤回饋與穩定 locator；unit/component coverage gate 通過。
+  - Output Files: apps/web/library-mini-admin-web/src/App.vue；apps/web/library-mini-admin-web/src/core/；apps/web/library-mini-admin-web/src/features/；docs/traceability/FE-REQ-LIB-001.json
+  - Open Questions: QA 需驗證 Chromium、窄螢幕與實際 API journey。
+- S5B BE: done
 
-  - Summary: 需依 PG plan 與 frozen OpenAPI 實作書目／借閱交易。
-  - Output Files: apps/api/*
-  - Open Questions: 需由 SD 定義 DTO、error envelope 與 transaction boundary。
+  - Summary: 已完成 generated Spring boundary、H2/Liquibase schema、JDBC DAO、service transaction rules、business-code envelope、correlation ID、TEST localhost CORS allowlist、JsonNullable Jackson mapping 與 API integration tests。
+  - Output Files: apps/api/library-mini-admin-api/pom.xml；apps/api/library-mini-admin-api/src/main/generated/；apps/api/library-mini-admin-api/src/main/java/；apps/api/library-mini-admin-api/src/main/resources/db/；apps/api/library-mini-admin-api/src/test/java/
+  - Open Questions: generated source 尚未 staged/committed；QA 需驗證實際啟動、瀏覽器 preflight 與完整 journey。
 - S6 QA: not_started
 
-  - Summary: 待 FE／BE 可執行且 locator、API、測試資料隔離契約穩定後驗證。
+  - Summary: FE／BE 可執行且 locator、API、測試資料隔離契約已穩定，等待 QA skill 執行驗證。
   - Output Files: docs/qa-report/QA-LIB-001.md
-  - Open Questions: 待實作與環境就緒。
+  - Open Questions: 需執行 QA Playwright journey、NFR checks 與差異清單。
 - S7 Done: not_started
 
   - Summary: 尚未完成所有 stage 與 QA gate。
 
 ## 6. Dependency / Blocking Status
 
-- Blocking Issues: 目前沒有阻擋 PG 規劃的問題；Q-001 至 Q-004 若在 implementation contract freeze 前仍未決，需回送 SA／產品，不得把 SD baseline 視為已確認需求。
+- Blocking Issues: 沒有產品程式實作 blocker；`npm run api:verify-generated` 在未 staged/committed 的 worktree 會因 generated output untracked 而 fail，需 commit 後重跑 source-control gate。
 - Missing Decisions: Q-001 必填欄位、Q-002 reader identity、Q-003 逾期規則、Q-004 歸還定位、Q-005 持久化、Q-006 搜尋行為、Q-007 複本增補範圍。
-- Waiting For: PG 讀取完整 upstream artifacts 並產出 TASK-LIB-001_mvp-delivery.md；必要時回送 Q-001 至 Q-004 給 SA／產品決策。
+- Waiting For: QA 執行 S6；產品後續確認 Q-001 至 Q-004 時需回送 SA／SD，不得把目前 baseline 擴大為正式產品決策。
 - Safe Assumptions: TEST 是唯一 deployment profile；MVP 免登入且只允許 private TEST ingress；H2 2.3.232 作為 TEST embedded persistence；管理員流程先涵蓋單次單複本交易；所有 API 遵守 00000／A0000／B0000／C0000 業務碼契約；Figma export 作為 UI 視覺與互動語意基準，而非未確認業務規則的唯一來源。
 - Risks: 以 ISBN 直接歸還可能無法定位多複本的特定借閱；前端 mock state 不足以支援共享資料；Figma 搜尋欄與 scenario 範圍尚未一致。
 
 ## 7. Parallel Work Plan
 
-- FE can start when: S4 PG 完成切分，且 S3 SD 已凍結 OpenAPI、DTO、錯誤碼與 locator 契約；可先做不依賴 API 的純視覺骨架，但不得宣稱可交付。
-- BE can start when: S4 PG 完成切分，且 S3 SD 已凍結 OpenAPI、schema、錯誤碼與交易邊界。
+- FE can start when: S4 PG 完成切分，且 S3 SD 已凍結 OpenAPI、DTO、錯誤碼與 locator 契約；此條件已滿足。
+- BE can start when: S4 PG 完成切分，且 S3 SD 已凍結 OpenAPI、schema、錯誤碼與交易邊界；此條件已滿足。
 - Shared dependencies: REQ-LIB-001 的 AC、業務規則、狀態模型、API response envelope、錯誤碼與測試資料識別策略。
 - Contract freeze point: S3 SD exit gate 通過並由 PG 在 TASK-LIB-001_mvp-delivery.md 記錄 freeze。
 - Merge criteria: FE／BE 均通過各自 check；API contract 與 UI locator 不漂移；AC-001 至 AC-009 具備可驗證實作；交由 QA 前 workflow 與 handoff 文件更新完成。
 
 ## 8. Auto QA Loop
 
-- QA Trigger Condition: FE／BE 實作完成、API contract freeze、前端 `data-testid` locator 穩定，且本地前後端可啟動。
-- Latest QA Result: not_run
+- QA Trigger Condition: FE／BE 實作完成、API contract freeze、前端 `data-testid` locator 穩定，且本地前後端可啟動；目前已達成。
+- Latest QA Result: not_run; backend CORS and borrow JSON mapping rework locally verified
 - Defects:
 
   - DEF-001:
 
-    - Severity: 尚未發現
-    - Owner: QA
-    - Status: not_started
-    - Fix Plan: QA 執行後依缺陷分類回送 FE、BE、SD、Archi 或 SA。
+    - Severity: medium
+    - Owner: BE
+    - Status: fixed_pending_qa
+    - Fix Plan: 已新增明確 `http://localhost:5173,http://localhost:4173` allowlist、GET/POST/OPTIONS methods、Content-Type/X-Correlation-Id/Idempotency-Key headers；以 MockMvc 驗證 preflight、實際 GET 與拒絕未列來源。
+  - DEF-002:
+
+    - Severity: high
+    - Owner: BE
+    - Status: fixed_pending_qa
+    - Fix Plan: 註冊 OpenAPI Generator 所需的 `JsonNullableModule`，並以 integration test 覆蓋含 author 與 dueDate 的新增／借出 journey，避免 request 在 controller 前轉換失敗並回傳 `B0000`。
 - Re-entry Rule:
 
   - implementation bug -> FE/BE
@@ -139,11 +147,11 @@ S4 PG
 
 ## 9. Session Handoff Notes
 
-- Last completed action: SD 補充 library-books-001 的 1-based page-number pagination，新增 `page`、`pageSize`、`totalPages` 與頁碼錯誤規則，並以 `npm run sd:validate -- --strict --requirement docs/requirements/REQ-LIB-001.md --architecture docs/architecture/ARCH-LIB-001.md` 驗證 4 operations、0 errors、0 warnings。
-- Recommended next action: 請 PG 讀取 REQ-LIB-001、ARCH-LIB-001、docs/openapi.yaml、docs/error-codes.md、docs/schema/ 與 docs/api/，依分頁契約產出 TASK-LIB-001_mvp-delivery.md，並在 freeze 前處理 Q-001 至 Q-004。
-- Files to read first: README.md；AGENTS.md；docs/scenarios/SCN-LIB-001.md；docs/requirements/REQ-LIB-001.md；docs/architecture/ARCH-LIB-001.md；docs/openapi.yaml；docs/error-codes.md；docs/schema/books.md；docs/schema/loans.md；docs/api/。
-- Questions to resolve: Q-001 至 Q-004、Q-006、Q-007；SD 已提供 baseline，但 Q-001 至 Q-004 尚未取得產品確認，不能由 baseline 靜默取代需求決策。
-- Notes for next agent/session: S3 artifacts 已通過 strict validator；library-books-001 使用 page=1、pageSize=20 預設值，pageSize 上限 100，回應包含 totalPages；API IDs 為 library-books-001 至 004，operationId 均未使用 API ID。TEST CORS shortcut 只限 test，H2 只限 TEST MVP；不得將免登入或 embedded DB 推廣到 UAT／PROD。
+- Last completed action: BE 修正 JsonNullable JSON mapping，新增含 author／dueDate 的借書 integration test，並以隔離 TEST runtime 驗證新增與借書 HTTP journey。
+- Recommended next action: 請 QA 讀取 TASK-LIB-001_mvp-delivery.md、REQ-LIB-001、OpenAPI、locator contract，啟動前後端並執行 S6 QA Playwright journey，產出 docs/qa-report/QA-LIB-001.md。
+- Files to read first: README.md；AGENTS.md；docs/workflows/WF-LIB-001.md；docs/tasks/TASK-LIB-001_mvp-delivery.md；docs/requirements/REQ-LIB-001.md；docs/architecture/ARCH-LIB-001.md；docs/openapi.yaml；docs/traceability/FE-REQ-LIB-001.json。
+- Questions to resolve: QA 需驗證 Q-001 至 Q-004 baseline 是否可接受；Q-006、Q-007 仍列為後續產品決策，實作依 frozen SD baseline。
+- Notes for next agent/session: `library-books-001` 使用 page=1、pageSize=20 API defaults，前端預設每頁 10 並提供 10／20／50 selector；API IDs 為 library-books-001 至 004；所有 API envelope 使用 business code；TEST CORS shortcut 只限 test，H2 只限 TEST MVP；不得將免登入或 embedded DB 推廣到 UAT／PROD。
 
 ## 10. Completion Checklist
 
@@ -151,9 +159,9 @@ S4 PG
 - [x] Requirements are complete
 - [x] Architecture is complete
 - [x] API / schema is complete
-- [ ] PG plan is complete
-- [ ] FE implementation is complete
-- [ ] BE implementation is complete
+- [x] PG plan is complete
+- [x] FE implementation is complete
+- [x] BE implementation is complete
 - [ ] QA verification is complete
-- [ ] Artifacts are consistent
+- [x] Artifacts are consistent
 - [x] Scope has not drifted

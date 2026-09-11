@@ -1,0 +1,92 @@
+{
+  "requirementId": "REQ-LIB-001",
+  "scope": "frontend MVP catalogue, transaction and feedback flows",
+  "criteria": [
+    {
+      "id": "FR-001",
+      "requiredLevels": ["unit"],
+      "tests": [{"level": "unit", "file": "apps/web/library-mini-admin-web/src/features/library/useLibraryConsole.spec.ts"}]
+    },
+    {
+      "id": "FR-002",
+      "requiredLevels": ["unit"],
+      "tests": [{"level": "unit", "file": "apps/web/library-mini-admin-web/src/features/library/useLibraryConsole.spec.ts"}]
+    },
+    {
+      "id": "FR-003",
+      "requiredLevels": ["unit"],
+      "tests": [{"level": "unit", "file": "apps/web/library-mini-admin-web/src/features/library/useLibraryConsole.spec.ts"}]
+    },
+    {
+      "id": "FR-004",
+      "requiredLevels": ["unit"],
+      "tests": [{"level": "unit", "file": "apps/web/library-mini-admin-web/src/core/api/libraryApi.spec.ts"}]
+    },
+    {
+      "id": "FR-005",
+      "requiredLevels": ["unit"],
+      "tests": [{"level": "unit", "file": "apps/web/library-mini-admin-web/src/core/api/errorMessages.spec.ts"}]
+    },
+    {
+      "id": "FR-UI-001",
+      "requiredLevels": ["unit", "component"],
+      "tests": [
+        {"level": "unit", "file": "apps/web/library-mini-admin-web/src/features/library/components/libraryComponents.spec.ts"},
+        {"level": "component", "file": "apps/web/library-mini-admin-web/src/features/library/components/libraryComponents.spec.ts"}
+      ]
+    },
+    {
+      "id": "AC-001",
+      "requiredLevels": ["unit"],
+      "tests": [{"level": "unit", "file": "apps/web/library-mini-admin-web/src/core/api/libraryApi.spec.ts"}]
+    },
+    {
+      "id": "AC-002",
+      "requiredLevels": ["unit"],
+      "tests": [{"level": "unit", "file": "apps/web/library-mini-admin-web/src/features/library/components/libraryComponents.spec.ts"}]
+    },
+    {
+      "id": "AC-003",
+      "requiredLevels": ["unit"],
+      "tests": [{"level": "unit", "file": "apps/web/library-mini-admin-web/src/core/api/libraryApi.spec.ts"}]
+    },
+    {
+      "id": "AC-004",
+      "requiredLevels": ["unit"],
+      "tests": [{"level": "unit", "file": "apps/web/library-mini-admin-web/src/features/library/components/libraryComponents.spec.ts"}]
+    },
+    {
+      "id": "AC-005",
+      "requiredLevels": ["unit"],
+      "tests": [{"level": "unit", "file": "apps/web/library-mini-admin-web/src/core/api/libraryApi.spec.ts"}]
+    },
+    {
+      "id": "AC-006",
+      "requiredLevels": ["unit"],
+      "tests": [{"level": "unit", "file": "apps/web/library-mini-admin-web/src/core/api/libraryApi.spec.ts"}]
+    },
+    {
+      "id": "AC-007",
+      "requiredLevels": ["unit"],
+      "tests": [{"level": "unit", "file": "apps/web/library-mini-admin-web/src/features/library/useLibraryConsole.spec.ts"}]
+    },
+    {
+      "id": "AC-008",
+      "requiredLevels": ["unit"],
+      "tests": [{"level": "unit", "file": "apps/web/library-mini-admin-web/src/features/library/components/libraryComponents.spec.ts"}]
+    },
+    {
+      "id": "AC-UI-001",
+      "requiredLevels": ["unit", "component"],
+      "tests": [
+        {"level": "unit", "file": "apps/web/library-mini-admin-web/src/features/library/components/libraryComponents.spec.ts"},
+        {"level": "component", "file": "apps/web/library-mini-admin-web/src/features/library/components/libraryComponents.spec.ts"}
+      ]
+    },
+    {
+      "id": "AC-009",
+      "requiredLevels": ["unit"],
+      "tests": [{"level": "unit", "file": "apps/web/library-mini-admin-web/src/core/api/errorMessages.spec.ts"}]
+    }
+  ]
+}
