@@ -9,7 +9,7 @@
 - Architecture: ARCH-LIB-001
 - Status: ready_for_qa
 - Owner: PG
-- Updated At: 2026-09-11
+- Updated At: 2026-09-14
 
 ## 2. Delivery Objective
 
@@ -147,6 +147,7 @@ not add or modify QA-owned E2E specs.
 | Gate-B | done | H2/Liquibase persistence, borrow/return integration tests and TEST CORS preflight checks pass |
 | Gate-C | done | Vue UI, typed client, locator contract, unit/component tests and build pass |
 | Gate-D | done | PG integration review complete; QA handoff is ready |
+| FE visual rework | done | Re-aligned Vue global CSS to the requirement-scoped Figma light card layout and verified desktop/mobile rendering |
 
 Resolved implementation blocker: `npm run api:generate` initially reached
 OpenAPI Generator `7.25.0` but failed because the existing
@@ -166,6 +167,9 @@ failure. The frontend OpenAPI type output is likewise generated under
 - PG has not changed requirements, architecture, OpenAPI, schema, or API flow
   documents in this execution.
 - FE and BE implementation are complete within their assigned directories.
+- FE completed a Figma visual rework in `apps/web/library-mini-admin-web/src/App.vue`:
+  light surface tokens, card/form/table styling, desktop two-column layout,
+  mobile stacking, and preserved pagination/error/loading behavior.
 - Frontend requirement evidence is recorded in
   `docs/traceability/FE-REQ-LIB-001.json`; the skill verifier confirms all 16
   canonical FR/AC criteria have unit evidence and 97.81% line coverage.

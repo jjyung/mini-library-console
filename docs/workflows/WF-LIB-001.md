@@ -10,7 +10,7 @@
 - Overall Status: in_progress
 - Priority: medium
 - Created At: 2026-09-08
-- Updated At: 2026-09-11
+- Updated At: 2026-09-14
 - Related Branch/Worktree: current worktree
 - Related Files:
   - docs/scenarios/SCN-LIB-001.md
@@ -87,7 +87,7 @@ S4 PG
   - Open Questions: Q-001 至 Q-004 使用 SD baseline 實作，仍需產品確認；不阻擋本次 TEST MVP handoff。
 - S5A FE: done
 
-  - Summary: 已完成 Vue 3 Figma-aligned admin console、typed OpenAPI client、館藏搜尋／分頁、表單交易、錯誤回饋與穩定 locator；unit/component coverage gate 通過。
+  - Summary: 已完成 Vue 3 Figma-aligned admin console、typed OpenAPI client、館藏搜尋／分頁、表單交易、錯誤回饋與穩定 locator；本次補完成 Figma light card layout 的 CSS rework 與 desktop／390px responsive visual smoke；unit/component coverage gate 通過。
   - Output Files: apps/web/library-mini-admin-web/src/App.vue；apps/web/library-mini-admin-web/src/core/；apps/web/library-mini-admin-web/src/features/；docs/traceability/FE-REQ-LIB-001.json
   - Open Questions: QA 需驗證 Chromium、窄螢幕與實際 API journey。
 - S5B BE: done
@@ -97,7 +97,7 @@ S4 PG
   - Open Questions: generated source 尚未 staged/committed；QA 需驗證實際啟動、瀏覽器 preflight 與完整 journey。
 - S6 QA: not_started
 
-  - Summary: FE／BE 可執行且 locator、API、測試資料隔離契約已穩定，等待 QA skill 執行驗證。
+  - Summary: FE／BE 可執行且 locator、API、測試資料隔離契約已穩定；FE visual rework 已完成，等待 QA skill 執行實際 API journey、responsive 與 locator 驗證。
   - Output Files: docs/qa-report/QA-LIB-001.md
   - Open Questions: 需執行 QA Playwright journey、NFR checks 與差異清單。
 - S7 Done: not_started
@@ -123,7 +123,7 @@ S4 PG
 ## 8. Auto QA Loop
 
 - QA Trigger Condition: FE／BE 實作完成、API contract freeze、前端 `data-testid` locator 穩定，且本地前後端可啟動；目前已達成。
-- Latest QA Result: not_run; backend CORS and borrow JSON mapping rework locally verified
+- Latest QA Result: not_run; backend CORS and borrow JSON mapping rework locally verified; FE Figma visual rework locally verified
 - Defects:
 
   - DEF-001:
@@ -138,6 +138,12 @@ S4 PG
     - Owner: BE
     - Status: fixed_pending_qa
     - Fix Plan: 註冊 OpenAPI Generator 所需的 `JsonNullableModule`，並以 integration test 覆蓋含 author 與 dueDate 的新增／借出 journey，避免 request 在 controller 前轉換失敗並回傳 `B0000`。
+  - DEF-003:
+
+    - Severity: medium
+    - Owner: FE
+    - Status: fixed_pending_qa
+    - Fix Plan: 將 `apps/web/library-mini-admin-web/src/App.vue` 的深色自訂 dashboard CSS 重整為 `docs/figma/library-mini-admin-console` 的 light card layout，補上桌面兩欄／館藏下排與窄螢幕堆疊規則；保留既有 locator 與交易狀態。
 - Re-entry Rule:
 
   - implementation bug -> FE/BE
@@ -147,7 +153,7 @@ S4 PG
 
 ## 9. Session Handoff Notes
 
-- Last completed action: BE 修正 JsonNullable JSON mapping，新增含 author／dueDate 的借書 integration test，並以隔離 TEST runtime 驗證新增與借書 HTTP journey。
+- Last completed action: FE 完成 Figma light card layout CSS rework，並以 Chromium desktop／390px viewport 確認表單、館藏空狀態、分頁與 responsive 排版；BE JsonNullable JSON mapping 及含 author／dueDate 的借書 integration test 仍已通過。
 - Recommended next action: 請 QA 讀取 TASK-LIB-001_mvp-delivery.md、REQ-LIB-001、OpenAPI、locator contract，啟動前後端並執行 S6 QA Playwright journey，產出 docs/qa-report/QA-LIB-001.md。
 - Files to read first: README.md；AGENTS.md；docs/workflows/WF-LIB-001.md；docs/tasks/TASK-LIB-001_mvp-delivery.md；docs/requirements/REQ-LIB-001.md；docs/architecture/ARCH-LIB-001.md；docs/openapi.yaml；docs/traceability/FE-REQ-LIB-001.json。
 - Questions to resolve: QA 需驗證 Q-001 至 Q-004 baseline 是否可接受；Q-006、Q-007 仍列為後續產品決策，實作依 frozen SD baseline。

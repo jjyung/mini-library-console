@@ -25,6 +25,9 @@ flow artifacts were not changed during implementation.
   generated `openapi-typescript` models, search, page/page-size controls,
   empty/loading/error states, add-book form, borrow/return tabs and responsive
   table layout.
+- Figma visual rework in `apps/web/library-mini-admin-web/src/App.vue`: light
+  surface tokens, card/form/table styling, Figma-aligned desktop placement,
+  and mobile stacking while preserving the existing UI locator contract.
 - Stable UI locators including `library-topbar-search`, transaction tabs and
   submits, add-book fields/form, `library-book-table`,
   `library-book-row`, and row `data-book-id`.
@@ -42,6 +45,7 @@ flow artifacts were not changed during implementation.
 | `npm --prefix apps/web/library-mini-admin-web run type-check` | PASS |
 | `npm --prefix apps/web/library-mini-admin-web run lint` | PASS |
 | `npm --prefix apps/web/library-mini-admin-web run build` | PASS |
+| Figma visual smoke (Chromium desktop + 390px viewport) | PASS |
 | FE requirement verifier | PASS — all 16 canonical FR/AC criteria have unit evidence |
 | `npm run api:generate` | PASS |
 | `npm run api:verify-generated` | Pending commit — generated path is untracked in this worktree |
