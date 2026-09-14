@@ -1,12 +1,12 @@
 # Library Mini Admin Console
 
-這個 repo 是一個示範 **Codex multi-agent collaboration** 與 **artifact-driven workflow** 的教學專案。業務場景是 library mini admin console，但 README 的重點不是 Library CRUD 本身，而是如何用 `orchestrator + role agents + workflow state` 完成一條可重現、可接手、可回溯的 scenario-driven delivery。
+這個 repo 是一個示範 **Codex subagent collaboration** 與 **spec-driven workflow** 的教學專案。業務場景是 library mini admin console，但 README 的重點不是 Library CRUD 本身，而是如何用 `orchestrator + role agents + workflow state` 完成一條可重現、可接手、可回溯的 scenario-driven delivery。
 
 目前 repo 已附一條完整範例流程：
 
 - Scenario: `SCN-LIB-001`
 
-如果你想看的是 Codex multi-agent 怎麼設定、角色怎麼分工、workflow 怎麼接手，以及怎麼 demo，這份 README 就是入口。
+如果你想看的是 Codex subagent 怎麼設定、角色怎麼分工、workflow 怎麼接手，以及怎麼 demo，這份 README 就是入口。
 
 ## Why This Repo
 
@@ -26,9 +26,9 @@
 
 - `resume / handoff`：中斷後靠 workflow state 恢復上下文，不依賴前一段聊天
 
-## Codex Multi-Agent 設定方式
+## Codex Subagent 設定方式
 
-這個 repo 的 multi-agent 設定已經完成，重點是理解它怎麼組成。
+這個 repo 的 subagent 設定已經完成，重點是理解它怎麼組成。
 
 ### 1. `AGENTS.md` 是 repo-level contract
 
@@ -46,9 +46,9 @@ contract。
 
 Codex 在開始工作前應先讀 `AGENTS.md`，再讀對應 scenario 與 workflow artifact。
 
-### 2. `.codex/config.toml` 註冊 multi-agent 角色
+### 2. `.codex/config.toml` 註冊 subagent 角色
 
-Codex 目前預設已啟用 multi-agent（官方 config reference 標示 `features.multi_agent` 為 stable、on by default），不需要額外的 feature flag；repo 只需在 `.codex/config.toml` 註冊角色：
+Codex 目前預設已啟用 subagent workflows（官方 config reference 仍以 `features.multi_agent`、`[agents]` 命名，兩者皆為 stable、on by default），不需要額外的 feature flag；repo 只需在 `.codex/config.toml` 註冊角色：
 
 ```toml
 [agents.orchestrator]
@@ -125,13 +125,13 @@ S0 Scenario Discovery
 | `FE / BE` | `S5A` / `S5B` | 在 PG 協調下平行實作前後端 | task plan, frozen API contract, acceptance criteria | `apps/web/*`, `apps/api/*` |
 | `QA` | `S6` | 執行 E2E / NFR 驗證，必要時觸發回圈 | running app, REQ, workflow state, stable test ids | `docs/qa-report/QA-<DOMAIN>-<NNN>.md`, defect feedback |
 
-補充兩點：
+補充三點：
 
 - `PG` 是協調與交付角色，不等於單人包辦所有 FE/BE 細節
 - workflow state 是執行中的產物，不是 repo 一開始就固定存在的靜態文件
 - 當某條 scenario 開始推進時，對應的 source of truth 會是 `docs/workflows/WF-<DOMAIN>-<NNN>.md`
 
-## Artifact-Driven Workflow State
+## Spec-Driven Workflow State
 
 這個 repo 的核心不是「多開幾個 agent」，而是把 workflow 狀態保存成 artifact，讓不同 agent 或不同 session 都能安全接手。
 
@@ -158,11 +158,11 @@ docs/workflows/WF-<DOMAIN>-<NNN>.md
 
 ## Quick Start
 
-如果你只是要看 multi-agent workflow，不必先研究完整 domain logic。先把專案跑起來即可。
+如果你只是要看 subagent workflow，不必先研究完整 domain logic。先把專案跑起來即可。
 
 ### Prerequisites
 
-- Node.js 20+
+- Node.js `^20.19.0 || >=22.12.0`（見 `apps/web/library-mini-admin-web/package.json` 的 `engines`）
 - Java 21+
 - `npm`
 
@@ -172,7 +172,7 @@ docs/workflows/WF-<DOMAIN>-<NNN>.md
 npm run setup
 ```
 
-`setup` installs the root SD validator dependency and the frontend dependencies.
+`setup` installs the root validator dependencies (`yaml`) and the frontend dependencies.
 
 ### Start Backend + Frontend
 
@@ -376,7 +376,7 @@ orchestrator 的工作方式應該是：
 - 再定位應先讀哪些 artifact
 - 最後回報 next action
 
-這就是 artifact-driven workflow 的核心價值：接手靠文件狀態，不靠聊天上下文。
+這就是 spec-driven workflow 以 artifact 交接的核心價值：接手靠文件狀態，不靠聊天上下文。
 
 ## Project Layout
 
@@ -397,7 +397,7 @@ orchestrator 的工作方式應該是：
 │  ├─ figma/               # Figma 匯出與設計參考
 │  └─ templates/           # workflow / QA report 等模板
 ├─ .codex/
-│  ├─ config.toml          # Codex multi-agent 設定入口
+│  ├─ config.toml          # Codex subagent 設定入口
 │  ├─ agents/              # 各角色 agent prompt 與邊界設定
 │  └─ skills/              # 可重用 workflow skills
 ├─ scripts/                # 啟動、檢查或輔助腳本
@@ -415,20 +415,23 @@ orchestrator 的工作方式應該是：
 ## Commands Reference
 
 ```bash
-npm run setup      # install frontend dependencies
+npm run setup      # install root + frontend dependencies
 npm run dev        # start backend + frontend
 npm run dev:api    # start Spring Boot API
 npm run dev:web    # start Vite web app
-npm run check      # backend tests + frontend lint/type-check
+npm run check      # skill binding check + backend tests + frontend lint/type-check
 npm run check:api  # backend tests
 npm run check:web  # frontend lint + type-check
+npm run skills:validate      # validate agent/skill binding rules
 npm run backend:check       # deterministic backend Maven test entry point
 npm run api:generate        # run the POM-configured OpenAPI generator
+npm run api:check           # API generate/verify + backend tests
 npm run api:verify-generated -- --generated-path apps/api/library-mini-admin-api/src/main/generated
 npm run db:validate -- --changelog <formatted-sql-directory>
 npm run workflow:validate -- docs/workflows/WF-<DOMAIN>-<NNN>.md
 npm run sd:validate -- --requirement docs/requirements/REQ-LIB-001.md --architecture docs/architecture/ARCH-LIB-001.md
 npm run test:sd       # SD artifact validator tests
+npm run qa:skill:check # QA skill script self-check
 npm run e2e        # Playwright smoke E2E
 ```
 
@@ -489,7 +492,6 @@ semantics or architecture decisions.
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
-nvm use --silent
 ```
 
 `~/.zprofile`
@@ -498,10 +500,9 @@ nvm use --silent
 [ -f "$HOME/.zshrc" ] && source "$HOME/.zshrc"
 ```
 
-本 repo 也提供 `.nvmrc`，進入專案後可先執行：
+本 repo 目前未提供 `.nvmrc`，進入專案後請先確認 Node.js 版本符合 `engines` 需求：
 
 ```bash
-nvm use
 node -v
 npm -v
 ```

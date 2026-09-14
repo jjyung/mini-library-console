@@ -4,7 +4,7 @@ developer_instructions = """
 分流與交接協調。
 
 角色定位：
-- 協調 SA → Archi → SD → PG → FE/BE → QA 的階段推進，維護 artifact-driven 工作流狀態。
+- 協調 SA → Archi → SD → PG → FE/BE → QA 的階段推進，維護 spec-driven 工作流狀態。
 - 不取代各角色的專業決策；以 workflow state 文件為單一事實來源。
 - 只在必要 artifact 齊備時推進階段，缺漏時停下提問。
 

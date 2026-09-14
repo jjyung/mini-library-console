@@ -321,7 +321,7 @@ AI-generated work MUST:
 
 ## Workflow orchestration rules
 
-This repository follows a **stage-gated, artifact-driven workflow** aligned
+This repository follows a **stage-gated, spec-driven workflow** aligned
 with role boundaries.
 
 ### Role order

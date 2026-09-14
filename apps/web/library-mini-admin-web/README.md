@@ -1,67 +1,55 @@
 # library-mini-admin-web
 
-This template should help get you started developing with Vue 3 in Vite.
+Library mini admin console 前端應用（Vue 3 + Vite + TypeScript），搭配 `apps/api` 的 Spring Boot 後端。完整的 subagent workflow、角色規範與指令請見根目錄 [README.md](../../../README.md) 與 [AGENTS.md](../../../AGENTS.md)。
 
-## Recommended IDE Setup
+## Prerequisites
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+- Node.js `^20.19.0 || >=22.12.0`（見 `package.json` 的 `engines`）
 
-## Recommended Browser Setup
+## Commands
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
-
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
+於本目錄（`apps/web/library-mini-admin-web`）：
 
 ```sh
-npm install
+npm install        # 安裝前端依賴；repo 根目錄可直接用 npm run setup
+npm run dev        # 啟動 Vite dev server（http://localhost:5173）
+npm run build      # type-check + production build
+npm run preview    # 預覽 production build（http://localhost:4173）
+npm run type-check # vue-tsc 型別檢查
+npm run lint       # oxlint + eslint（皆帶 --fix）
+npm run format     # Prettier 格式化 src/
 ```
 
-### Compile and Hot-Reload for Development
+於 repo 根目錄：
 
 ```sh
-npm run dev
+npm run dev        # 同時啟動 API 與 web
+npm run dev:web    # 只啟動 web
+npm run check:web  # frontend lint + type-check
+npm run e2e        # Playwright smoke E2E
 ```
 
-### Type-Check, Compile and Minify for Production
+## E2E Tests (Playwright)
+
+- 測試目錄為 `e2e/`（`playwright.config.ts` 的 `testDir`），檔名 `*.spec.ts`
+- dev 模式 baseURL 為 `http://localhost:5173`；CI 使用 preview server `http://localhost:4173`，需先執行 `npm run build`
+- 首次執行需安裝瀏覽器：`npx playwright install`
 
 ```sh
-npm run build
-```
-
-### Run End-to-End Tests with [Playwright](https://playwright.dev)
-
-```sh
-# Install browsers for the first run
-npx playwright install
-
-# When testing on CI, must build the project first
-npm run build
-
-# Runs the end-to-end tests
+# 執行所有 E2E
 npm run test:e2e
-# Runs the tests only on Chromium
+# 只跑 Chromium
 npm run test:e2e -- --project=chromium
-# Runs the tests of a specific file
-npm run test:e2e -- tests/example.spec.ts
-# Runs the tests in debug mode
+# 只跑特定檔案
+npm run test:e2e -- e2e/vue.spec.ts
+# debug 模式
 npm run test:e2e -- --debug
 ```
 
-### Lint with [ESLint](https://eslint.org/)
+## UI Test Locator Rule
 
-```sh
-npm run lint
-```
+UI 變更 MUST 保留 `data-testid` 的穩定性；E2E 也應優先使用 `getByTestId()`（見根目錄 `AGENTS.md`）。
+
+## IDE Setup
+
+VS Code + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar)（請停用 Vetur）。`.vue` 匯入的型別由 `vue-tsc` 負責，編輯器端則由 Volar 提供 TypeScript language service 支援。
