@@ -1,6 +1,8 @@
 ---
 name: sd-docs-producer
 description: Produce SD deliverables from requirements and architecture documents, including OpenAPI contract, global error-code definitions, schema docs, and per-API flow docs. Use when user asks SD to generate implementation-ready design artifacts under docs/openapi.yaml, docs/error-codes.md, docs/schema/, and docs/api/.
+version: 1.0.0
+owner: sd
 ---
 
 # SD Docs Producer
@@ -98,6 +100,16 @@ ambiguity when it cannot be resolved from the upstream artifacts.
   sections, and cross-document API ID/path mapping. It does not decide whether
   business rules, architecture trade-offs, transaction boundaries, retry
   policies, or requirement intent are semantically correct.
+
+7. Update workflow handoff.
+- For scenario-driven delivery, update the existing
+  `docs/workflows/WF-<DOMAIN>-<NNN>.md` with the S3 SD status, summary, output
+  paths, unresolved ambiguities, the next recommended S4 PG action, and the
+  files the next session must read first.
+- Do not advance the workflow to PG while the validator reports errors; record
+  the blocker instead.
+- Run `npm run workflow:validate -- docs/workflows/WF-<DOMAIN>-<NNN>.md` after
+  updating state.
 
 ## Output Contract
 

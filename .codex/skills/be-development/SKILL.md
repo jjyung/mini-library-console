@@ -1,6 +1,8 @@
 ---
 name: be-development
 description: Implement assigned Java/Spring backend tasks from SD artifacts. Use Maven POM plugins for OpenAPI Generator, keep generated API code under source control without manual edits, apply proportionate layered architecture, and validate with TDD.
+version: 1.0.0
+owner: be
 ---
 
 # BE Development

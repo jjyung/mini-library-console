@@ -17,8 +17,9 @@
     "backend:check": "node scripts/backend-workflow.js backend:check",
     "db:validate": "node scripts/backend-workflow.js db:validate",
     "workflow:validate": "node scripts/validate-workflow-state.js",
+    "skills:validate": "node scripts/validate-skill-agent-binding.js",
     "check:web": "npm --prefix apps/web/library-mini-admin-web run lint && npm --prefix apps/web/library-mini-admin-web run type-check",
-    "check": "npm run check:api && npm run check:web",
+    "check": "npm run skills:validate && npm run check:api && npm run check:web",
     "e2e": "npm --prefix apps/web/library-mini-admin-web run test:e2e",
     "qa:skill:check": "node .codex/skills/qa-e2e-verifier/scripts/validate-qa-skill.mjs"
   },

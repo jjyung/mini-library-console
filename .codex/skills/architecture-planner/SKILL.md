@@ -1,6 +1,8 @@
 ---
 name: architecture-planner
 description: Plan and document MVP system architecture from requirements, including technology selection, application architecture, environment-tier topology, C4 views, security, observability, resilience, NFR trade-offs, cost, risks, and explicit SD handoff boundaries.
+version: 1.0.0
+owner: archi
 ---
 
 # Architecture Planner
@@ -12,7 +14,7 @@ treat observability as a single checklist item; make each operational control
 an explicit architecture decision or an explicit deferred decision.
 
 This skill is self-contained. Do not depend on role-agent configuration files
-or require any file under `.codex/agents/` as an input.
+or require them as inputs.
 
 ## Workflow
 

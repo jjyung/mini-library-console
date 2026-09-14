@@ -1,7 +1,7 @@
 # AGENTS
 
-Version: 1.0.2
-Last Updated: 2026-09-03
+Version: 1.0.4
+Last Updated: 2026-09-14
 
 This file defines repo-wide mandatory rules for AI Agents and developers.
 Role-specific implementation rules live in the corresponding skill under
@@ -16,7 +16,8 @@ skill.
 
 - All UI changes MUST preserve `data-testid` integrity.
 
-- If QA raises locator requirements, PG MUST prioritize handling them.
+- Locator gaps raised by verification MUST be handled by the owning
+  implementation role before delivery.
 
 ### Skill-Agent Decoupling (MUST)
 
@@ -25,11 +26,29 @@ skill.
 - Existing agents may remain for runtime/persona usage, but skills MUST work correctly when agent files are absent.
 - New or updated skills MUST follow the same rule and MUST NOT add references to `.codex/agents/**`.
 
+### Skill-Agent Binding (MUST)
+
+- Agent config files under `.codex/agents/*.toml` MUST stay thin adapters:
+  role, context routing, model, and MCP servers only.
+- Every agent config file MUST be registered in `.codex/config.toml` under
+  `[agents.<name>]` with its `config_file` path.
+- Each agent MUST route to at least one skill using `$<skill-name>`; the skill
+  owns the workflow, tool commands, output contract, and engineering rules.
+- Agent config files MUST NOT embed workflow steps, deliverables, or
+  engineering rules (no Markdown headings inside `developer_instructions`).
+- Every skill referenced by an agent MUST exist under
+  `.codex/skills/<skill-name>/SKILL.md`, and each skill MUST declare
+  `name`, `description`, `version`, and `owner` frontmatter.
+- Skill names MUST be lowercase kebab-case, capability-based, unique within the
+  repository, and MUST NOT overlap semantically with another skill's purpose.
+- Run `npm run skills:validate` after changing any agent or skill. It checks
+  binding integrity, one-way decoupling, and thin-adapter shape.
+
 ### Role-specific Workflow Routing
 
 - Role-specific implementation workflows are defined by the corresponding
-  skills under `.codex/skills/`, including `be-development` and
-  `fe-development`.
+  skills under `.codex/skills/`; skills own workflow procedures and
+  engineering standards.
 - Agent configuration files define role/context routing only; they MUST NOT be
   treated as the source of implementation procedures or engineering standards.
 
@@ -53,7 +72,8 @@ HTTP status code MUST NOT replace business error code.
 
 ## OpenAPI Contract Rules
 
-This section applies to Backend, Frontend, SA, QA.
+This section applies to all roles that author, consume, or verify the API
+contract.
 
 ---
 
@@ -301,7 +321,8 @@ AI-generated work MUST:
 
 ## Workflow orchestration rules
 
-This repository follows a **stage-gated, artifact-driven workflow** aligned with role boundaries.
+This repository follows a **stage-gated, artifact-driven workflow** aligned
+with role boundaries.
 
 ### Role order
 
@@ -321,19 +342,10 @@ For each scenario-driven implementation, maintain a workflow state file:
 docs/workflows/WF-<DOMAIN>-<NNN>.md
 ```
 
-Agents must treat this file as the handoff artifact across sessions.
-
-Each workflow state file should include at least:
-
-- workflow metadata
-- current stage
-- workflow graph
-- current objective
-- stage-by-stage status
-- blockers and open questions
-- parallel FE/BE plan
-- QA loop status
-- session handoff notes
+Create it from `docs/templates/workflow-state-template.md`. This file is the
+handoff artifact across sessions and MUST record the current stage, stage
+status, current objective, blockers and open questions, parallel FE/BE plan,
+QA loop status, and next-session reading order.
 
 ### Required startup check for any agent
 
@@ -345,43 +357,23 @@ Before making changes, agents should inspect:
 4. corresponding workflow state under `docs/workflows/`
 5. upstream artifacts required by the current stage
 
-### Stage transition rule
+### Stage gates and handoff
 
-An agent may move a workflow to the next stage only when the current stage has enough artifact quality to support the next role.
+- An agent may advance a workflow only when the current stage artifacts are
+  sufficient to support the next role.
+- FE and BE may run in parallel only after PG has produced a stable
+  implementation plan and SD artifacts are sufficient for parallel delivery;
+  both MUST stay aligned on the API contract, shared terminology, acceptance
+  criteria, and scenario scope.
+- QA rework MUST route by defect type: implementation -> FE/BE, contract -> SD,
+  design -> Archi, requirement -> SA. Do not loop indefinitely; escalate after
+  repeated failures.
+- If required information is missing, stop and ask clarifying questions, or
+  explicitly document assumptions before proceeding.
+- At the end of any substantial action, update the workflow state with the
+  latest completed step, current status, next recommended action,
+  blockers/questions, and files the next session should read first.
 
-If required information is missing, the agent must:
-
-- stop and ask clarifying questions, or
-- explicitly document assumptions before proceeding
-
-### Parallel FE/BE rule
-
-FE and BE may run in parallel only after PG has produced a stable implementation plan and SD artifacts are sufficient for parallel delivery.
-
-Agents must keep FE/BE aligned on:
-
-- API contract
-- shared terminology
-- acceptance criteria
-- scenario scope
-
-### Auto QA loop rule
-
-QA may trigger automatic rework loops, but the rework target must match the defect type:
-
-- implementation issue -> FE/BE
-- contract issue -> SD
-- design issue -> Archi
-- requirement issue -> SA
-
-Do not keep looping indefinitely. Escalate after repeated failures.
-
-### Handoff requirement
-
-At the end of any substantial agent action, update the workflow state file with:
-
-- latest completed step
-- current status
-- next recommended action
-- blockers/questions
-- files the next session should read first
+The operational procedure for these rules is owned by the
+`workflow-orchestration` skill; this section defines only the repo-wide
+obligations.

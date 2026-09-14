@@ -1,0 +1,4 @@
+interface:
+  display_name: "Workflow Orchestration"
+  short_description: "Coordinate staged delivery and handoffs"
+  default_prompt: "Use $workflow-orchestration to resume the current scenario workflow, report stage status, and determine the next role and required artifacts."

@@ -46,52 +46,54 @@ contract。
 
 Codex 在開始工作前應先讀 `AGENTS.md`，再讀對應 scenario 與 workflow artifact。
 
-### 2. `.codex/config.toml` 開啟 multi-agent
+### 2. `.codex/config.toml` 註冊 multi-agent 角色
 
-這個 repo 透過 `.codex/config.toml` 啟用多角色設定：
+Codex 目前預設已啟用 multi-agent（官方 config reference 標示 `features.multi_agent` 為 stable、on by default），不需要額外的 feature flag；repo 只需在 `.codex/config.toml` 註冊角色：
 
 ```toml
-[features]
-multi_agent = true
-
-[agents.general]
+[agents.orchestrator]
 config_file = "agents/orchestrator.toml"
 ```
 
-已註冊的主要 agent 如下：
+已註冊的 agent 如下：
 
-- `general`：對應 orchestrator
+- `orchestrator`：跨角色 workflow 協調
 - `sa`
 - `archi`
 - `sd`
 - `pg`
+- `fe`
+- `be`
 - `qa`
 
 這代表你不需要從零設定 agent registry；README 主要是解釋結構與使用方式。
 
 ### 3. `.codex/agents/*.toml` 定義角色邊界
 
-每個角色都有自己的 prompt / boundary 設定，例如：
+每個角色都有自己的 role / context routing 設定，例如：
 
 - `.codex/agents/orchestrator.toml`
 - `.codex/agents/sa.toml`
 - `.codex/agents/archi.toml`
 - `.codex/agents/sd.toml`
 - `.codex/agents/pg.toml`
+- `.codex/agents/fe.toml`
+- `.codex/agents/be.toml`
 - `.codex/agents/qa.toml`
 
-這些檔案定義的是角色責任，不是 workflow state 本身。workflow 狀態仍以 `docs/workflows/WF-*.md` 為準。
+這些檔案只定義角色與 routing，實際流程與工程規範由對應 skill 提供；workflow 狀態仍以 `docs/workflows/WF-*.md` 為準。
 
 ### 4. `.codex/skills/*` 是可重用 workflow skills
 
 skills 放在 `.codex/skills/`，例如：
 
+- `workflow-orchestration`
 - `scenario-requirements-writer`
 - `architecture-planner`
 - `sd-docs-producer`
 - `be-development`
 - `fe-development`
-- `pg-task-orchestrator`
+- `pg-delivery-coordination`
 - `qa-e2e-verifier`
 
 這些 skill 提供可重用的工作流程與檢查清單，並且依 repo 規範和 agent config 解耦。

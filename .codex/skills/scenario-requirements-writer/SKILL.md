@@ -1,6 +1,8 @@
 ---
 name: scenario-requirements-writer
 description: Analyze scenario documents and related Figma export materials, then generate a structured requirements analysis file with FR/NFR/AC, business rules, edge cases, risk items, and business error-code mapping. Use when user asks to analyze a scenario (e.g., SCN-*) and produce or update a requirement document (e.g., REQ-*).
+version: 1.0.0
+owner: sa
 ---
 
 # Scenario Requirements Writer
@@ -54,6 +56,11 @@ Execute this workflow to convert a scenario into a requirement analysis document
 - Run `python3 .codex/skills/scenario-requirements-writer/scripts/validate_requirements.py <REQ-FILE>`.
 - Treat validator errors as blocking; warnings may be resolved according to the workflow gate.
 - The validator checks one REQ document only. Cross-artifact traceability belongs to the workflow framework, not this skill.
+
+7. Update workflow handoff for scenario-driven work.
+- When `docs/workflows/WF-<DOMAIN>-<NNN>.md` exists, update the S1 SA status, summary, output path, open questions, the next recommended S2 Archi action, and the files the next session must read first.
+- Do not create workflow state for a non-scenario request; report the missing handoff artifact instead.
+- Run `npm run workflow:validate -- docs/workflows/WF-<DOMAIN>-<NNN>.md` after updating state.
 
 ## Output Contract
 

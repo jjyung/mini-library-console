@@ -1,9 +1,11 @@
 ---
-name: pg-task-orchestrator
-description: Orchestrate PG delivery from planning to implementation by splitting tasks across BE/FE, managing handoff gates, executing staged implementation, running checks, and producing delivery summaries. Use when user asks PG to continue execution after task planning or to coordinate BE/FE implementation workflow.
+name: pg-delivery-coordination
+description: Coordinate PG delivery from planning to implementation by splitting tasks across BE/FE, managing handoff gates, executing staged implementation, running checks, and producing delivery summaries. Use when user asks PG to continue execution after task planning or to coordinate BE/FE implementation workflow.
+version: 1.0.0
+owner: pg
 ---
 
-# PG Task Orchestrator
+# PG Delivery Coordination
 
 Run this workflow to execute PG coordination and delivery end-to-end.
 
@@ -46,6 +48,8 @@ Run this workflow to execute PG coordination and delivery end-to-end.
 6. Update delivery artifacts.
 - Update `docs/tasks/{task-id}_{task_name}.md` status and gate progress.
 - Generate `docs/tasks/{task-id}_{task_name}-summary.md` with completed scope, validations, blockers, and next actions.
+- For scenario-driven delivery, update the existing `docs/workflows/WF-<DOMAIN>-<NNN>.md` S4/S5 status, latest completed gate, blockers, next recommended QA action, and next-session reading order.
+- Run `npm run workflow:validate -- docs/workflows/WF-<DOMAIN>-<NNN>.md` after updating state. Do not create workflow state for a non-scenario task; report the missing handoff artifact instead.
 
 ## Output Contract
 

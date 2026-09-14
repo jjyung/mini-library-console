@@ -1,0 +1,4 @@
+interface:
+  display_name: "PG Delivery Coordination"
+  short_description: "Split BE/FE and drive delivery"
+  default_prompt: "Use $pg-delivery-coordination to split LIB-API-001 tasks across BE/FE, execute by gates, and produce a delivery summary."

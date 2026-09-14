@@ -1,15 +1,5 @@
-[profiles.deep-review]
-model = 'gpt-5.6-sol'
-model_reasoning_effort = 'high'
-approval_policy = 'never'
-
-[profiles.lightweight]
-model = 'gpt-5.6-luna'
-model_reasoning_effort = 'high'
-approval_policy = 'untrusted'
-
-[agents.general]
-description = "General-purpose software development workflow orchestrator coordinating multi-role agents following team conventions and Conway's Law."
+[agents.orchestrator]
+description = "跨角色工作流程協調者，負責階段推進、workflow state 維護、平行 FE/BE 協調與 QA 回圈管理。"
 config_file = "agents/orchestrator.toml"
 
 [agents.sa]
@@ -25,8 +15,16 @@ description = "將需求與架構設計落地為可實作的技術細節，包�
 config_file = "agents/sd.toml"
 
 [agents.pg]
-description = "負責系統的具體實作與測試撰寫，依照設計規格與驗收標準，實作後端邏輯與最小化前端 UI。後端必須嚴格遵守 TDD 流程。"
+description = "負責 PG 交付編排：拆分 BE/FE 任務、管理 gate 與依賴，完成整合驗證後交付 QA。"
 config_file = "agents/pg.toml"
+
+[agents.fe]
+description = "依照 OpenAPI 契約與任務拆解實作前端 UI、集中式 API client、錯誤碼映射與穩定的 data-testid。"
+config_file = "agents/fe.toml"
+
+[agents.be]
+description = "依照 SD 規格實作後端 API、領域邏輯與持久化，遵守 TDD；OpenAPI 產生器輸出納入版控且不得手改。"
+config_file = "agents/be.toml"
 
 [agents.qa]
 description = "負責撰寫 E2E 測試腳本，確保核心使用者旅程的穩定性，並驗證非功能性需求 (NFR)。"

@@ -1,6 +1,8 @@
 ---
 name: fe-development
 description: Implement or review assigned frontend work from requirements, stories, Figma flows, and frozen OpenAPI artifacts. Apply the architecture-approved Vue, Angular, or React approach, centralize typed API access, preserve data-testid contracts, and validate with TDD. Use for frontend implementation or review, not backend, requirements, or system-architecture work.
+version: 1.0.0
+owner: fe
 ---
 
 # FE Development

@@ -1,6 +1,8 @@
 ---
 name: qa-e2e-verifier
 description: Verify a web scenario against its requirement with risk-based Playwright acceptance tests, isolated test data, preflight/NFR gates, root-cause classification, and an evidence-backed QA report. Use for QA verification of REQ-* deliveries and their linked SCN-* scenarios; do not use it to implement product code.
+version: 1.0.0
+owner: qa
 ---
 
 # QA E2E Verifier
