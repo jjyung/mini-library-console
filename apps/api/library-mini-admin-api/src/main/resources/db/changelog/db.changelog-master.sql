@@ -74,3 +74,26 @@ CREATE TABLE loans (
 CREATE INDEX idx_loans_book_status ON loans (book_id, status);
 CREATE INDEX idx_loans_reader_status ON loans (reader_id, status);
 --rollback DROP TABLE loans;
+
+--changeset be:books-002
+ALTER TABLE books DROP CONSTRAINT ck_books_status_mapping;
+
+ALTER TABLE books ADD CONSTRAINT ck_books_status_mapping CHECK (
+    (is_active = FALSE AND status = 'INACTIVE')
+    OR (
+        is_active = TRUE
+        AND status IN ('AVAILABLE', 'BORROWED')
+    )
+);
+
+--rollback ALTER TABLE books DROP CONSTRAINT ck_books_status_mapping;
+--rollback ALTER TABLE books ADD CONSTRAINT ck_books_status_mapping CHECK (
+--rollback     (is_active = FALSE AND status = 'INACTIVE')
+--rollback     OR (
+--rollback         is_active = TRUE
+--rollback         AND (
+--rollback             (available_count > 0 AND status = 'AVAILABLE')
+--rollback             OR (available_count = 0 AND status = 'BORROWED')
+--rollback         )
+--rollback     )
+--rollback );

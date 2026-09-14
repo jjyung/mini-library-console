@@ -53,8 +53,8 @@ S4 PG
 
 ## 4. Current Objective
 
-- Current Goal: 由 QA 依已完成的 PG handoff 驗證 TEST-only Library Mini Admin MVP 的完整前後端 journey、NFR 與 locator 契約。
-- Why this is the next step: PG 已完成 FE／BE 實作、contract alignment、unit/integration checks 與 QA 測試資料 handoff；剩餘工作是實際瀏覽器驗證。
+- Current Goal: 完成 DEF-QA-001 的 QA re-verification，並同步關閉 S6 QA gate。
+- Why this is the next step: QA 已完成 BE 修正後的 targeted AC-008 與完整 Chromium rerun；核心 scenario 已通過，剩餘由 orchestrator 判斷 S7 Done。
 - Expected Output: docs/qa-report/QA-LIB-001.md
 - Exit Criteria: QA 完成新增、借出、歸還、搜尋／分頁、錯誤、響應式、可存取性與 performance smoke，並依缺陷分類觸發有限 rework loop。
 
@@ -89,26 +89,26 @@ S4 PG
 
   - Summary: 已完成 Vue 3 Figma-aligned admin console、typed OpenAPI client、館藏搜尋／分頁、表單交易、錯誤回饋與穩定 locator；本次補完成 Figma light card layout 的 CSS rework 與 desktop／390px responsive visual smoke；unit/component coverage gate 通過。
   - Output Files: apps/web/library-mini-admin-web/src/App.vue；apps/web/library-mini-admin-web/src/core/；apps/web/library-mini-admin-web/src/features/；docs/traceability/FE-REQ-LIB-001.json
-  - Open Questions: QA 需驗證 Chromium、窄螢幕與實際 API journey。
+  - Open Questions: 核心 Chromium、窄螢幕與實際 API journey 已由 QA 驗證；pixel-diff 與 accessibility audit 仍未執行。
 - S5B BE: done
 
-  - Summary: 已完成 generated Spring boundary、H2/Liquibase schema、JDBC DAO、service transaction rules、business-code envelope、correlation ID、TEST localhost CORS allowlist、JsonNullable Jackson mapping 與 API integration tests。
+  - Summary: 已完成 generated Spring boundary、H2/Liquibase schema、JDBC DAO、service transaction rules、business-code envelope、correlation ID、TEST localhost CORS allowlist、JsonNullable Jackson mapping 與 API integration tests；本輪修正 `DEF-QA-001`，以可回滾 Liquibase changeset 放寬錯誤的 status／available constraint，並補上 AC-008 兩複本逐筆歸還 integration test。
   - Output Files: apps/api/library-mini-admin-api/pom.xml；apps/api/library-mini-admin-api/src/main/generated/；apps/api/library-mini-admin-api/src/main/java/；apps/api/library-mini-admin-api/src/main/resources/db/；apps/api/library-mini-admin-api/src/test/java/
-  - Open Questions: generated source 尚未 staged/committed；QA 需驗證實際啟動、瀏覽器 preflight 與完整 journey。
-- S6 QA: not_started
+  - Open Questions: generated source 尚未 staged/committed；需在 commit/source-control gate 處理 generator timestamp-only diff。
+- S6 QA: done
 
-  - Summary: FE／BE 可執行且 locator、API、測試資料隔離契約已穩定；FE visual rework 已完成，等待 QA skill 執行實際 API journey、responsive 與 locator 驗證。
-  - Output Files: docs/qa-report/QA-LIB-001.md
-  - Open Questions: 需執行 QA Playwright journey、NFR checks 與差異清單。
+  - Summary: QA 完成 BE 修正後的 targeted AC-008（1/1）與完整 Chromium 2-worker suite（6/6）；涵蓋 AC-001 至 AC-009、responsive、search／pagination、keyboard、error mapping、data isolation 與 performance smoke。DEF-QA-001 已 Verified／Closed。
+  - Output Files: docs/qa-report/QA-LIB-001.md；apps/web/library-mini-admin-web/e2e/vue.spec.ts；apps/web/library-mini-admin-web/e2e/LibraryConsolePage.ts；apps/web/library-mini-admin-web/e2e/data.ts；apps/web/library-mini-admin-web/e2e/fixtures.ts
+  - Open Questions: 保留未執行 pixel-diff、axe／contrast audit、loading／submit-disabled 獨立斷言與完整 server-log correlation；Q-001 至 Q-004 仍依既有 baseline 待產品確認。
 - S7 Done: not_started
 
-  - Summary: 尚未完成所有 stage 與 QA gate。
+  - Summary: S6 QA gate 已完成；尚未由 orchestrator 將 workflow 收斂至 S7 Done。
 
 ## 6. Dependency / Blocking Status
 
-- Blocking Issues: 沒有產品程式實作 blocker；`npm run api:verify-generated` 在未 staged/committed 的 worktree 會因 generated output untracked 而 fail，需 commit 後重跑 source-control gate。
+- Blocking Issues: 無 QA product blocker；S7 Done 仍待 orchestrator gate。`npm run api:verify-generated` 會因 generator 每次更新 generated annotation timestamp 而產生 timestamp-only diff，需在 commit/source-control gate 階段處理；BE DEF-QA-001 已修正並驗證關閉。
 - Missing Decisions: Q-001 必填欄位、Q-002 reader identity、Q-003 逾期規則、Q-004 歸還定位、Q-005 持久化、Q-006 搜尋行為、Q-007 複本增補範圍。
-- Waiting For: QA 執行 S6；產品後續確認 Q-001 至 Q-004 時需回送 SA／SD，不得把目前 baseline 擴大為正式產品決策。
+- Waiting For: orchestrator 判斷 S7 Done；產品後續確認 Q-001 至 Q-004 時需回送 SA／SD，不得把目前 baseline 擴大為正式產品決策。
 - Safe Assumptions: TEST 是唯一 deployment profile；MVP 免登入且只允許 private TEST ingress；H2 2.3.232 作為 TEST embedded persistence；管理員流程先涵蓋單次單複本交易；所有 API 遵守 00000／A0000／B0000／C0000 業務碼契約；Figma export 作為 UI 視覺與互動語意基準，而非未確認業務規則的唯一來源。
 - Risks: 以 ISBN 直接歸還可能無法定位多複本的特定借閱；前端 mock state 不足以支援共享資料；Figma 搜尋欄與 scenario 範圍尚未一致。
 
@@ -123,27 +123,35 @@ S4 PG
 ## 8. Auto QA Loop
 
 - QA Trigger Condition: FE／BE 實作完成、API contract freeze、前端 `data-testid` locator 穩定，且本地前後端可啟動；目前已達成。
-- Latest QA Result: not_run; backend CORS and borrow JSON mapping rework locally verified; FE Figma visual rework locally verified
+- Latest QA Result: targeted AC-008 Chromium passed 1/1（28.3s）；完整 Chromium 2-worker E2E passed 6/6（1.1m），`--retries=0` 且通過後未重跑。QA report 已同步，DEF-QA-001 Verified／Closed。
 - Defects:
 
   - DEF-001:
 
     - Severity: medium
     - Owner: BE
-    - Status: fixed_pending_qa
+    - Status: verified
     - Fix Plan: 已新增明確 `http://localhost:5173,http://localhost:4173` allowlist、GET/POST/OPTIONS methods、Content-Type/X-Correlation-Id/Idempotency-Key headers；以 MockMvc 驗證 preflight、實際 GET 與拒絕未列來源。
   - DEF-002:
 
     - Severity: high
     - Owner: BE
-    - Status: fixed_pending_qa
+    - Status: verified
     - Fix Plan: 註冊 OpenAPI Generator 所需的 `JsonNullableModule`，並以 integration test 覆蓋含 author 與 dueDate 的新增／借出 journey，避免 request 在 controller 前轉換失敗並回傳 `B0000`。
   - DEF-003:
 
     - Severity: medium
     - Owner: FE
-    - Status: fixed_pending_qa
+    - Status: verified
     - Fix Plan: 將 `apps/web/library-mini-admin-web/src/App.vue` 的深色自訂 dashboard CSS 重整為 `docs/figma/library-mini-admin-console` 的 light card layout，補上桌面兩欄／館藏下排與窄螢幕堆疊規則；保留既有 locator 與交易狀態。
+  - DEF-QA-001:
+
+    - Severity: high
+    - Owner: BE
+    - Status: verified
+    - Classification: product implementation
+    - Evidence: 初輪與修正後結果均記錄於 `docs/qa-report/QA-LIB-001.md`；`apps/web/library-mini-admin-web/e2e/vue.spec.ts:49-71`；BE red integration test 重現 `CK_BOOKS_STATUS_MAPPING` violation；修正後 targeted AC-008 passed，Chromium 2-worker E2E 6/6 passed。
+    - Fix Plan: 已新增 `books-002` Liquibase changeset，允許上架書籍在仍有未歸還 loan 時維持 `BORROWED`，同時保留 inactive／合法 status 限制；BE API integration 與 QA browser rerun 均通過，缺陷關閉。
 - Re-entry Rule:
 
   - implementation bug -> FE/BE
@@ -153,10 +161,10 @@ S4 PG
 
 ## 9. Session Handoff Notes
 
-- Last completed action: FE 完成 Figma light card layout CSS rework，並以 Chromium desktop／390px viewport 確認表單、館藏空狀態、分頁與 responsive 排版；BE JsonNullable JSON mapping 及含 author／dueDate 的借書 integration test 仍已通過。
-- Recommended next action: 請 QA 讀取 TASK-LIB-001_mvp-delivery.md、REQ-LIB-001、OpenAPI、locator contract，啟動前後端並執行 S6 QA Playwright journey，產出 docs/qa-report/QA-LIB-001.md。
-- Files to read first: README.md；AGENTS.md；docs/workflows/WF-LIB-001.md；docs/tasks/TASK-LIB-001_mvp-delivery.md；docs/requirements/REQ-LIB-001.md；docs/architecture/ARCH-LIB-001.md；docs/openapi.yaml；docs/traceability/FE-REQ-LIB-001.json。
-- Questions to resolve: QA 需驗證 Q-001 至 Q-004 baseline 是否可接受；Q-006、Q-007 仍列為後續產品決策，實作依 frozen SD baseline。
+- Last completed action: QA 完成 BE 修正後 targeted AC-008（1/1）與完整 Chromium 2-worker E2E（6/6），同步更新 `QA-LIB-001.md`，並將 DEF-QA-001 標記為 Verified／Closed。
+- Recommended next action: orchestrator 依 QA report 判斷 S7 Done；若產品確認 Q-001 至 Q-004 導致契約改動，再回送 SA／SD。
+- Files to read first: README.md；AGENTS.md；docs/workflows/WF-LIB-001.md；docs/qa-report/QA-LIB-001.md；apps/web/library-mini-admin-web/e2e/vue.spec.ts；docs/requirements/REQ-LIB-001.md；docs/api/library-books-004_return.md。
+- Questions to resolve: S7 gate 是否關閉；Q-001 至 Q-004 baseline 仍需產品確認；Q-006、Q-007 仍列為後續產品決策。
 - Notes for next agent/session: `library-books-001` 使用 page=1、pageSize=20 API defaults，前端預設每頁 10 並提供 10／20／50 selector；API IDs 為 library-books-001 至 004；所有 API envelope 使用 business code；TEST CORS shortcut 只限 test，H2 只限 TEST MVP；不得將免登入或 embedded DB 推廣到 UAT／PROD。
 
 ## 10. Completion Checklist
@@ -168,6 +176,6 @@ S4 PG
 - [x] PG plan is complete
 - [x] FE implementation is complete
 - [x] BE implementation is complete
-- [ ] QA verification is complete
+- [x] QA verification is complete — targeted AC-008 and full Chromium suite passed; report and S6 gate synchronized
 - [x] Artifacts are consistent
 - [x] Scope has not drifted

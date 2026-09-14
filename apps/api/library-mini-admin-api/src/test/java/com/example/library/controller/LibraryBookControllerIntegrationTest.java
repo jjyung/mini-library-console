@@ -96,6 +96,35 @@ class LibraryBookControllerIntegrationTest {
     }
 
     @Test
+    void AC_008_returnsEachActiveCopyIndependently() throws Exception {
+        JsonNode createdBook = createBook("978-0-13-235088-4", "Two Copy Book", "create-two-copy");
+        String bookId = createdBook.path("data").path("bookId").asText();
+
+        JsonNode firstBorrow = borrowBook(bookId, "qa-reader-one", "borrow-two-copy-one");
+        JsonNode secondBorrow = borrowBook(bookId, "qa-reader-two", "borrow-two-copy-two");
+
+        mockMvc.perform(post(BOOKS_PATH + "/" + bookId + "/return")
+                        .contentType(APPLICATION_JSON)
+                        .header("Idempotency-Key", "return-two-copy-one")
+                        .content("{\"loanId\":\"" + firstBorrow.path("data").path("loan").path("loanId").asText() + "\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("00000"))
+                .andExpect(jsonPath("$.data.book.availableCount").value(1))
+                .andExpect(jsonPath("$.data.book.status").value("borrowed"))
+                .andExpect(jsonPath("$.data.loan.status").value("RETURNED"));
+
+        mockMvc.perform(post(BOOKS_PATH + "/" + bookId + "/return")
+                        .contentType(APPLICATION_JSON)
+                        .header("Idempotency-Key", "return-two-copy-two")
+                        .content("{\"loanId\":\"" + secondBorrow.path("data").path("loan").path("loanId").asText() + "\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("00000"))
+                .andExpect(jsonPath("$.data.book.availableCount").value(2))
+                .andExpect(jsonPath("$.data.book.status").value("available"))
+                .andExpect(jsonPath("$.data.loan.status").value("RETURNED"));
+    }
+
+    @Test
     void AC_003_acceptsOptionalJsonNullableFieldsAcrossBorrowJourney() throws Exception {
         String createResponse = mockMvc.perform(post(BOOKS_PATH)
                         .contentType(APPLICATION_JSON)
@@ -148,6 +177,19 @@ class LibraryBookControllerIntegrationTest {
                         .header("Idempotency-Key", idempotencyKey)
                         .content(bookJson(isbn, title)))
                 .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.code").value("00000"))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        return objectMapper.readTree(response);
+    }
+
+    private JsonNode borrowBook(String bookId, String readerId, String idempotencyKey) throws Exception {
+        String response = mockMvc.perform(post(BOOKS_PATH + "/" + bookId + "/borrow")
+                        .contentType(APPLICATION_JSON)
+                        .header("Idempotency-Key", idempotencyKey)
+                        .content("{\"readerId\":\"" + readerId + "\"}"))
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value("00000"))
                 .andReturn()
                 .getResponse()
