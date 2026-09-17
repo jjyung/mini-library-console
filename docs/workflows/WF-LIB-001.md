@@ -6,11 +6,11 @@
 - Scenario ID: SCN-LIB-001
 - Title: 小型圖書櫃管理 MVP
 - Owner Role: orchestrator
-- Current Stage: S6
-- Overall Status: in_progress
+- Current Stage: S7
+- Overall Status: done
 - Priority: medium
 - Created At: 2026-09-08
-- Updated At: 2026-09-14
+- Updated At: 2026-09-17
 - Related Branch/Worktree: current worktree
 - Related Files:
   - docs/scenarios/SCN-LIB-001.md
@@ -53,10 +53,10 @@ S4 PG
 
 ## 4. Current Objective
 
-- Current Goal: 完成 DEF-QA-001 的 QA re-verification，並同步關閉 S6 QA gate。
-- Why this is the next step: QA 已完成 BE 修正後的 targeted AC-008 與完整 Chromium rerun；核心 scenario 已通過，剩餘由 orchestrator 判斷 S7 Done。
-- Expected Output: docs/qa-report/QA-LIB-001.md
-- Exit Criteria: QA 完成新增、借出、歸還、搜尋／分頁、錯誤、響應式、可存取性與 performance smoke，並依缺陷分類觸發有限 rework loop。
+- Current Goal: 完成 S7 Done 收斂並封存 TEST-only Library Mini Admin MVP 交付狀態。
+- Why this is the next step: S6 QA 已完成，核心 scenario、AC-001 至 AC-009、響應式與錯誤流程均已通過；DEF-QA-001 已 Verified／Closed，沒有未處理的 product blocker。
+- Expected Output: workflow state、task plan 與 delivery summary 均標記為完成。
+- Exit Criteria: FE／BE／QA gate 均完成，交付產物一致，scope 未漂移，且剩餘限制與產品決策已明確記錄。
 
 ## 5. Stage Status
 
@@ -94,21 +94,21 @@ S4 PG
 
   - Summary: 已完成 generated Spring boundary、H2/Liquibase schema、JDBC DAO、service transaction rules、business-code envelope、correlation ID、TEST localhost CORS allowlist、JsonNullable Jackson mapping 與 API integration tests；本輪修正 `DEF-QA-001`，以可回滾 Liquibase changeset 放寬錯誤的 status／available constraint，並補上 AC-008 兩複本逐筆歸還 integration test。
   - Output Files: apps/api/library-mini-admin-api/pom.xml；apps/api/library-mini-admin-api/src/main/generated/；apps/api/library-mini-admin-api/src/main/java/；apps/api/library-mini-admin-api/src/main/resources/db/；apps/api/library-mini-admin-api/src/test/java/
-  - Open Questions: generated source 尚未 staged/committed；需在 commit/source-control gate 處理 generator timestamp-only diff。
+  - Open Questions: OpenAPI Generator 7.25.0 會在每次生成時更新 annotation timestamp；generated paths 已納入 Git，目前只保留此 source-control/tooling limitation，不影響本次交付。
 - S6 QA: done
 
   - Summary: QA 完成 BE 修正後的 targeted AC-008（1/1）與完整 Chromium 2-worker suite（6/6）；涵蓋 AC-001 至 AC-009、responsive、search／pagination、keyboard、error mapping、data isolation 與 performance smoke。DEF-QA-001 已 Verified／Closed。
   - Output Files: docs/qa-report/QA-LIB-001.md；apps/web/library-mini-admin-web/e2e/vue.spec.ts；apps/web/library-mini-admin-web/e2e/LibraryConsolePage.ts；apps/web/library-mini-admin-web/e2e/data.ts；apps/web/library-mini-admin-web/e2e/fixtures.ts
   - Open Questions: 保留未執行 pixel-diff、axe／contrast audit、loading／submit-disabled 獨立斷言與完整 server-log correlation；Q-001 至 Q-004 仍依既有 baseline 待產品確認。
-- S7 Done: not_started
+- S7 Done: done
 
-  - Summary: S6 QA gate 已完成；尚未由 orchestrator 將 workflow 收斂至 S7 Done。
+  - Summary: orchestrator 已完成最終整合審查；TEST MVP、FE／BE 交付、QA 驗證、缺陷狀態與 handoff 文件均已收斂，workflow 正式完成。
 
 ## 6. Dependency / Blocking Status
 
-- Blocking Issues: 無 QA product blocker；S7 Done 仍待 orchestrator gate。`npm run api:verify-generated` 會因 generator 每次更新 generated annotation timestamp 而產生 timestamp-only diff，需在 commit/source-control gate 階段處理；BE DEF-QA-001 已修正並驗證關閉。
+- Blocking Issues: 無 workflow 或 QA product blocker；BE DEF-QA-001 已修正並驗證關閉。generated source 已納入 Git且 generated paths 目前無 diff；OpenAPI Generator 7.25.0 每次生成會更新 annotation timestamp，故 `api:verify-generated` 仍可能報 timestamp-only diff；此為 source-control/tooling limitation，不阻擋本次 S7 closure。
 - Missing Decisions: Q-001 必填欄位、Q-002 reader identity、Q-003 逾期規則、Q-004 歸還定位、Q-005 持久化、Q-006 搜尋行為、Q-007 複本增補範圍。
-- Waiting For: orchestrator 判斷 S7 Done；產品後續確認 Q-001 至 Q-004 時需回送 SA／SD，不得把目前 baseline 擴大為正式產品決策。
+- Waiting For: 無 S7 交付阻塞。產品後續確認 Q-001 至 Q-004 時需回送 SA／SD，不得把目前 baseline 擴大為正式產品決策。
 - Safe Assumptions: TEST 是唯一 deployment profile；MVP 免登入且只允許 private TEST ingress；H2 2.3.232 作為 TEST embedded persistence；管理員流程先涵蓋單次單複本交易；所有 API 遵守 00000／A0000／B0000／C0000 業務碼契約；Figma export 作為 UI 視覺與互動語意基準，而非未確認業務規則的唯一來源。
 - Risks: 以 ISBN 直接歸還可能無法定位多複本的特定借閱；前端 mock state 不足以支援共享資料；Figma 搜尋欄與 scenario 範圍尚未一致。
 
@@ -161,11 +161,11 @@ S4 PG
 
 ## 9. Session Handoff Notes
 
-- Last completed action: QA 完成 BE 修正後 targeted AC-008（1/1）與完整 Chromium 2-worker E2E（6/6），同步更新 `QA-LIB-001.md`，並將 DEF-QA-001 標記為 Verified／Closed。
-- Recommended next action: orchestrator 依 QA report 判斷 S7 Done；若產品確認 Q-001 至 Q-004 導致契約改動，再回送 SA／SD。
+- Last completed action: orchestrator 核對 QA report、task plan、交付產物與 source-control 狀態，確認 S6 gate 通過後將 workflow 收斂至 S7 Done。
+- Recommended next action: workflow 已完成；若產品確認 Q-001 至 Q-004 導致契約改動，重新建立相應的 SA／SD rework handoff。
 - Files to read first: README.md；AGENTS.md；docs/workflows/WF-LIB-001.md；docs/qa-report/QA-LIB-001.md；apps/web/library-mini-admin-web/e2e/vue.spec.ts；docs/requirements/REQ-LIB-001.md；docs/api/library-books-004_return.md。
-- Questions to resolve: S7 gate 是否關閉；Q-001 至 Q-004 baseline 仍需產品確認；Q-006、Q-007 仍列為後續產品決策。
-- Notes for next agent/session: `library-books-001` 使用 page=1、pageSize=20 API defaults，前端預設每頁 10 並提供 10／20／50 selector；API IDs 為 library-books-001 至 004；所有 API envelope 使用 business code；TEST CORS shortcut 只限 test，H2 只限 TEST MVP；不得將免登入或 embedded DB 推廣到 UAT／PROD。
+- Questions to resolve: Q-001 至 Q-004 baseline 仍需產品確認；Q-006、Q-007 仍列為後續產品決策，均不阻擋本次 S7 closure。
+- Notes for next agent/session: workflow 已完成。若後續重啟，先讀本檔與 QA report，再依產品決策將變更回送 SA／SD；`library-books-001` 使用 page=1、pageSize=20 API defaults，前端預設每頁 10 並提供 10／20／50 selector；API IDs 為 library-books-001 至 004；所有 API envelope 使用 business code；TEST CORS shortcut 只限 test，H2 只限 TEST MVP；不得將免登入或 embedded DB 推廣到 UAT／PROD。
 
 ## 10. Completion Checklist
 
@@ -179,3 +179,4 @@ S4 PG
 - [x] QA verification is complete — targeted AC-008 and full Chromium suite passed; report and S6 gate synchronized
 - [x] Artifacts are consistent
 - [x] Scope has not drifted
+- [x] S7 Done — final integration gate closed and workflow marked completed

@@ -7,9 +7,9 @@
 - Scenario ID: SCN-LIB-001
 - Requirement ID: REQ-LIB-001
 - Architecture: ARCH-LIB-001
-- Status: ready_for_qa
+- Status: delivery_complete
 - Owner: PG
-- Updated At: 2026-09-14
+- Updated At: 2026-09-17
 
 ## 2. Delivery Objective
 
@@ -146,7 +146,7 @@ not add or modify QA-owned E2E specs.
 | Gate-A | done | Generated Spring boundary compiles; validation and business-code mapping covered |
 | Gate-B | done | H2/Liquibase persistence, borrow/return integration tests and TEST CORS preflight checks pass |
 | Gate-C | done | Vue UI, typed client, locator contract, unit/component tests and build pass |
-| Gate-D | done | PG integration review complete; QA handoff is ready |
+| Gate-D | done | PG integration review complete; QA verification passed and final delivery gate is closed |
 | FE visual rework | done | Re-aligned Vue global CSS to the requirement-scoped Figma light card layout and verified desktop/mobile rendering |
 
 Resolved implementation blocker: `npm run api:generate` initially reached
@@ -155,12 +155,12 @@ OpenAPI Generator `7.25.0` but failed because the existing
 The POM now uses `resources/resource/directory`, generation succeeds, and the
 generated Spring boundary is used by the implementation.
 
-Known delivery-state limitation: the repository intentionally has not been
-staged or committed in this session. Therefore `npm run api:verify-generated`
-will report `src/main/generated` as untracked until the generated output is
-committed; this is a source-control gate, not a generation or compilation
-failure. The frontend OpenAPI type output is likewise generated under
-`apps/web/library-mini-admin-web/src/core/api/generated`.
+The current checkout tracks the generated API boundary and frontend OpenAPI
+type output, and the generated paths are clean; only the expected workflow
+documents are changed in this session. The generated files remain under
+`apps/api/library-mini-admin-api/src/main/generated/` and
+`apps/web/library-mini-admin-web/src/core/api/generated/` for source-control
+reproducibility.
 
 ## 8. Handoff Notes
 
@@ -176,7 +176,8 @@ failure. The frontend OpenAPI type output is likewise generated under
 - QA should execute the synthetic journey with ISBN `978-0-13-235088-4`,
   reader `qa-reader-001`, and the pagination/error/accessibility checks listed
   above. QA owns Playwright changes and the QA report.
-- The next session should read this task, the delivery summary, and
-  `WF-LIB-001.md`, then begin S6 QA verification.
+- The workflow is delivery-complete. A future session should read this task,
+  the delivery summary, and `WF-LIB-001.md`; only product decisions or a new
+  rework request should reopen a stage.
 - Any unresolved Q-001..Q-004 decision remains a product/SA/SD question;
   implementation uses the documented SD baseline only.

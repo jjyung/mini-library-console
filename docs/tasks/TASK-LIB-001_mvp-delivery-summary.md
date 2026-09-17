@@ -2,8 +2,8 @@
 
 ## Result
 
-PG coordination completed the TEST-only Library Mini Admin MVP handoff. FE
-and BE implementation boundaries remained within `apps/web/**` and
+PG coordination completed the TEST-only Library Mini Admin MVP delivery and
+closed the S7 workflow gate. FE and BE implementation boundaries remained within `apps/web/**` and
 `apps/api/**`; upstream requirement, architecture, OpenAPI, schema and API
 flow artifacts were not changed during implementation.
 
@@ -48,19 +48,17 @@ flow artifacts were not changed during implementation.
 | Figma visual smoke (Chromium desktop + 390px viewport) | PASS |
 | FE requirement verifier | PASS — all 16 canonical FR/AC criteria have unit evidence |
 | `npm run api:generate` | PASS |
-| `npm run api:verify-generated` | Pending commit — generated path is untracked in this worktree |
+| `npm run api:verify-generated` | Known limitation — generator rewrites annotation timestamps; generated output is tracked and generated paths are clean after restoring the timestamp-only diff |
+| Workflow state | PASS — S7 Done; workflow marked `done` |
 
-## QA Handoff
+## QA Result
 
-QA should start the API and web app, create ISBN `978-0-13-235088-4`, borrow
-with `qa-reader-001`, verify `availableCount` and status, return the exact
-`loanId`, and verify the original inventory. QA should also cover search,
-`page=2&pageSize=1`, empty results, validation/business errors, duplicate ISBN,
-inactive/unavailable books, repeated writes, responsive layout, keyboard
-navigation and the frozen locators.
-
-The existing Playwright starter spec remains QA-owned and was not modified by
-FE. QA should update or replace that starter expectation and produce
+QA completed the synthetic journey and the additional search, pagination,
+validation/error, repeated-write, responsive, keyboard and locator checks.
+Targeted AC-008 passed 1/1 and the full Chromium suite passed 6/6 with two
+workers and no cross-test data pollution. The QA decision is Pass with
+limitations; non-blocking pixel-diff, axe/contrast, independent loading-state
+assertions and complete server-log correlation remain explicitly recorded in
 `docs/qa-report/QA-LIB-001.md`.
 
 ## Known MVP Limitations
@@ -69,5 +67,8 @@ FE. QA should update or replace that starter expectation and produce
   durable distributed idempotency is out of scope.
 - Q-001 through Q-004 follow the documented SD baseline but still require
   product confirmation before any UAT/PROD expansion.
-- Generated API source and frontend schema output must be staged/committed,
-  then `npm run api:verify-generated` rerun as the source-control gate.
+- Generated API source and frontend schema output are tracked in the current
+  checkout; generated paths are clean, with only the expected workflow docs
+  changed in this session. OpenAPI Generator 7.25.0 still rewrites annotation
+  timestamps during regeneration, so `api:verify-generated` needs a
+  generator-stability fix before it can be a deterministic source-control gate.
