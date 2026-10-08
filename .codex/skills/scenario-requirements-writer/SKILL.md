@@ -19,6 +19,7 @@ Execute this workflow to convert a scenario into a requirement analysis document
 2. Establish document identity.
 - Keep scenario ID as-is (for example `SCN-LIB-001`).
 - Assign a separate requirement document ID (for example `REQ-LIB-001`).
+- Use the requirement document ID as the output filename stem: `<REQ-ID>.md`.
 - Add a `文件資訊` section near the top with:
   - `需求文件 ID：<REQ-ID>`
   - `來源情境：<SCN-ID>`
@@ -44,13 +45,17 @@ Execute this workflow to convert a scenario into a requirement analysis document
 - Avoid introducing assumptions without marking them as pending confirmation.
 
 5. Write output file.
-- Default path: `docs/requirements/<SCN-ID>.md` unless user requests another path.
-- If file exists, update in place and preserve useful prior content.
+- Default path: `docs/requirements/<REQ-ID>.md`.
+- If the user requests another output directory, use that directory but keep the filename as `<REQ-ID>.md`. If a requested filename differs, use the canonical filename and report the resolved path.
+- In the target directory, find an existing requirement document by its `需求文件 ID` metadata, not by scenario ID or filename. If exactly one matching document has a different filename, rename it to `<REQ-ID>.md` and preserve useful prior content.
+- If the canonical path contains a different requirement document ID, or multiple documents in the target directory have the same requirement ID, stop and report the conflict instead of overwriting a document.
+- If the canonical file exists with the matching ID, update it in place and preserve useful prior content.
 
 6. Validate before finish.
 - Ensure all mandatory sections exist.
 - Ensure each AC is in Given/When/Then format.
 - Ensure `需求文件 ID`, `來源情境`, and `UI 設計來源` are present.
+- Ensure the output filename stem (excluding `.md`) exactly matches `需求文件 ID`.
 - Ensure UI alignment FR and UI alignment AC both exist.
 - Ensure business rules, state transitions, edge cases, and open questions are addressed.
 - Run `python3 .codex/skills/scenario-requirements-writer/scripts/validate_requirements.py <REQ-FILE>`.
